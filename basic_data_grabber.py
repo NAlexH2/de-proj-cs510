@@ -6,11 +6,18 @@ API_URL = "https://busdata.cs.pdx.edu/api/getBreadCrumbs?vehicle_id="
 DATA_FILE = "./data_file"
 
 def web_api_response(cf: pd.DataFrame) -> pd.DataFrame:
+    all_responses = pd.DataFrame()
+    all_responses["ID"] = pd.Series(dtype=str)
+    all_responses["Response"] = pd.Series(dtype=str)
     for i in range(cf.size):
-        resp = requests.request("GET", API_URL+str(cf.loc[i][0]))
-    if resp.status_code != "200":
-        return None
-    return resp
+        vehicleID = str(cf['Snickers'].at[i])
+        resp = requests.request("GET", API_URL+vehicleID)
+        if resp.status_code == 404:
+            all_responses.loc[all_responses.size] = [str(vehicleID), str(resp.status_code)]
+        elif resp.status_code == 202:
+            all_responses.loc[all_responses.size] = [str(vehicleID), str(resp.status_code)]
+    
+    print(all_responses.head(all_responses.size))
 
 
 def data_grabber() -> None:
