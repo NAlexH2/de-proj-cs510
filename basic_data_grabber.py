@@ -3,21 +3,21 @@ import pandas as pd
 import os
 
 API_URL = "https://busdata.cs.pdx.edu/api/getBreadCrumbs?vehicle_id="
-BUS_FAMILY = "Whisker"
 DATA_FILE = "./data_file"
 
-def web_api_response():
-    resp = requests.request("GET", API_URL+BUS_FAMILY)
+def web_api_response(cf: pd.DataFrame) -> pd.DataFrame:
+    for i in range(cf.size):
+        resp = requests.request("GET", API_URL+str(cf.loc[i][0]))
     if resp.status_code != "200":
         return None
     return resp
 
 
-def data_grabber():
+def data_grabber() -> None:
     file = None
-    df = web_api_response()
+    csv_frame: pd.DataFrame = pd.read_csv("./vehicle_ids.csv")
+    df = web_api_response(csv_frame)
     if df is not None:
-        data_frame = pd.read_csv("./vehicle_ids.csv")
         if os.path.exists(DATA_FILE):
             file = open(DATA_FILE, "x")
     else:
