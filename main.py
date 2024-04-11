@@ -10,12 +10,23 @@ DATA_PATH = "./data_files"
 
 
 class BreadCrumbClass:
+    """
+    Collection of data from bus API that the breadcrumbs come from.
+
+        Class Data Members:
+            OK_response -- pandas dataframe that stores the 200 status
+            codes
+
+            bad_response -- pandas dataframe that stores the 404 status
+            codes
+    """
+
     def __init__(self) -> None:
         self.OK_response = self.build_query_df()
         self.bad_response = self.build_query_df()
 
-    def response_vdf(self, vehicleID: str, stat_code: int) -> pd.DataFrame:
-        """Build a dataframe just for vehicle responses
+    def response_vdf(self, vehicleID: str, stat_code: int) -> None:
+        """Build a dataframe just for vehicle responses to self modify
 
         Arguments:
             vehicleID -- id of vehicle used in the query operation
@@ -25,6 +36,7 @@ class BreadCrumbClass:
         Returns:
             pd.DataFrame with ID and Response as columns and a single row
         """
+
         data = {
             "ID": [str(vehicleID)],
             "Response": [str(stat_code)],
@@ -37,13 +49,15 @@ class BreadCrumbClass:
         Returns:
             pd.DataFrame with columns 'ID' and 'Response'.
         """
+
         new_df = pd.DataFrame()
         new_df["ID"] = pd.Series(dtype=str)
         new_df["Response"] = pd.Series(dtype=str)
         return new_df
 
-    def web_api_response(self, cf: pd.DataFrame) -> list[pd.DataFrame]:
+    def gather_response_codes(self, cf: pd.DataFrame) -> list[pd.DataFrame]:
 
+        # TODO: parallelize this operation to make it go faster
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
             resp = requests.request("GET", API_URL + vehicleID)
@@ -53,25 +67,23 @@ class BreadCrumbClass:
 
             # Collect both responses for notification
             if resp.status_code == 404:
-                bad_response = pd.concat([bad_response, to_concat])
-
+                self.bad_response = pd.concat([self.bad_response, to_concat])
             else:
-                OK_response = pd.concat([OK_response, to_concat])
+                self.OK_response = pd.concat([self.OK_response, to_concat])
 
-        return [OK_response, bad_response]
+        return
 
     def data_grabber(self) -> None:
         file = None
         csv_frame: pd.DataFrame = pd.read_csv("./vehicle_ids.csv")
-        df = self.web_api_response(csv_frame)
-        oks: pd.DataFrame = df[0]
-        bads: pd.DataFrame = df[1]
+        self.gather_response_codes(csv_frame)
 
         # if oks.size is not 0:
         #     os.mkdir(DATA_PATH)
         #     if os.path.exists(DATA_PATH):
 
-        emailer(oks.size, bads.size)
+        # emailer(oks.size, bads.size)
+        return
 
 
 if __name__ == "__main__":
