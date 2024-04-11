@@ -1,4 +1,4 @@
-from data_grabber import DataGrabber
+from src.data_grabber import DataGrabber
 
 
 if __name__ == "__main__":
