@@ -1,8 +1,12 @@
+import json
+import multiprocessing
+from typing import Callable, Iterable
 import requests
 import pandas as pd
 import os
+from datetime import datetime
 
-from email_notify import emailer
+from .email_notify import emailer
 
 API_URL = "https://busdata.cs.pdx.edu/api/getBreadCrumbs?vehicle_id="
 DATA_PATH = "./data_files"
@@ -23,6 +27,14 @@ class DataGrabber:
     def __init__(self) -> None:
         self.OK_response = self.build_query_df()
         self.bad_response = self.build_query_df()
+
+    def paralleled_ops(func: Callable, data: Iterable):
+        # TODO: come back to this once you've figured out the algo for collecting
+        # data
+
+        # p = multiprocessing.Pool(multiprocessing.cpu_count() // 2)
+        # for result in p.imap(func, data):
+        pass
 
     def response_vdf(self, vehicleID: str, stat_code: int) -> None:
         """Build a dataframe just for vehicle responses to self modify
@@ -57,8 +69,12 @@ class DataGrabber:
     def gather_response_codes(self, cf: pd.DataFrame) -> list[pd.DataFrame]:
 
         # TODO: parallelize this operation to make it go faster
+        # TODO: docstring
+        print("\n")
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
+            print(f"VID: {vehicleID}", end="\r")
+
             resp = requests.request("GET", API_URL + vehicleID)
 
             # Make a quick dataframe with our info to concat
@@ -72,14 +88,29 @@ class DataGrabber:
 
         return
 
+    def get_JSON_data(self, ok_df: pd.DataFrame) -> list[dict]:
+        # TODO: parallelize this operation too? I don't see why we can't...
+        for i in range(ok_df.size):
+            vehicleID = str(ok_df["ID"][i].values[0])
+            resp = requests.request("GET", API_URL + vehicleID)
+            json_got = json.loads(resp.text)
+
+            dt_obj = datetime(1, 1, 1)
+            file_str = dt_obj.now().strftime("%m/%d/%Y-%H:%M:%S:%f")[:-3]
+            return
+
+    def save_JSON_data(self) -> None:
+        pass
+
     def data_grabber(self) -> None:
         file = None
-        csv_frame: pd.DataFrame = pd.read_csv("./vehicle_ids.csv")
+        csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_response_codes(csv_frame)
 
-        # if oks.size is not 0:
-        #     os.mkdir(DATA_PATH)
-        #     if os.path.exists(DATA_PATH):
+        if self.OK_response.size != 0:
+            if os.path.exists(DATA_PATH):
+                os.rmdir(DATA_PATH)
+            os.mkdir(DATA_PATH)
+            self.get_JSON_data(self.OK_response)
 
-        # emailer(oks.size, bads.size)
         return
