@@ -7,12 +7,11 @@ import pandas as pd
 import os
 from datetime import datetime
 
-from .email_notify import emailer
-
 API_URL = "https://busdata.cs.pdx.edu/api/getBreadCrumbs?vehicle_id="
 DATA_FOLDER = os.path.join("raw_data_files")
 DATA_MONTH_DAY = datetime.now().strftime("%m-%d")
 DATA_PATH = os.path.join(DATA_FOLDER, DATA_MONTH_DAY)
+
 
 
 class DataGrabber:
@@ -96,18 +95,17 @@ class DataGrabber:
         dt_obj = datetime(1, 1, 1)
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
-        file_str = dt_obj.now().strftime("%m-%d-%Y-%H:%M:%S:%f")[:-3]
-        file_str = file_str + ".json"
-        full_file_path = os.path.join(DATA_PATH, vehicleID+"-"+file_str)
+        file_str = dt_obj.now().strftime("%m-%d-%Y")[:-3]
+        file_str = vehicleID + "-" + file_str + ".json"
+        full_file_path = os.path.join(DATA_PATH, file_str)
 
         with open(full_file_path, "w") as outfile:
             outfile.write(json_got)
 
     def data_grabber(self) -> None:
-        if self.OK_response.size != 0:
-            if os.path.exists(DATA_PATH):
-                shutil.rmtree(DATA_PATH)
-            os.makedirs(DATA_PATH)
+        if os.path.exists(DATA_PATH):
+            shutil.rmtree(DATA_PATH)
+        os.makedirs(DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_response_codes(csv_frame)
 
