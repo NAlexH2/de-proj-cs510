@@ -1,4 +1,5 @@
 import json
+import shutil
 import multiprocessing
 from typing import Callable, Iterable
 import requests
@@ -9,7 +10,9 @@ from datetime import datetime
 from .email_notify import emailer
 
 API_URL = "https://busdata.cs.pdx.edu/api/getBreadCrumbs?vehicle_id="
-DATA_PATH = "./data_files"
+DATA_FOLDER = os.path.join("raw_data_files")
+DATA_MONTH_DAY = datetime.now().strftime("%m-%d")
+DATA_PATH = os.path.join(DATA_FOLDER, DATA_MONTH_DAY)
 
 
 class DataGrabber:
@@ -67,7 +70,6 @@ class DataGrabber:
         return new_df
 
     def gather_response_codes(self, cf: pd.DataFrame) -> list[pd.DataFrame]:
-
         # TODO: parallelize this operation to make it go faster
         # TODO: docstring
         print("\n")
@@ -82,35 +84,31 @@ class DataGrabber:
 
             # Collect both responses for notification
             if resp.status_code == 404:
-                self.bad_response = pd.concat([self.bad_response, to_concat])
+                self.bad_response = pd.concat([self.bad_response, to_concat], 
+                                              ignore_index=True)
             else:
-                self.OK_response = pd.concat([self.OK_response, to_concat])
-
+                self.OK_response = pd.concat([self.OK_response, to_concat],
+                                             ignore_index=True)
+                self.save_JSON_data(resp.text, vehicleID)
         return
 
-    def get_JSON_data(self, ok_df: pd.DataFrame) -> list[dict]:
-        # TODO: parallelize this operation too? I don't see why we can't...
-        for i in range(ok_df.size):
-            vehicleID = str(ok_df["ID"][i].values[0])
-            resp = requests.request("GET", API_URL + vehicleID)
-            json_got = json.loads(resp.text)
+    def save_JSON_data(self, resp_text: str, vehicleID: str) -> None:
+        dt_obj = datetime(1, 1, 1)
+        json_got = json.dumps(json.loads(resp_text), indent=4)
 
-            dt_obj = datetime(1, 1, 1)
-            file_str = dt_obj.now().strftime("%m/%d/%Y-%H:%M:%S:%f")[:-3]
-            return
+        file_str = dt_obj.now().strftime("%m-%d-%Y-%H:%M:%S:%f")[:-3]
+        file_str = file_str + ".json"
+        full_file_path = os.path.join(DATA_PATH, vehicleID+"-"+file_str)
 
-    def save_JSON_data(self) -> None:
-        pass
+        with open(full_file_path, "w") as outfile:
+            outfile.write(json_got)
 
     def data_grabber(self) -> None:
-        file = None
-        csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
-        self.gather_response_codes(csv_frame)
-
         if self.OK_response.size != 0:
             if os.path.exists(DATA_PATH):
-                os.rmdir(DATA_PATH)
-            os.mkdir(DATA_PATH)
-            self.get_JSON_data(self.OK_response)
+                shutil.rmtree(DATA_PATH)
+            os.makedirs(DATA_PATH)
+        csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
+        self.gather_response_codes(csv_frame)
 
         return
