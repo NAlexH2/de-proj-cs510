@@ -9,6 +9,6 @@ from src.uploadgdrive import upload_to_gdrive
 if __name__ == "__main__":
     data_collect = DataGrabber()
     data_collect.data_grabber()
-    # write_to_gdrive()
+    upload_to_gdrive()
 
     # shutil.rmtree(DATA_FOLDER)
