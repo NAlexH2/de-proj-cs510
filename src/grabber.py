@@ -87,13 +87,15 @@ class DataGrabber:
                     [self.OK_response, to_concat], ignore_index=True
                 )
                 self.save_JSON_data(resp.text, vehicleID)
+
+        print("\n")
         return
 
     def save_JSON_data(self, resp_text: str, vehicleID: str) -> None:
         dt_obj = datetime(1, 1, 1)
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
-        file_str = dt_obj.now().strftime("%m-%d-%Y")[:-3]
+        file_str = dt_obj.now().strftime("%m-%d-%Y")
         file_str = vehicleID + "-" + file_str + ".json"
         full_file_path = os.path.join(DATA_PATH, file_str)
 
