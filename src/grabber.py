@@ -1,17 +1,13 @@
 import json
 import shutil
 import multiprocessing
-from typing import Callable, Iterable
 import requests
 import pandas as pd
 import os
+
 from datetime import datetime
-
-API_URL = "https://busdata.cs.pdx.edu/api/getBreadCrumbs?vehicle_id="
-DATA_FOLDER = os.path.join("raw_data_files")
-DATA_MONTH_DAY = datetime.now().strftime("%m-%d")
-DATA_PATH = os.path.join(DATA_FOLDER, DATA_MONTH_DAY)
-
+from src.vars import API_URL, DATA_FOLDER, DATA_MONTH_DAY, DATA_PATH
+from typing import Callable, Iterable
 
 
 class DataGrabber:
@@ -83,11 +79,13 @@ class DataGrabber:
 
             # Collect both responses for notification
             if resp.status_code == 404:
-                self.bad_response = pd.concat([self.bad_response, to_concat], 
-                                              ignore_index=True)
+                self.bad_response = pd.concat(
+                    [self.bad_response, to_concat], ignore_index=True
+                )
             else:
-                self.OK_response = pd.concat([self.OK_response, to_concat],
-                                             ignore_index=True)
+                self.OK_response = pd.concat(
+                    [self.OK_response, to_concat], ignore_index=True
+                )
                 self.save_JSON_data(resp.text, vehicleID)
         return
 

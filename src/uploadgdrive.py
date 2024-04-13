@@ -1,17 +1,12 @@
 import os
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-
-SCOPES = ['https://www.googleapis.com/auth/drive']
-SERVICE_ACCOUNT_FILE = "../data_eng_key/data-eng-auth-data.json"
+from .vars import SCOPES, SERVICE_ACCOUNT_FILE
 
 
 def write_to_gdrive() -> None:
     serv_acc = service_account.Credentials()
-    creds = serv_acc.from_service_account_file(SERVICE_ACCOUNT_FILE, 
-                                           scopes=SCOPES)
+    creds = serv_acc.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
-    drive_service = build('drive', 'v3', credentials=creds)
+    drive_service = build("drive", "v3", credentials=creds)
     print(type(drive_service))
-    
-    
