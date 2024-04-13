@@ -1,10 +1,9 @@
 import os
+import shutil
 
 from datetime import datetime
-import shutil
 from src.grabber import DataGrabber
-from src.uploadgdrive import write_to_gdrive
-from src.vars import API_URL, DATA_FOLDER, DATA_MONTH_DAY, DATA_PATH
+from src.uploadgdrive import upload_to_gdrive
 
 
 if __name__ == "__main__":
