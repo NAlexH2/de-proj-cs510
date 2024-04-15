@@ -13,7 +13,7 @@ def time_to_play():
     )
     service = build("drive", "v3", credentials=creds)
 
-    print("\n\nGO PLAY IN THE DEBUGGER!\n THE WORLD IS YOUR KERNEL!")
+    print("\n\nGO PLAY IN THE DEBUGGER!\nTHE WORLD IS YOUR KERNEL!")
     return
 
 
