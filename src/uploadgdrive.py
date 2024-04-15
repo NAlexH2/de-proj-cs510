@@ -1,8 +1,15 @@
 import os
+from time import sleep
 from google.oauth2 import service_account
 from googleapiclient.discovery import build, MediaFileUpload
+import sys
 
-from src.vars import DATA_MONTH_DAY
+script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+if "/src" in script_dir:
+    from vars import DATA_MONTH_DAY
+else:
+    from src.vars import DATA_MONTH_DAY
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
@@ -17,15 +24,20 @@ def folder_exists(service):
     return None
 
 
-def file_exists(service, file_name):
-    query = f"name='{file_name}'"
+def get_folder_files_list(service, gdrive_cur_file_id):
+    gdrive_files_list = set()
+    query = f"'{gdrive_cur_file_id}' in parents"
     response = service.files().list(q=query).execute()
-    if len(response["files"]) > 0 and bool(response["files"][0]):
-        return response["files"][0]["id"]
-    return None
+    response = response.get("files")
+    if len(response) > 0:
+        for i in range(len(response)):
+            gdrive_files_list.add(response[i]["name"])
+        return gdrive_files_list
+    return set()
 
 
 def upload_to_gdrive() -> None:
+    print("\n")
 
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES
@@ -41,17 +53,26 @@ def upload_to_gdrive() -> None:
         GDRIVE_DATA_MONTH_DAY = (
             service.files().create(body=folder_metadata, fields="id").execute()
         )
+        GDRIVE_DATA_MONTH_DAY = GDRIVE_DATA_MONTH_DAY["id"]
+    else:
+        print(
+            f"\{GDRIVE_DATA_MONTH_DAY}: already exists... skipping creation in google drive.",
+            end="\r",
+        )
+        sleep(0.3)
 
+    gdrive_files_list: set = get_folder_files_list(service, GDRIVE_DATA_MONTH_DAY)
     files = os.listdir("./raw_data_files/" + DATA_MONTH_DAY)
     files.sort()
 
     # for loop it through all files created in raw_data_files
     num_files = len(files)
     for i in range(num_files):
-        exists = file_exists(service, files[i])
-
-        if exists is None:
-            print(f"Uploading file# {i+1} out of {num_files+1}", end="\r")
+        if files[i] in gdrive_files_list:
+            print(f"{files[i+1]}: already uploaded... skipping.", end="\r")
+            sleep(0.3)
+        else:
+            print(f"Uploading file# {i+1} out of {num_files}", end="\r")
 
             file_metadata = {"name": files[i], "parents": [GDRIVE_DATA_MONTH_DAY]}
             media = MediaFileUpload(
@@ -64,6 +85,7 @@ def upload_to_gdrive() -> None:
                 .create(body=file_metadata, media_body=media, fields="id")
                 .execute()
             )
+            gdrive_files_list.add(files[i])
 
     print("\n")
 
