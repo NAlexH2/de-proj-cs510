@@ -5,4 +5,4 @@ import os
 API_URL = "https://busdata.cs.pdx.edu/api/getBreadCrumbs?vehicle_id="
 DATA_FOLDER = os.path.join("raw_data_files")
 DATA_MONTH_DAY = datetime.now().strftime("%m-%d")
-DATA_PATH = os.path.join(DATA_FOLDER, DATA_MONTH_DAY)
+FULL_DATA_PATH = os.path.join(DATA_FOLDER, DATA_MONTH_DAY)

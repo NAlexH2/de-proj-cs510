@@ -6,7 +6,7 @@ import pandas as pd
 import os
 
 from datetime import datetime
-from src.vars import API_URL, DATA_FOLDER, DATA_MONTH_DAY, DATA_PATH
+from src.vars import API_URL, DATA_FOLDER, DATA_MONTH_DAY, FULL_DATA_PATH
 from typing import Callable, Iterable
 
 
@@ -97,7 +97,7 @@ class DataGrabber:
 
         file_str = dt_obj.now().strftime("%m-%d-%Y")
         file_str = vehicleID + "-" + file_str + ".json"
-        full_file_path = os.path.join(DATA_PATH, file_str)
+        full_file_path = os.path.join(FULL_DATA_PATH, file_str)
 
         with open(full_file_path, "w") as outfile:
             outfile.write(json_got)
@@ -105,7 +105,7 @@ class DataGrabber:
     def data_grabber(self) -> None:
         if os.path.exists(DATA_FOLDER):
             shutil.rmtree(DATA_FOLDER)
-        os.makedirs(DATA_PATH)
+        os.makedirs(FULL_DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_response_codes(csv_frame)
 
