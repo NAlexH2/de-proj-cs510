@@ -26,16 +26,20 @@ def tar_data():
 
 def data_emailer(ok_size: int, bad_size: int) -> None:
     SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
-    SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
+    SCOPES = [
+        "https://www.googleapis.com/auth/gmail.send",
+        "https://www.googleapis.com/auth/gmail.compose",
+    ]
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES
     )
-    service = build("drive", "v3", credentials=creds)
+    creds = creds.with_subject("nharris@pdx.edu")
+    service = build("gmail", "v1", credentials=creds)
     message = EmailMessage()
-    message.set_content(f"{DATA_MONTH_DAY} Data Retrieval")
+    message.set_content(f"{DATA_MONTH_DAY}---Data Retrieval")
     message["To"] = "nharris@pdx.edu"
     message["From"] = creds.service_account_email
-    message["Subject"] = f"{DATA_MONTH_DAY} Data Retrieval"
+    message["Subject"] = f"{DATA_MONTH_DAY} Data Retrieval2"
 
     encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
     create_message = {"raw": encoded_message}
@@ -45,6 +49,7 @@ def data_emailer(ok_size: int, bad_size: int) -> None:
         .send(userId="me", body=create_message)
         .execute()
     )
+    return
 
 
 if __name__ == "__main__":
