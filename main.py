@@ -3,9 +3,10 @@ import shutil
 import sys
 
 from datetime import datetime
-from src.dataemailer import data_emailer
+from src.dataemailer import tar_data
 from src.grabber import DataGrabber
 from src.uploadgdrive import upload_to_gdrive
+from src.vars import FULL_DATA_PATH
 
 
 if __name__ == "__main__":
@@ -16,10 +17,15 @@ if __name__ == "__main__":
     data_collect.data_grabber()
     OK_size = data_collect.OK_response.size
     bad_size = data_collect.bad_response.size
+
+    # TODO See if you can find another soln to get the emailer working.
     # data_emailer(ok_size=OK_size, bad_size=bad_size)
+
+    tar_data()  # Just tar the file instead. For now.
 
     if "-U" in sys.argv:
         upload_to_gdrive()
         print("\nUpload to google drive completed.")
 
-    # shutil.rmtree(DATA_FOLDER)
+    shutil.rmtree(FULL_DATA_PATH)
+    print("\nOperation finished. Cleanup complete.")
