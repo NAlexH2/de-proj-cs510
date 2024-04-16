@@ -7,13 +7,16 @@ from googleapiclient.discovery import build
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 if "/src" in script_dir:
-    from vars import DATA_MONTH_DAY, DATA_FOLDER, FULL_DATA_PATH
+    from vars import DATA_MONTH_DAY, FULL_DATA_PATH
 else:
-    from src.vars import DATA_MONTH_DAY, DATA_FOLDER, FULL_DATA_PATH
+    from src.vars import DATA_MONTH_DAY, FULL_DATA_PATH
 
 
 def tar_data():
     print("\n")
+    file_exists = os.path.exists(f"{FULL_DATA_PATH}.tar")
+    if file_exists:
+        os.remove(f"{FULL_DATA_PATH}.tar")
     tar = tarfile.open(f"{FULL_DATA_PATH}.tar", "w")
     files = os.listdir(f"{FULL_DATA_PATH}")
     files.sort()
@@ -22,6 +25,7 @@ def tar_data():
             FULL_DATA_PATH + "/" + file, arcname=DATA_MONTH_DAY + "/" + file
         )
     tar.close()
+    print(f"\ntar for {DATA_MONTH_DAY} complete...")
 
 
 def data_emailer(ok_size: int, bad_size: int) -> None:
@@ -53,5 +57,5 @@ def data_emailer(ok_size: int, bad_size: int) -> None:
 
 
 if __name__ == "__main__":
-    # tar_data()
-    data_emailer(0, 0)
+    tar_data()
+    # data_emailer(0, 0)
