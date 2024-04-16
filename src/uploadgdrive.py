@@ -63,7 +63,9 @@ def upload_to_gdrive() -> None:
         )
         sleep(0.3)
 
-    gdrive_files_list: set = get_folder_files_list(service, GDRIVE_DATA_MONTH_DAY)
+    gdrive_files_list: set = get_folder_files_list(
+        service, GDRIVE_DATA_MONTH_DAY
+    )
     files = os.listdir(FULL_DATA_PATH)
     files.sort()
 
@@ -76,7 +78,10 @@ def upload_to_gdrive() -> None:
         else:
             print(f"Uploading file# {i+1} out of {num_files}", end="\r")
 
-            file_metadata = {"name": files[i], "parents": [GDRIVE_DATA_MONTH_DAY]}
+            file_metadata = {
+                "name": files[i],
+                "parents": [GDRIVE_DATA_MONTH_DAY],
+            }
             media = MediaFileUpload(FULL_DATA_PATH + "/" + files[i])
 
             # Upload the current file to my pdx gdrive
