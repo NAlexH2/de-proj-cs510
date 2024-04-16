@@ -103,8 +103,8 @@ class DataGrabber:
             outfile.write(json_got)
 
     def data_grabber(self) -> None:
-        if os.path.exists(DATA_FOLDER):
-            shutil.rmtree(DATA_FOLDER)
+        if os.path.exists(FULL_DATA_PATH):
+            shutil.rmtree(FULL_DATA_PATH)
         os.makedirs(FULL_DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_response_codes(csv_frame)
