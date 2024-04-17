@@ -67,6 +67,7 @@ class DataGrabber:
     def gather_response_codes(self, cf: pd.DataFrame) -> list[pd.DataFrame]:
         # TODO: parallelize this operation to make it go faster
         # TODO: docstring
+        # TODO: bool to set to False once a 200 response is received
         print("\n")
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])

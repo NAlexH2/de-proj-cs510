@@ -9,6 +9,9 @@ from src.uploadgdrive import upload_to_gdrive
 from src.vars import FULL_DATA_PATH
 
 
+# TODO: Each output message should have the same DTG format as the bash script
+# TODO: gmail acc to email from to myself
+
 if __name__ == "__main__":
     if "-U" in sys.argv:
         print("\nUpload arg found. Will send to google drive nharris@pdx.edu.")
