@@ -27,6 +27,11 @@ def publisher():
 
     # Convert the message data to a JSON string
     message = message_data
+    # publish example
+    # service
+    # .projects()
+    # .topics()
+    # .publish(topic=TOPIC_ID, body=message)
     return
 
 
