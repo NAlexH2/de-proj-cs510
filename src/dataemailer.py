@@ -7,9 +7,9 @@ from googleapiclient.discovery import build
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 if "/src" in script_dir:
-    from vars import DATA_MONTH_DAY, FULL_DATA_PATH
+    from utils import DATA_MONTH_DAY, FULL_DATA_PATH
 else:
-    from src.vars import DATA_MONTH_DAY, FULL_DATA_PATH
+    from src.utils import DATA_MONTH_DAY, FULL_DATA_PATH
 
 
 def tar_data():
