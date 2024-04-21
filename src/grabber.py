@@ -1,13 +1,11 @@
-import json
-import shutil
-import multiprocessing
-import requests
-import pandas as pd
-import os
-
-from datetime import datetime
-from src.vars import API_URL, DATA_FOLDER, DATA_MONTH_DAY, FULL_DATA_PATH
+import json, shutil, multiprocessing, requests, pandas as pd, os, sys
 from typing import Callable, Iterable
+
+script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+if "/src" in script_dir:
+    from utils import API_URL, FULL_DATA_PATH, mdy_time, curr_time_micro
+else:
+    from src.utils import API_URL, FULL_DATA_PATH, mdy_time, curr_time_micro
 
 
 class DataGrabber:
@@ -67,10 +65,10 @@ class DataGrabber:
     def gather_response_codes(self, cf: pd.DataFrame) -> list[pd.DataFrame]:
         # TODO: parallelize this operation to make it go faster
         # TODO: docstring
-        print("\n")
+        # TODO: bool to set to False once a 200 response is received
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
-            print(f"VID: {vehicleID}", end="\r")
+            print(f"{curr_time_micro()} VID: {vehicleID}", end="\r")
 
             resp = requests.request("GET", API_URL + vehicleID)
 
@@ -86,17 +84,14 @@ class DataGrabber:
                 self.OK_response = pd.concat(
                     [self.OK_response, to_concat], ignore_index=True
                 )
-                self.save_JSON_data(resp.text, vehicleID)
+                self.save_json_data(resp.text, vehicleID)
 
-        print("\n")
         return
 
-    def save_JSON_data(self, resp_text: str, vehicleID: str) -> None:
-        dt_obj = datetime(1, 1, 1)
+    def save_json_data(self, resp_text: str, vehicleID: str) -> None:
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
-        file_str = dt_obj.now().strftime("%m-%d-%Y")
-        file_str = vehicleID + "-" + file_str + ".json"
+        file_str = vehicleID + "-" + mdy_time() + ".json"
         full_file_path = os.path.join(FULL_DATA_PATH, file_str)
 
         with open(full_file_path, "w") as outfile:

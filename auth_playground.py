@@ -1,7 +1,6 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
-
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 GDRIVE_RAW_DATA_FILES = "1ew5-8Iyrg4gdRdleqRULt5WxMMAiwT8B"

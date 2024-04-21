@@ -1,17 +1,15 @@
-import os
-import sys
+import os, sys
 from time import sleep
 from google.oauth2 import service_account
 from googleapiclient.discovery import build, MediaFileUpload
-import sys
 
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 if "/src" in script_dir:
-    from vars import DATA_MONTH_DAY, FULL_DATA_PATH
+    from utils import DATA_MONTH_DAY, FULL_DATA_PATH
 else:
-    from src.vars import DATA_MONTH_DAY, FULL_DATA_PATH
+    from src.utils import DATA_MONTH_DAY, FULL_DATA_PATH
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
@@ -38,14 +36,7 @@ def get_folder_files_list(service, gdrive_cur_file_id):
     return set()
 
 
-def upload_to_gdrive() -> None:
-    print("\n")
-
-    creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES
-    )
-    service = build("drive", "v3", credentials=creds)
-    GDRIVE_DATA_MONTH_DAY = folder_exists(service)
+def create_gdrive_folder(service):
     if GDRIVE_DATA_MONTH_DAY is None:
         folder_metadata = {
             "name": DATA_MONTH_DAY,
@@ -62,6 +53,17 @@ def upload_to_gdrive() -> None:
             end="\r",
         )
         sleep(0.3)
+
+
+def upload_to_gdrive() -> None:
+    print("\n")
+
+    creds = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    )
+    service = build("drive", "v3", credentials=creds)
+    GDRIVE_DATA_MONTH_DAY = folder_exists(service)
+    create_gdrive_folder(service, GDRIVE_DATA_MONTH_DAY)
 
     gdrive_files_list: set = get_folder_files_list(
         service, GDRIVE_DATA_MONTH_DAY
