@@ -2,7 +2,7 @@ data_eng_key
 raw_data_files
 subscriber_data_files
 env
-MAINLOG
-SUBLOG
+MAINLOG-*
+SUBLOG-*
 __pycache__
 .vscode
