@@ -3,7 +3,7 @@ from datetime import datetime
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
-from src.vars import FULL_DATA_PATH
+from src.vars import SUBSCRIBER_DATA_PATH
 
 
 SCOPES = ["https://www.googleapis.com/auth/pubsub"]
@@ -31,9 +31,9 @@ def save_json_data(json_got, vehicleID: str) -> None:
     file_str = DT_OBJ.now().strftime("%m-%d-%Y")
     file_str = vehicleID + "-" + file_str + ".json"
 
-    full_file_path = os.path.join(FULL_DATA_PATH, file_str)
-    if not os.path.exists(FULL_DATA_PATH):
-        os.makedirs(FULL_DATA_PATH)
+    full_file_path = os.path.join(SUBSCRIBER_DATA_PATH, file_str)
+    if not os.path.exists(SUBSCRIBER_DATA_PATH):
+        os.makedirs(SUBSCRIBER_DATA_PATH)
     if not os.path.exists(full_file_path):
         with open(full_file_path, "w") as outfile:
             json.dump([json_got], outfile, indent=4)
@@ -85,10 +85,10 @@ def receiver():
                 ackd_ids.add(to_ack)
                 dt_output = DT_OBJ.now().strftime("%m-%d-%Y-%H:%M:%S.%f")[:-3]
                 print(
-                    f"{dt_output} - Data appended to {file_worked_on} and saved - Response#: {response_not_none}"
+                    f"{dt_output} - Data appended to {file_worked_on} and "
+                    + f"saved - Response#: {response_not_none}"
                 )
 
-            # time.sleep(0.5)
             # Prime the pump for the next loop, cycle to the next possible message
             # that may be waiting for us.
             response_not_none += 1
@@ -96,7 +96,8 @@ def receiver():
         sixty_sleep_count += 1
         dt_output = DT_OBJ.now().strftime("%m-%d-%Y-%H:%M:%S.%f")[:-3]
         print(
-            f"{dt_output} - Sixty sleep counter: {sixty_sleep_count} - No data to receive from topic. Sleeping for 1 minute."
+            f"{dt_output} - Sixty sleep counter: {sixty_sleep_count} - No data "
+            + "to receive from topic. Sleeping for 1 minute."
         )
         time.sleep(60)
 
