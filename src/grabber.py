@@ -3,9 +3,9 @@ from typing import Callable, Iterable
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
-    from utils import API_URL, FULL_DATA_PATH, MDY_TIME
+    from utils import API_URL, FULL_DATA_PATH, mdy_time
 else:
-    from src.utils import API_URL, FULL_DATA_PATH, MDY_TIME
+    from src.utils import API_URL, FULL_DATA_PATH, mdy_time
 
 
 class DataGrabber:
@@ -93,7 +93,7 @@ class DataGrabber:
     def save_json_data(self, resp_text: str, vehicleID: str) -> None:
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
-        file_str = vehicleID + "-" + MDY_TIME + ".json"
+        file_str = vehicleID + "-" + mdy_time() + ".json"
         full_file_path = os.path.join(FULL_DATA_PATH, file_str)
 
         with open(full_file_path, "w") as outfile:
