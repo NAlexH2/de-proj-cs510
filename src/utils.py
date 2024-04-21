@@ -1,5 +1,5 @@
-from datetime import datetime
 import os
+from datetime import datetime
 
 # Utilities used throughout
 API_URL = "https://busdata.cs.pdx.edu/api/getBreadCrumbs?vehicle_id="
