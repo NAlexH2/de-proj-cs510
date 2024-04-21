@@ -51,8 +51,9 @@ def publisher(data_file):
 def publish_data():
     files_list = os.listdir(FULL_DATA_PATH)
     files_list.sort()
-    for i in range(len(files_list)):
-
+    file_len = len(files_list)
+    for i in range(file_len):
+        print(f"{curr_time_micro} - File {i+1} of {file_len}.")
         publisher(files_list[i])
 
     print(f"All files published")
