@@ -38,7 +38,7 @@ def publisher(data_file, total_sent):
         total_sent += 1
     working_file.close()
 
-    return
+    return total_sent
 
 
 def publish_data():
