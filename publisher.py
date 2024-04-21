@@ -48,7 +48,8 @@ def publish_data():
     file_len = len(files_list)
     for i in range(file_len):
         print(
-            f"{curr_time_micro()} File {i+1} of {file_len}. Total published: {total_sent} -- pid: {os.getpid()}"
+            f"{curr_time_micro()} File {i+1} of {file_len}. "
+            + f"Total records published: {total_sent} -- pid: {os.getpid()}"
         )
         total_sent += publisher(files_list[i], total_sent)
         print(
