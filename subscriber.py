@@ -29,7 +29,7 @@ def pull_subscription_messages(service):
         return None
 
 
-def save_json_data(json_got, vehicleID: str) -> None:
+def save_json_data(json_got, vehicleID: str):
     file_str = vehicleID + "-" + mdy_time() + ".json"
 
     full_file_path = os.path.join(SUBSCRIBER_DATA_PATH, file_str)
@@ -63,38 +63,69 @@ def get_decoded_data(response_data):
     return decoded_data
 
 
-def get_vehicle_id(decoded_data):
+def get_vehicle_id(decoded_data) -> str:
     return str(decoded_data["VEHICLE_ID"])
 
 
-def ack_message(service, ack_data):
+def ack_message(service, ack_data) -> None:
     service.projects().subscriptions().acknowledge(
         subscription=FULL_SUB_ID, body=ack_data
     ).execute()
+    return
 
 
-def subscriber(service):
+def print_random_notice(
+    last_file: str, curr_file: str, resp_total: int
+) -> None:
+    print(
+        f"{curr_time_micro()} - Random notice: last file was "
+        + f"{last_file} and the current file is {curr_file}. "
+        + f"Total responses handled: {resp_total} -- {os.getpid()}"
+    )
+    return
+
+
+def verbose_append_print(curr_file: str, resp_total: int) -> None:
+    print(
+        f"{curr_time_micro()} - Data appended to {curr_file} and "
+        + f"saved - Response#: {resp_total} -- pid: {os.getpid()}"
+    )
+    return
+
+
+def print_sixty_sleep(sixty_sleep_count: int, last_file: str) -> None:
+    print(
+        f"{curr_time_micro()} - Sixty sleep counter: {sixty_sleep_count} - "
+        + f"No data to receive from topic. Sleeping for 1 "
+        + f"minute -- pid: {os.getpid()}"
+    )
+    if last_file:
+        print(
+            f"{curr_time_micro()} - Last file appended to {last_file} "
+            + f"-- pid: {os.getpid()}"
+        )
+    return
+
+
+def subscriber(service) -> None:
     ackd_ids = set()
 
     # Number of times a call to time.sleep(60) has happened
     sixty_sleep_count = 0
-    response_not_none = 1
+    response_count = 1
     last_file = None
     curr_file = None
     print(
-        f"{curr_time_micro()} - Subscriber w/ following pid has started "
-        + f"listening for data on GCP Pub/Sub: {os.getpid()}"
+        f"{curr_time_micro()} - Subscriber w/ pid {os.getpid()} has started."
+        + f"Listening for data on GCP Pub/Sub: "
     )
     while True:
         response = pull_subscription_messages(service)
         if response is not None:
-            rand_int = random.randint(1, 500000)
-            if response_not_none % rand_int == 0:
-                print(
-                    f"{curr_time_micro()} - Random notice: last file was "
-                    + f"{last_file} and the current file is {curr_file} -- {os.getpid()}"
-                )
             sixty_sleep_count = 0
+            rand_int = random.randint(1, 500000)
+            if response_count % rand_int == 0:
+                print_random_notice(last_file, curr_file, response_count)
             response_data = response.get("receivedMessages")[0]
             to_ack = response_data["ackId"]
             if to_ack not in ackd_ids:
@@ -105,26 +136,13 @@ def subscriber(service):
                 ack_message(service, ack_data)
                 ackd_ids.add(to_ack)
                 if "-V" in sys.argv:
-                    print(
-                        f"{curr_time_micro()} - Data appended to {curr_file} and "
-                        + f"saved - Response#: {response_not_none} -- pid: {os.getpid()}"
-                    )
-            # Prime the pump for the next loop, cycle to the next possible message
-            # that may be waiting for us.
-            response_not_none += 1
+                    verbose_append_print(curr_file, response_count)
+            response_count += 1
             last_file = curr_file
 
         else:
             sixty_sleep_count += 1
-            print(
-                f"{curr_time_micro()} - Sixty sleep counter: {sixty_sleep_count} - No data "
-                + f"to receive from topic. Sleeping for 1 minute -- pid: {os.getpid()}"
-            )
-            if last_file is not None:
-                print(
-                    f"{curr_time_micro()} - Last file appended to {last_file} "
-                    + f"-- pid: {os.getpid()}"
-                )
+            print_sixty_sleep(sixty_sleep_count, last_file)
             time.sleep(60)
 
 
