@@ -87,12 +87,12 @@ class DataGrabber:
                 self.OK_response = pd.concat(
                     [self.OK_response, to_concat], ignore_index=True
                 )
-                self.save_JSON_data(resp.text, vehicleID)
+                self.save_json_data(resp.text, vehicleID)
 
         print("\n")
         return
 
-    def save_JSON_data(self, resp_text: str, vehicleID: str) -> None:
+    def save_json_data(self, resp_text: str, vehicleID: str) -> None:
         dt_obj = datetime(1, 1, 1)
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
