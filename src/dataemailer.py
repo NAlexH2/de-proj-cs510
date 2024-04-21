@@ -22,7 +22,8 @@ def tar_data():
     files.sort()
     for file in files:
         tar.add(
-            FULL_DATA_PATH + "/" + file, arcname=DATA_MONTH_DAY + "/" + file
+            FULL_DATA_PATH + "/" + file,
+            arcname=DATA_MONTH_DAY + "/" + file,
         )
     tar.close()
     print(f"\ntar for {DATA_MONTH_DAY} complete...")
