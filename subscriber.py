@@ -1,4 +1,4 @@
-import base64, json, os, time, sys, multiprocessing
+import base64, json, os, time, sys, random
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
@@ -73,36 +73,27 @@ def ack_message(service, ack_data):
     ).execute()
 
 
-def same_files(last_file, curr_file):
-    return last_file is not None and last_file != curr_file
-
-
-def new_file_switch(last_file, curr_file):
-    return (
-        f"{curr_time_micro()} - Files have switched. Last file appended to "
-        + f"{last_file}. New file being worked on is {curr_file}. "
-        + "This probably is either because the subscriber finished working on that file "
-        + "and there were no more messages associated to that file, or messages aren't "
-        + f"in any particular order. -- pid: {os.getpid()}"
-    )
-
-
-def multithreaded_subscriber(service):
+def subscriber(service):
     ackd_ids = set()
+
+    # Number of times a call to time.sleep(60) has happened
     sixty_sleep_count = 0
     response_not_none = 1
     last_file = None
     curr_file = None
     print(
-        f"{curr_time_micro()} - Subscriber w/ following pid has started listening: {os.getpid()}"
+        f"{curr_time_micro()} - Subscriber w/ following pid has started "
+        + f"listening for data on GCP Pub/Sub: {os.getpid()}"
     )
     while True:
-        # Number of times a call to time.sleep(60) has happened
-
-        # prime the pump, so to speak, before getting all the data
         response = pull_subscription_messages(service)
         if response is not None:
-            print(os.getpid(), curr_file)
+            rand_int = random.randint(1, 500000)
+            if response_not_none % rand_int == 0:
+                print(
+                    f"{curr_time_micro()} - Random notice: last file was "
+                    + f"{last_file} and the current file is {curr_file} -- {os.getpid()}"
+                )
             sixty_sleep_count = 0
             response_data = response.get("receivedMessages")[0]
             to_ack = response_data["ackId"]
@@ -121,12 +112,7 @@ def multithreaded_subscriber(service):
             # Prime the pump for the next loop, cycle to the next possible message
             # that may be waiting for us.
             response_not_none += 1
-
-            if same_files(last_file, curr_file):
-                pass
-                # print(new_file_switch(last_file, curr_file))
             last_file = curr_file
-            time.sleep(0.05)
 
         else:
             sixty_sleep_count += 1
@@ -136,37 +122,19 @@ def multithreaded_subscriber(service):
             )
             if last_file is not None:
                 print(
-                    f"{curr_time_micro()} - Last file appended to {curr_file} "
+                    f"{curr_time_micro()} - Last file appended to {last_file} "
                     + f"-- pid: {os.getpid()}"
                 )
             time.sleep(60)
 
 
-def work_multi(subs_list, num_procs):
-    p = multiprocessing.Pool(num_procs)
-
-    # maps each file name over one of the processors available. This is not done
-    # in order, and the file is chosen by the multiprocessing library in some
-    # fashion.
-    p.imap(multithreaded_subscriber, subs_list)
-
-    # Just gotta clean up once all files have been worked on.
-    p.close()
-    p.join()
-
-
-def multithreaded_subscriber__setup():
-    concurrences = 2
+def sub_setup():
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES
     )
-    subscriber_one = build("pubsub", "v1", credentials=creds)
-    subscriber_two = build("pubsub", "v1", credentials=creds)
-    subs_list = [subscriber_one, subscriber_two]
-
-    work_multi(subs_list, concurrences)
-    print(f"Terminating app...")
+    service = build("pubsub", "v1", credentials=creds)
+    subscriber(service)
 
 
 if __name__ == "__main__":
-    multithreaded_subscriber__setup()
+    sub_setup()
