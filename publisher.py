@@ -1,14 +1,7 @@
 import os, sys, json, base64
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-
-
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-
-if "/src" in script_dir:
-    from utils import FULL_DATA_PATH, curr_time_micro
-else:
-    from src.utils import FULL_DATA_PATH, curr_time_micro
+from src.utils import FULL_DATA_PATH, curr_time_micro
 
 
 SCOPES = ["https://www.googleapis.com/auth/pubsub"]
@@ -18,7 +11,7 @@ TOPIC_ID = "topics/VehicleData"
 FULL_TOPIC_ID = f"{PROJECT_ID}/{TOPIC_ID}"
 
 
-def publisher(data_file):
+def publisher(data_file, total_sent):
     print(
         f"{curr_time_micro()} Publishing file {data_file} -- pid: {os.getpid()}",
         end="\n",
@@ -42,19 +35,25 @@ def publisher(data_file):
             .publish(topic=FULL_TOPIC_ID, body=message)
             .execute()
         )
-    print(f"{curr_time_micro()} {data_file} published -- pid: {os.getpid()}")
+        total_sent += 1
     working_file.close()
 
     return
 
 
 def publish_data():
+    total_sent = 0
     files_list = os.listdir(FULL_DATA_PATH)
     files_list.sort()
     file_len = len(files_list)
     for i in range(file_len):
-        print(f"{curr_time_micro} File {i+1} of {file_len}.")
-        publisher(files_list[i])
+        print(
+            f"{curr_time_micro} File {i+1} of {file_len}. Total published: {total_sent} -- pid: {os.getpid()}"
+        )
+        total_sent += publisher(files_list[i], total_sent)
+        print(
+            f"{curr_time_micro()} {files_list[i]} published -- pid: {os.getpid()}"
+        )
 
     print(f"All files published")
 
