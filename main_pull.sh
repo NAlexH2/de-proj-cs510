@@ -8,7 +8,7 @@ echo -e "$(text_date) cd into dir complete -> $(pwd)" >> "MAINLOG-$(date +"%Y-%m
 git pull >> "SUBLOG-$(date +"%Y-%m-%d").txt"
 echo "$(text_date) git pull complete" >> "MAINLOG-$(date +"%Y-%m-%d").txt"
 echo "$(text_date) Starting python script" >> "MAINLOG-$(date +"%Y-%m-%d").txt"
-python main.py -U >> "MAINLOG-$(date +"%Y-%m-%d").txt"
+python main.py >> "MAINLOG-$(date +"%Y-%m-%d").txt"
 echo "$(text_date) DATA COLLECTION COMPLETE" >> "MAINLOG-$(date +"%Y-%m-%d").txt"
 
 
