@@ -7,7 +7,12 @@ DATA_FOLDER = os.path.join("raw_data_files")
 DATA_MONTH_DAY = datetime.now().strftime("%m-%d")
 FULL_DATA_PATH = os.path.join(DATA_FOLDER, DATA_MONTH_DAY)
 SUBSCRIBER_DATA_PATH = os.path.join("subscriber_data_files")
-CURR_TIME_MICRO = (lambda dt: dt.strftime("%m-%d-%Y-%H:%M:%S.%f")[:-3])(
-    datetime.now()
-)
-MDY_TIME = (lambda dt: dt.strftime("%m-%d-%Y"))(datetime.now())
+CURR_TIME_MICRO = None
+
+
+def curr_time_micro() -> str:
+    return datetime.now().strftime("%m-%d-%Y-%H:%M:%S.%f")[:-3]
+
+
+def mdy_time() -> str:
+    return datetime.now().strftime("%m-%d-%Y")
