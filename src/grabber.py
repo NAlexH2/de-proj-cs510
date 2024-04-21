@@ -3,9 +3,9 @@ from typing import Callable, Iterable
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
-    from utils import API_URL, FULL_DATA_PATH, mdy_time
+    from utils import API_URL, FULL_DATA_PATH, mdy_time, curr_time_micro
 else:
-    from src.utils import API_URL, FULL_DATA_PATH, mdy_time
+    from src.utils import API_URL, FULL_DATA_PATH, mdy_time, curr_time_micro
 
 
 class DataGrabber:
@@ -66,10 +66,9 @@ class DataGrabber:
         # TODO: parallelize this operation to make it go faster
         # TODO: docstring
         # TODO: bool to set to False once a 200 response is received
-        print()
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
-            print(f"VID: {vehicleID}", end="\r")
+            print(f"{curr_time_micro()} VID: {vehicleID}", end="\r")
 
             resp = requests.request("GET", API_URL + vehicleID)
 
@@ -87,7 +86,6 @@ class DataGrabber:
                 )
                 self.save_json_data(resp.text, vehicleID)
 
-        print()
         return
 
     def save_json_data(self, resp_text: str, vehicleID: str) -> None:
