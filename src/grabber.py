@@ -66,7 +66,7 @@ class DataGrabber:
         # TODO: parallelize this operation to make it go faster
         # TODO: docstring
         # TODO: bool to set to False once a 200 response is received
-        print("\n")
+        print()
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
             print(f"VID: {vehicleID}", end="\r")
@@ -87,7 +87,7 @@ class DataGrabber:
                 )
                 self.save_json_data(resp.text, vehicleID)
 
-        print("\n")
+        print()
         return
 
     def save_json_data(self, resp_text: str, vehicleID: str) -> None:
