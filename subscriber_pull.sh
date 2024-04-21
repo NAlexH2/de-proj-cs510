@@ -1,7 +1,8 @@
-text_date="[$(date +"%m/%d/%Y-%H:%M:%S")]"
+text_date() {
+    echo "[$(date +"%m/%d/%Y-%H:%M:%S.%N" | cut -c -23)]"
+}
 
-echo "$(text_date) SUBSCRIBER START COLLECTION START" >> SUBLOG
-date >> TABLOG
+echo "$(text_date) SUBSCRIBER ACK STARTING" >> SUBLOG
 cd /home/nharris/de-proj-cs510/
 echo -e "$(text_date) cd into dir complete -> $(pwd)" >> SUBLOG
 git pull
