@@ -11,7 +11,8 @@ TOPIC_ID = "topics/VehicleData"
 FULL_TOPIC_ID = f"{PROJECT_ID}/{TOPIC_ID}"
 
 
-def publisher(data_file, total_sent):
+def publisher(data_file):
+    records_count = 0
     print(
         f"{curr_time_micro()} Publishing file {data_file} -- pid: {os.getpid()}",
         end="\n",
@@ -35,10 +36,10 @@ def publisher(data_file, total_sent):
             .publish(topic=FULL_TOPIC_ID, body=message)
             .execute()
         )
-        total_sent += 1
+        records_count += 1
     working_file.close()
 
-    return total_sent
+    return records_count
 
 
 def publish_data():
@@ -51,7 +52,7 @@ def publish_data():
             f"{curr_time_micro()} File {i+1} of {file_len}. "
             + f"Total records published: {total_sent} -- pid: {os.getpid()}"
         )
-        total_sent += publisher(files_list[i], total_sent)
+        total_sent += publisher(files_list[i])
         print(
             f"{curr_time_micro()} {files_list[i]} published -- pid: {os.getpid()}"
         )
