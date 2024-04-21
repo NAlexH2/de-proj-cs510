@@ -80,7 +80,7 @@ def print_random_notice(
     print(
         f"{curr_time_micro()} Random notice: last file was "
         + f"{last_file} and the current file is {curr_file}. "
-        + f"Total responses handled: {resp_total} -- {os.getpid()}"
+        + f"Total responses handled: {resp_total} -- pid: {os.getpid()}"
     )
     return
 
