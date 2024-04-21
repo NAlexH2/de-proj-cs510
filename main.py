@@ -24,11 +24,11 @@ if __name__ == "__main__":
     # data_emailer(ok_size=OK_size, bad_size=bad_size)
 
     tar_data()  # Just tar the file instead. For now.
-    publish_data()  # Publish to pub/sub in multithread for receiver
 
     if "-U" in sys.argv:
         upload_to_gdrive()
         print("\nUpload to google drive completed.")
 
+    publish_data()  # Publish to pub/sub
     # shutil.rmtree(FULL_DATA_PATH)
     print("\nOperation finished. Cleanup complete.")
