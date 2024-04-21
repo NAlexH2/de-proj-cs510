@@ -78,7 +78,7 @@ def print_random_notice(
     last_file: str, curr_file: str, resp_total: int
 ) -> None:
     print(
-        f"{curr_time_micro()} - Random notice: last file was "
+        f"{curr_time_micro()} Random notice: last file was "
         + f"{last_file} and the current file is {curr_file}. "
         + f"Total responses handled: {resp_total} -- {os.getpid()}"
     )
@@ -87,7 +87,7 @@ def print_random_notice(
 
 def verbose_append_print(curr_file: str, resp_total: int) -> None:
     print(
-        f"{curr_time_micro()} - Data appended to {curr_file} and "
+        f"{curr_time_micro()} Data appended to {curr_file} and "
         + f"saved - Response#: {resp_total} -- pid: {os.getpid()}"
     )
     return
@@ -95,13 +95,13 @@ def verbose_append_print(curr_file: str, resp_total: int) -> None:
 
 def print_sixty_sleep(sixty_sleep_count: int, last_file: str) -> None:
     print(
-        f"{curr_time_micro()} - Sixty sleep counter: {sixty_sleep_count} - "
+        f"{curr_time_micro()} Sixty sleep counter: {sixty_sleep_count} - "
         + f"No data to receive from topic. Sleeping for 1 "
         + f"minute -- pid: {os.getpid()}"
     )
     if last_file:
         print(
-            f"{curr_time_micro()} - Last file appended to {last_file} "
+            f"{curr_time_micro()} Last file appended to {last_file} "
             + f"-- pid: {os.getpid()}"
         )
     return
@@ -116,7 +116,7 @@ def subscriber(service) -> None:
     last_file = None
     curr_file = None
     print(
-        f"{curr_time_micro()} - Subscriber w/ pid {os.getpid()} has started."
+        f"{curr_time_micro()} Subscriber w/ pid {os.getpid()} has started."
         + f"Listening for data on GCP Pub/Sub: "
     )
     while True:

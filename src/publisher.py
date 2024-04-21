@@ -20,7 +20,7 @@ FULL_TOPIC_ID = f"{PROJECT_ID}/{TOPIC_ID}"
 
 def publisher(data_file):
     print(
-        f"{curr_time_micro()} - Publishing file {data_file} -- pid: {os.getpid()}",
+        f"{curr_time_micro()} Publishing file {data_file} -- pid: {os.getpid()}",
         end="\n",
     )
     creds = service_account.Credentials.from_service_account_file(
@@ -42,7 +42,7 @@ def publisher(data_file):
             .publish(topic=FULL_TOPIC_ID, body=message)
             .execute()
         )
-    print(f"{curr_time_micro()} - {data_file} published -- pid: {os.getpid()}")
+    print(f"{curr_time_micro()} {data_file} published -- pid: {os.getpid()}")
     working_file.close()
 
     return
@@ -53,7 +53,7 @@ def publish_data():
     files_list.sort()
     file_len = len(files_list)
     for i in range(file_len):
-        print(f"{curr_time_micro} - File {i+1} of {file_len}.")
+        print(f"{curr_time_micro} File {i+1} of {file_len}.")
         publisher(files_list[i])
 
     print(f"All files published")

@@ -11,7 +11,7 @@ CURR_TIME_MICRO = None
 
 
 def curr_time_micro() -> str:
-    return datetime.now().strftime("%m-%d-%Y-%H:%M:%S.%f")[:-3]
+    return f"[{datetime.now().strftime("%m-%d-%Y-%H:%M:%S.%f")[:-3]}]"
 
 
 def mdy_time() -> str:
