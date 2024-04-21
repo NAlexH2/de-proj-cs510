@@ -2,11 +2,10 @@ import os
 import shutil
 import sys
 
-from datetime import datetime
 from src.dataemailer import tar_data
 from src.grabber import DataGrabber
 from src.uploadgdrive import upload_to_gdrive
-from src.vars import FULL_DATA_PATH
+from src.utils import FULL_DATA_PATH
 
 
 # TODO: Each output message should have the same DTG format as the bash script
