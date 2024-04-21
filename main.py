@@ -5,7 +5,7 @@ import sys
 from src.dataemailer import tar_data
 from src.grabber import DataGrabber
 from src.uploadgdrive import upload_to_gdrive
-from src.publisher import publish_data
+from publisher import publish_data
 from src.utils import curr_time_micro
 
 
