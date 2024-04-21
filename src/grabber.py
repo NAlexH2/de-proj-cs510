@@ -1,13 +1,11 @@
-import json
-import shutil
-import multiprocessing
-import requests
-import pandas as pd
-import os
-
-from datetime import datetime
-from src.vars import API_URL, DATA_FOLDER, DATA_MONTH_DAY, FULL_DATA_PATH
+import json, shutil, multiprocessing, requests, pandas as pd, os, sys
 from typing import Callable, Iterable
+
+script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+if "/src" in script_dir:
+    from utils import API_URL, FULL_DATA_PATH, MDY_TIME
+else:
+    from src.utils import API_URL, FULL_DATA_PATH, MDY_TIME
 
 
 class DataGrabber:
@@ -93,11 +91,9 @@ class DataGrabber:
         return
 
     def save_json_data(self, resp_text: str, vehicleID: str) -> None:
-        dt_obj = datetime(1, 1, 1)
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
-        file_str = dt_obj.now().strftime("%m-%d-%Y")
-        file_str = vehicleID + "-" + file_str + ".json"
+        file_str = vehicleID + "-" + MDY_TIME + ".json"
         full_file_path = os.path.join(FULL_DATA_PATH, file_str)
 
         with open(full_file_path, "w") as outfile:
