@@ -5,7 +5,7 @@ import sys
 from src.dataemailer import tar_data
 from src.grabber import DataGrabber
 from src.uploadgdrive import upload_to_gdrive
-from src.utils import FULL_DATA_PATH
+from src.publisher import publish_data
 
 
 # TODO: Each output message should have the same DTG format as the bash script
@@ -24,10 +24,11 @@ if __name__ == "__main__":
     # data_emailer(ok_size=OK_size, bad_size=bad_size)
 
     tar_data()  # Just tar the file instead. For now.
+    publish_data()  # Publish to pub/sub in multithread for receiver
 
     if "-U" in sys.argv:
         upload_to_gdrive()
         print("\nUpload to google drive completed.")
 
-    shutil.rmtree(FULL_DATA_PATH)
+    # shutil.rmtree(FULL_DATA_PATH)
     print("\nOperation finished. Cleanup complete.")
