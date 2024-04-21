@@ -44,7 +44,8 @@ def multithread_publisher(data_file):
         if len(response["messageIds"]) > 0:
             print(
                 f"{data_file} - File record {i+1} of {working_file_length} "
-                + f"published w/ id {response['messageIds'][0]} -- pid: {os.getpid()}"
+                + f"published w/ id {response['messageIds'][0]} "
+                + f"-- pid: {os.getpid()}"
             )
         else:
             print(f"{response}")
