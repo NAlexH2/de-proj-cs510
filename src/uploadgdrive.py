@@ -36,20 +36,20 @@ def get_folder_files_list(service, gdrive_cur_file_id):
     return set()
 
 
-def create_gdrive_folder(service):
-    if GDRIVE_DATA_MONTH_DAY is None:
+def create_gdrive_folder(service, gdrive_folder_to_make):
+    if gdrive_folder_to_make is None:
         folder_metadata = {
             "name": DATA_MONTH_DAY,
             "mimeType": "application/vnd.google-apps.folder",
             "parents": [GDRIVE_RAW_DATA_FILES],
         }
-        GDRIVE_DATA_MONTH_DAY = (
+        gdrive_folder_to_make = (
             service.files().create(body=folder_metadata, fields="id").execute()
         )
-        GDRIVE_DATA_MONTH_DAY = GDRIVE_DATA_MONTH_DAY["id"]
+        gdrive_folder_to_make = gdrive_folder_to_make["id"]
     else:
         print(
-            f"\{GDRIVE_DATA_MONTH_DAY}: already exists... skipping creation in google drive.",
+            f"\{gdrive_folder_to_make}: already exists... skipping creation in google drive.",
             end="\r",
         )
         sleep(0.3)
