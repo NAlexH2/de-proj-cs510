@@ -62,7 +62,7 @@ class DataGrabber:
         new_df["Response"] = pd.Series(dtype=str)
         return new_df
 
-    def gather_response_codes(self, cf: pd.DataFrame) -> list[pd.DataFrame]:
+    def gather_response_codes(self, cf: pd.DataFrame):
         # TODO: parallelize this operation to make it go faster
         # TODO: docstring
         # TODO: bool to set to False once a 200 response is received
