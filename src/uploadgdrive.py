@@ -77,11 +77,9 @@ def upload_to_gdrive() -> None:
     for i in range(num_files):
         if files[i] in gdrive_files_list:
             print(f"{files[i]}: already uploaded... skipping.", end="\r")
-            print()
             sleep(0.3)
         else:
             print(f"Uploading file# {i+1} out of {num_files}", end="\r")
-            print()
 
             file_metadata = {
                 "name": files[i],
@@ -96,9 +94,7 @@ def upload_to_gdrive() -> None:
                 .execute()
             )
             gdrive_files_list.add(files[i])
-
-    print("\n")
-
+    print()
     return
 
 
