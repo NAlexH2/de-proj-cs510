@@ -11,7 +11,7 @@ from src.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 120
+TIMEOUT = 300
 
 
 class PipelineSubscriber:
@@ -26,59 +26,90 @@ class PipelineSubscriber:
         )
         self.sub_path = self.subscriber.subscription_path(PROJECT_ID, SUB_ID)
         self.data_to_write: list[str] = []
-        self.total_records = 0
+        self.current_listener_records = 0
 
     def write_records_to_file(self):
         json_data = []
         print()
-        print(f"{curr_time_micro()} Total records: {self.total_records}")
+        print(
+            f"{curr_time_micro()} Total records: {self.current_listener_records}"
+        )
         print(f"{curr_time_micro()} Writing all records to a single file.")
 
         while len(self.data_to_write) > 0:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
 
-        # json_data = json.dumps(json_data)
-
         if not os.path.exists(SUBSCRIBER_FOLDER):
             os.makedirs(SUBSCRIBER_FOLDER)
-        with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
-            json.dump(json_data, outfile, indent=4)
+        if not os.path.exists(SUBSCRIBER_DATA_PATH_JSON):
+            with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+                json.dump(json_data, outfile, indent=4)
+        else:
+            with open(SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
+                existing_data = json.load(outfile)
 
+            existing_data.append(json_data)
+
+            with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+                json.dump(existing_data, outfile, indent=4)
         return
 
     def callback(self, message: pubsub_v1.subscriber.message.Message) -> None:
         rcvd_data: bytes = message.data
         decoded_data = rcvd_data.decode()
         self.data_to_write.append(decoded_data)
-        self.total_records += 1
-        if self.total_records % 1000 == 0:
+        self.current_listener_records = len(self.data_to_write)
+        if self.current_listener_records % 1000 == 0:
             print(
-                f"{curr_time_micro()} Approximate records so far: {self.total_records}",
+                f"{curr_time_micro()} Approximate records received so "
+                + f"far: {self.current_listener_records}",
                 end="\r",
             )
         message.ack()
         return
 
     def subscriber_listener(self):
-        while True:
-            streaming_future = self.subscriber.subscribe(
-                self.sub_path, callback=self.callback
-            )
-            with self.subscriber:
-                try:
-                    streaming_future.result(timeout=TIMEOUT)
-                except TimeoutError:
-                    streaming_future.cancel()
-                    streaming_future.result()
-                    return
+        streaming_future = self.subscriber.subscribe(
+            self.sub_path, callback=self.callback
+        )
+        with self.subscriber:
+            try:
+                streaming_future.result(timeout=TIMEOUT)
+            except TimeoutError:
+                streaming_future.cancel()
+                streaming_future.result()
+                return
 
 
 if __name__ == "__main__":
     sub_worker = PipelineSubscriber()
     start_time = curr_time_micro()
+    total_records_overall = 0
     print(f"{start_time} Subscriber starting.")
-    sub_worker.subscriber_listener()
-    sub_worker.write_records_to_file()
-    print(f"{curr_time_micro()} Subscriber started at {start_time}.")
-    sys.exit(0)
+    while True:
+        sub_worker.subscriber_listener()
+        if sub_worker.current_listener_records > 0:
+            sub_worker.write_records_to_file()
+            print(
+                f"{curr_time_micro()} Subscriber started at {start_time}. "
+                + f" Subscriber complete."
+            )
+            total_records_overall += sub_worker.current_listener_records
+            sub_worker.current_listener_records = 0
+        else:
+            print(
+                f"{curr_time_micro()} No data received in the past 5 minutes."
+            )
+            total_records_overall += sub_worker.current_listener_records
+            sub_worker.current_listener_records = 0
+
+        print(
+            f"{curr_time_micro()} Have saved and received {total_records_overall} records up to this point."
+        )
+        print(
+            f"{curr_time_micro()} Subscriber re-starting to continue listening for messages."
+        )
+        sub_worker.subscriber = pubsub_v1.SubscriberClient(
+            credentials=sub_worker.pubsub_creds
+        )
