@@ -4,8 +4,10 @@ from typing import Callable, Iterable
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
     from utils import API_URL, FULL_DATA_PATH, mdy_time, curr_time_micro
+    from publisher import PipelinePublisher
 else:
     from src.utils import API_URL, FULL_DATA_PATH, mdy_time, curr_time_micro
+    from src.publisher import PipelinePublisher
 
 
 class DataGrabber:
@@ -20,9 +22,10 @@ class DataGrabber:
             codes
     """
 
-    def __init__(self) -> None:
+    def __init__(self, pub_worker: PipelinePublisher) -> None:
         self.OK_response = self.build_query_df()
         self.bad_response = self.build_query_df()
+        self.pub_worker: PipelinePublisher = pub_worker
 
     def paralleled_ops(func: Callable, data: Iterable):
         # TODO: come back to this once you've figured out the algo for collecting
@@ -62,7 +65,7 @@ class DataGrabber:
         new_df["Response"] = pd.Series(dtype=str)
         return new_df
 
-    def gather_response_codes(self, cf: pd.DataFrame):
+    def gather_data(self, cf: pd.DataFrame):
         # TODO: parallelize this operation to make it go faster
         # TODO: docstring
         # TODO: bool to set to False once a 200 response is received
@@ -85,6 +88,7 @@ class DataGrabber:
                     [self.OK_response, to_concat], ignore_index=True
                 )
                 self.save_json_data(resp.text, vehicleID)
+                self.pub_worker.add_to_publish_list(resp.text)
 
         return
 
@@ -97,11 +101,16 @@ class DataGrabber:
         with open(full_file_path, "w") as outfile:
             outfile.write(json_got)
 
-    def data_grabber(self) -> None:
+    def data_grabber_main(self) -> None:
         if os.path.exists(FULL_DATA_PATH):
             shutil.rmtree(FULL_DATA_PATH)
         os.makedirs(FULL_DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
-        self.gather_response_codes(csv_frame)
+        self.gather_data(csv_frame)
 
         return
+
+
+if __name__ == "__main__":
+    grabber = DataGrabber()
+    grabber.data_grabber_main()
