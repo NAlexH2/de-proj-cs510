@@ -13,4 +13,4 @@ echo "$(text_date) git pull complete" >> "SUBLOG-$(date +"%Y-%m-%d").txt"
 
 echo "$(text_date) Starting subscriber listener." >> "SUBLOG-$(date +"%Y-%m-%d").txt"
 
-python subsciber.py >> "SUBLOG-$(date +"%Y-%m-%d").txt"
+python subscriber.py >> "SUBLOG-$(date +"%Y-%m-%d").txt"
