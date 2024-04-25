@@ -50,8 +50,7 @@ def create_gdrive_folder(service, gdrive_folder_to_make):
         return gdrive_folder_to_make
     else:
         print(
-            f"\{gdrive_folder_to_make}: already exists... skipping creation in google drive.",
-            end="\r",
+            f"\{gdrive_folder_to_make}: already exists... skipping creation in google drive."
         )
         sleep(0.3)
         return gdrive_folder_to_make
@@ -77,10 +76,12 @@ def upload_to_gdrive() -> None:
     num_files = len(files)
     for i in range(num_files):
         if files[i] in gdrive_files_list:
-            print(f"{files[i+1]}: already uploaded... skipping.", end="\r")
+            print(f"{files[i]}: already uploaded... skipping.", end="\r")
+            print()
             sleep(0.3)
         else:
             print(f"Uploading file# {i+1} out of {num_files}", end="\r")
+            print()
 
             file_metadata = {
                 "name": files[i],
