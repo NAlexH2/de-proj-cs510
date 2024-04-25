@@ -11,5 +11,3 @@ echo "$(text_date) Starting python script" >> "MAINLOG-$(date +"%Y-%m-%d").txt"
 python main.py -T -P >> "MAINLOG-$(date +"%Y-%m-%d").txt" 2>&1
 
 echo "$(text_date) DATA COLLECTION COMPLETE" >> "MAINLOG-$(date +"%Y-%m-%d").txt"
-
-
