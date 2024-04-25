@@ -44,11 +44,7 @@ class PipelinePublisher:
             to_publish_json = json.loads(to_publish)
             for record in to_publish_json:
                 encoded_record = json.dumps(record).encode("utf-8")
-                try:
-                    self.publisher.publish(self.topic_path, data=encoded_record)
-                except Exception as e:
-                    print(f"{curr_time_micro()} publish failed.")
-                    print(e)
+                self.publisher.publish(self.topic_path, data=encoded_record)
                 record_count += 1
                 if record_count % 1000 == 0:
                     print(
