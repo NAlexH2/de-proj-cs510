@@ -1,12 +1,10 @@
-import os
-import shutil
 import sys
 
 from src.dataemailer import tar_data
 from src.grabber import DataGrabber
 from src.uploadgdrive import upload_to_gdrive
-from publisher import publish_data
 from src.utils import curr_time_micro
+from src.publisher import PipelinePublisher
 
 
 if __name__ == "__main__":
@@ -18,17 +16,19 @@ if __name__ == "__main__":
     if "-P" in sys.argv:
         print(
             f"{curr_time_micro()} Publish arg found. Will push ALL entries in "
-            + "EVERY FILE to Google pub/sub."
+            + "EVERY RECORD to Google pub/sub."
         )
-    data_collect = DataGrabber()
-    data_collect.data_grabber()
+    if "-T" in sys.argv:
+        print(f"{curr_time_micro()} Tar arg found. Will tarball each record.")
+
+    pub_worker: PipelinePublisher = PipelinePublisher()
+    data_collect = DataGrabber(pub_worker=pub_worker)
+    data_collect.data_grabber_main()
     OK_size = data_collect.OK_response.size
     bad_size = data_collect.bad_response.size
 
     # TODO: gmail acc to email from to myself
     # data_emailer(ok_size=OK_size, bad_size=bad_size)
-
-    tar_data()  # Just tar the file instead. For now.
 
     if "-U" in sys.argv:
         start_time = curr_time_micro()
@@ -38,10 +38,13 @@ if __name__ == "__main__":
             + f"Started at {start_time}."
         )
 
+    if "-T" in sys.argv:
+        tar_data()  # Just tar the file instead. For now.
+
+    # Publish all the data that's been collected so far.
     if "-P" in sys.argv:
         start_time = curr_time_micro()
-        publish_data()  # Publish to pub/sub
-        print(f"{curr_time_micro()} Publish complete. Started at {start_time}.")
+        pub_worker.publish_data()
+        print(f"{curr_time_micro()} Publish started at {start_time}.")
 
-    # shutil.rmtree(FULL_DATA_PATH)
-    print(f"{curr_time_micro()} Operation finished. Cleanup complete.")
+    print(f"{curr_time_micro()} Operation finished.")
