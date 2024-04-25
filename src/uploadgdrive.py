@@ -47,12 +47,14 @@ def create_gdrive_folder(service, gdrive_folder_to_make):
             service.files().create(body=folder_metadata, fields="id").execute()
         )
         gdrive_folder_to_make = gdrive_folder_to_make["id"]
+        return gdrive_folder_to_make
     else:
         print(
             f"\{gdrive_folder_to_make}: already exists... skipping creation in google drive.",
             end="\r",
         )
         sleep(0.3)
+        return gdrive_folder_to_make
 
 
 def upload_to_gdrive() -> None:
@@ -63,7 +65,7 @@ def upload_to_gdrive() -> None:
     )
     service = build("drive", "v3", credentials=creds)
     GDRIVE_DATA_MONTH_DAY = folder_exists(service)
-    create_gdrive_folder(service, GDRIVE_DATA_MONTH_DAY)
+    GDRIVE_DATA_MONTH_DAY = create_gdrive_folder(service, GDRIVE_DATA_MONTH_DAY)
 
     gdrive_files_list: set = get_folder_files_list(
         service, GDRIVE_DATA_MONTH_DAY
