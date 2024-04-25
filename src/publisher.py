@@ -37,22 +37,31 @@ class PipelinePublisher:
 
     def publish_data(self):
         print(f"{curr_time_micro()} Publishing all records.")
+
         record_count = 0
         while len(self.data_to_publish) > 0:
             to_publish = self.data_to_publish.pop()
             to_publish_json = json.loads(to_publish)
             for record in to_publish_json:
                 encoded_record = json.dumps(record).encode("utf-8")
-                self.publisher.publish(self.topic_path, data=encoded_record)
+                try:
+                    self.publisher.publish(self.topic_path, data=encoded_record)
+                except Exception as e:
+                    print(f"{curr_time_micro()} publish failed.")
+                    print(e)
                 record_count += 1
-                print(
-                    f"{curr_time_micro()} {record_count} of {self.total_records} published.",
-                    end="\r",
-                )
-        print()
+                if record_count % 1000 == 0:
+                    print(
+                        f"{curr_time_micro()} Approximately {record_count} of "
+                        + f"{self.total_records} published.",
+                        end="\r",
+                    )
         print(
-            f"{curr_time_micro()} Publishing complete. Total records published: {record_count}"
+            f"{curr_time_micro()} Publishing complete. Total records "
+            + f"published: {record_count}",
+            end="\r",
         )
+        print()
         return
 
 
