@@ -1,6 +1,6 @@
 import sys
 
-from src.dataemailer import tar_data
+from src.tardata import tar_data
 from src.grabber import DataGrabber
 from src.uploadgdrive import upload_to_gdrive
 from src.utils import curr_time_micro
