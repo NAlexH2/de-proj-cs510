@@ -43,7 +43,7 @@ class PipelineSubscriber:
             with open(SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
                 existing_data = json.load(outfile)
 
-            existing_data.append(json_data)
+            existing_data.extend(json_data)
 
             with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
                 json.dump(existing_data, outfile, indent=4)

@@ -32,17 +32,19 @@ class PipelinePublisher:
         return
 
     def publish_data(self):
-        print(f"{curr_time_micro()} Publishing all records.")
+        record_count = 0
         future = None
 
-        record_count = 0
+        print(f"{curr_time_micro()} Publishing all records.")
         while len(self.data_to_publish) > 0:
             to_publish = self.data_to_publish.pop()
             to_publish_json = json.loads(to_publish)
+
             for record in to_publish_json:
                 encoded_record = json.dumps(record).encode("utf-8")
                 future = self.publisher.publish(self.topic_path, data=encoded_record)
                 record_count += 1
+
                 if record_count % 1000 == 0:
                     print(
                         f"{curr_time_micro()} Approximately {record_count} of "
