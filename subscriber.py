@@ -11,19 +11,15 @@ from src.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 300
+TIMEOUT = 120
 
 
 class PipelineSubscriber:
     def __init__(self) -> None:
-        self.pubsub_creds = (
-            service_account.Credentials.from_service_account_file(
-                SERVICE_ACCOUNT_FILE
-            )
+        self.pubsub_creds = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE
         )
-        self.subscriber = pubsub_v1.SubscriberClient(
-            credentials=self.pubsub_creds
-        )
+        self.subscriber = pubsub_v1.SubscriberClient(credentials=self.pubsub_creds)
         self.sub_path = self.subscriber.subscription_path(PROJECT_ID, SUB_ID)
         self.data_to_write: list[str] = []
         self.current_listener_records = 0
@@ -31,9 +27,7 @@ class PipelineSubscriber:
     def write_records_to_file(self):
         json_data = []
         print()
-        print(
-            f"{curr_time_micro()} Total records: {self.current_listener_records}"
-        )
+        print(f"{curr_time_micro()} Total records: {self.current_listener_records}")
         print(f"{curr_time_micro()} Writing all records to a single file.")
 
         while len(self.data_to_write) > 0:
@@ -98,9 +92,7 @@ if __name__ == "__main__":
             total_records_overall += sub_worker.current_listener_records
             sub_worker.current_listener_records = 0
         else:
-            print(
-                f"{curr_time_micro()} No data received in the past 5 minutes."
-            )
+            print(f"{curr_time_micro()} No data received in the past 5 minutes.")
             total_records_overall += sub_worker.current_listener_records
             sub_worker.current_listener_records = 0
 
