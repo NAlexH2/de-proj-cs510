@@ -88,7 +88,8 @@ class DataGrabber:
                     [self.OK_response, to_concat], ignore_index=True
                 )
                 self.save_json_data(resp.text, vehicleID)
-                self.pub_worker.add_to_publish_list(resp.text)
+                if "-P" in sys.argv:
+                    self.pub_worker.add_to_publish_list(resp.text)
 
         return
 
