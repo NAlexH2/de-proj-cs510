@@ -83,13 +83,12 @@ class PipelinePublisher:
                     )
                 future.add_done_callback(self.futures_callback)
                 futures_list.append(future)
+
         log_or_print(
-            message=f"{curr_time_micro()} Publishing complete. Total records "
-            + f"published: {record_count}",
+            message=f"{curr_time_micro()} Waiting on Publisher futures...",
             use_print=True,
-            prend="\r",
+            prend="\n",
         )
-        log_or_print(message="", use_print=True, prend="\n")
         for future in futures.as_completed(futures_list):
             if future.cancelled():
                 log_or_print(
@@ -97,6 +96,13 @@ class PipelinePublisher:
                     use_print=True,
                 )
             pass
+
+        log_or_print(
+            message=f"{curr_time_micro()} Publishing complete. Total records "
+            + f"published: {record_count}",
+            use_print=True,
+            prend="\n",
+        )
 
         return
 
