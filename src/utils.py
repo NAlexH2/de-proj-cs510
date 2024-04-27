@@ -44,3 +44,8 @@ def log_or_print(
         print(message, end=prend)
     else:
         print(message, end=prend)
+
+
+def sub_logger(message: str, prend: str = "\n") -> None:
+    logging.info(msg=message)
+    print(message, end=prend)
