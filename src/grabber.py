@@ -1,12 +1,27 @@
-import json, shutil, multiprocessing, requests, pandas as pd, os, sys
+import json, shutil, requests, pandas as pd, os, sys, logging
 from typing import Callable, Iterable
+
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
-    from utils import API_URL, FULL_DATA_PATH, mdy_time, curr_time_micro
+    from utils import (
+        API_URL,
+        FULL_DATA_PATH,
+        DATA_MONTH_DAY,
+        mdy_time,
+        curr_time_micro,
+        log_or_print,
+    )
     from publisher import PipelinePublisher
 else:
-    from src.utils import API_URL, FULL_DATA_PATH, mdy_time, curr_time_micro
+    from src.utils import (
+        API_URL,
+        FULL_DATA_PATH,
+        DATA_MONTH_DAY,
+        mdy_time,
+        curr_time_micro,
+        log_or_print,
+    )
     from src.publisher import PipelinePublisher
 
 
@@ -26,14 +41,6 @@ class DataGrabber:
         self.OK_response = self.build_query_df()
         self.bad_response = self.build_query_df()
         self.pub_worker: PipelinePublisher = pub_worker
-
-    def paralleled_ops(func: Callable, data: Iterable):
-        # TODO: come back to this once you've figured out the algo for collecting
-        # data
-
-        # p = multiprocessing.Pool(multiprocessing.cpu_count() // 2)
-        # for result in p.imap(func, data):
-        pass
 
     def response_vdf(self, vehicleID: str, stat_code: int) -> None:
         """Build a dataframe just for vehicle responses to self modify
@@ -66,12 +73,13 @@ class DataGrabber:
         return new_df
 
     def gather_data(self, cf: pd.DataFrame):
-        # TODO: parallelize this operation to make it go faster
-        # TODO: docstring
-        # TODO: bool to set to False once a 200 response is received
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
-            print(f"{curr_time_micro()} VID: {vehicleID}", end="\r")
+            log_or_print(
+                message=f"{curr_time_micro()} VID: {vehicleID}",
+                use_print=True,
+                prend="\r",
+            )
 
             resp = requests.request("GET", API_URL + vehicleID)
 
@@ -113,5 +121,13 @@ class DataGrabber:
 
 
 if __name__ == "__main__":
+    os.makedirs("logs", exist_ok=True)
+    logging.basicConfig(
+        format="",
+        filename=f"logs/GRABBER_LOG-{DATA_MONTH_DAY}.log",
+        encoding="utf-8",
+        filemode="w",
+        level=logging.INFO,
+    )
     grabber = DataGrabber()
     grabber.data_grabber_main()
