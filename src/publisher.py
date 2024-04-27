@@ -1,4 +1,6 @@
+import logging
 import os, sys, json
+import time
 from google.oauth2 import service_account
 from concurrent import futures
 from google.cloud import pubsub_v1
@@ -6,9 +8,19 @@ from typing import Callable
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
-    from utils import curr_time_micro, FULL_DATA_PATH
+    from utils import (
+        curr_time_micro,
+        log_or_print,
+        FULL_DATA_PATH,
+        DATA_MONTH_DAY,
+    )
 else:
-    from src.utils import curr_time_micro, FULL_DATA_PATH
+    from src.utils import (
+        curr_time_micro,
+        log_or_print,
+        FULL_DATA_PATH,
+        DATA_MONTH_DAY,
+    )
 
 
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
@@ -18,10 +30,14 @@ TOPIC_ID = "VehicleData"
 
 class PipelinePublisher:
     def __init__(self):
-        self.pubsub_creds = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE
+        self.pubsub_creds = (
+            service_account.Credentials.from_service_account_file(
+                SERVICE_ACCOUNT_FILE
+            )
         )
-        self.publisher = pubsub_v1.PublisherClient(credentials=self.pubsub_creds)
+        self.publisher = pubsub_v1.PublisherClient(
+            credentials=self.pubsub_creds
+        )
         self.topic_path = self.publisher.topic_path(PROJECT_ID, TOPIC_ID)
         self.data_to_publish: list[str] = []
         self.total_records = 0
@@ -33,13 +49,18 @@ class PipelinePublisher:
 
     def futures_callback(self, futures: futures.Future):
         futures.result()
+
         return
 
     def publish_data(self):
         record_count = 0
         future = None
 
-        print(f"{curr_time_micro()} Publishing all records.")
+        log_or_print(
+            message=f"{curr_time_micro()} Publishing all records.",
+            use_print=True,
+            prend="\n",
+        )
         while len(self.data_to_publish) > 0:
             to_publish = self.data_to_publish.pop()
             to_publish_json = json.loads(to_publish)
@@ -52,22 +73,33 @@ class PipelinePublisher:
                 record_count += 1
 
                 if record_count % 1000 == 0:
-                    print(
-                        f"{curr_time_micro()} Approximately {record_count} of "
+                    log_or_print(
+                        message=f"{curr_time_micro()} Approximately {record_count} of "
                         + f"{self.total_records} published.",
-                        end="\r",
+                        prend="\r",
                     )
                 future.add_done_callback(self.futures_callback)
-        print(
-            f"{curr_time_micro()} Publishing complete. Total records "
+        log_or_print(
+            message=f"{curr_time_micro()} Publishing complete. Total records "
             + f"published: {record_count}",
-            end="\r",
+            use_print=True,
+            prend="\r",
         )
-        print()
+        log_or_print(message="", use_print=True, prend="\n")
+        while not future.done():
+            time.sleep(5)
         return
 
 
 if __name__ == "__main__":
+    os.makedirs("logs", exist_ok=True)
+    logging.basicConfig(
+        format="",
+        filename=f"logs/PUBLOG-{DATA_MONTH_DAY}.log",
+        encoding="utf-8",
+        filemode="w",
+        level=logging.INFO,
+    )
     print(f"{curr_time_micro()} Publisher starting.")
     pub_worker = PipelinePublisher()
 
