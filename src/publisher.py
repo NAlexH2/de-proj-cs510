@@ -47,14 +47,17 @@ class PipelinePublisher:
         self.total_records += len(json.loads(data))
         return
 
-    def futures_callback(self, futures: futures.Future):
-        futures.result()
-
-        return
+    def futures_callback(self, future: futures.Future):
+        try:
+            future.result()
+        except Exception as e:
+            # Log or handle the exception appropriately
+            logging.error(f"Error in future: {e}")
 
     def publish_data(self):
         record_count = 0
         future = None
+        futures_list = []
 
         log_or_print(
             message=f"{curr_time_micro()} Publishing all records.",
@@ -79,6 +82,7 @@ class PipelinePublisher:
                         prend="\r",
                     )
                 future.add_done_callback(self.futures_callback)
+                futures_list.append(future)
         log_or_print(
             message=f"{curr_time_micro()} Publishing complete. Total records "
             + f"published: {record_count}",
@@ -86,8 +90,14 @@ class PipelinePublisher:
             prend="\r",
         )
         log_or_print(message="", use_print=True, prend="\n")
-        while not future.done():
-            time.sleep(5)
+        for future in futures.as_completed(futures_list):
+            if future.cancelled():
+                log_or_print(
+                    message=f"{curr_time_micro()} {future.exception()}",
+                    use_print=True,
+                )
+            pass
+
         return
 
 
@@ -120,5 +130,8 @@ if __name__ == "__main__":
             f"{curr_time_micro()} Folder {FULL_DATA_PATH} does not exist. Quitting publishing."
         )
         sys.exit(0)
-
+    log_or_print(
+        message=f"{curr_time_micro()} Publisher Finished.",
+        use_print=True,
+    )
     sys.exit(0)
