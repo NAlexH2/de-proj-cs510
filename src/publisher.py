@@ -31,6 +31,10 @@ class PipelinePublisher:
         self.total_records += len(json.loads(data))
         return
 
+    def futures_callback(self, futures: futures.Future):
+        futures.result()
+        return
+
     def publish_data(self):
         record_count = 0
         future = None
@@ -42,7 +46,9 @@ class PipelinePublisher:
 
             for record in to_publish_json:
                 encoded_record = json.dumps(record).encode("utf-8")
-                future = self.publisher.publish(self.topic_path, data=encoded_record)
+                future: futures.Future = self.publisher.publish(
+                    self.topic_path, data=encoded_record
+                )
                 record_count += 1
 
                 if record_count % 1000 == 0:
@@ -51,7 +57,7 @@ class PipelinePublisher:
                         + f"{self.total_records} published.",
                         end="\r",
                     )
-            future.result()
+                future.add_done_callback(self.futures_callback)
         print(
             f"{curr_time_micro()} Publishing complete. Total records "
             + f"published: {record_count}",
