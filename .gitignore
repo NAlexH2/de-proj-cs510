@@ -6,3 +6,4 @@ MAINLOG-*
 SUBLOG-*
 __pycache__
 .vscode
+logs

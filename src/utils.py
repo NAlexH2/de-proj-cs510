@@ -1,4 +1,4 @@
-import os
+import logging, os, sys
 from datetime import datetime
 
 # Utilities used throughout
@@ -18,3 +18,34 @@ def curr_time_micro() -> str:
 
 def mdy_time() -> str:
     return datetime.now().strftime("%m-%d-%Y")
+
+
+def log_or_print(
+    message: str, use_print: bool = False, prend: str = "\n"
+) -> None:
+    """Either uses the built in logging library or prints based on sys.argv
+    containing -L option
+
+    Arguments:
+        message Specifies what the message to log/print will be
+
+        use_print Specifies to use print for the message. If -L is present in
+        sys.argv, this will log and print. Otherwise, will just print.
+
+        prend Specifies if the print will or won't have a end= arg to be used.
+
+    Returns:
+        None
+    """
+    if "-L" in sys.argv and not use_print:
+        logging.info(msg=message)
+    elif "-L" in sys.argv and use_print:
+        logging.info(msg=message)
+        print(message, end=prend)
+    else:
+        print(message, end=prend)
+
+
+def sub_logger(message: str, prend: str = "\n") -> None:
+    logging.info(msg=message)
+    print(message, end=prend)

@@ -2,12 +2,15 @@ text_date() {
     echo "[$(date +"%m-%d-%Y-%H:%M:%S.%N" | cut -c -23)]"
 }
 
-echo "$(text_date) DATA COLLECTION START" > "MAINLOG-$(date +"%Y-%m-%d").txt"
+if [ ! -d "logs" ]; then
+    mkdir logs
+fi
 
-git pull >> "MAINLOG-$(date +"%Y-%m-%d").txt"
-echo "$(text_date) git pull complete" >> "MAINLOG-$(date +"%Y-%m-%d").txt"
+echo "$(text_date) DATA COLLECTION AND PUBLISHING START" | tee "logs/MAINLOG-$(date +"%m-%d").log"
+git pull | tee -a "logs/MAINLOG-$(date +"%m-%d").log"
+echo "$(text_date) git pull complete" | tee -a "logs/MAINLOG-$(date +"%m-%d").log"
 
-echo "$(text_date) Starting python script" >> "MAINLOG-$(date +"%Y-%m-%d").txt"
-python main.py -U -T -P >> "MAINLOG-$(date +"%Y-%m-%d").txt" 2>&1
+pip install -r requirements.txt > /dev/null 2>&1
+python main.py -G -B -L -U -T -P
 
-echo "$(text_date) DATA COLLECTION COMPLETE" >> "MAINLOG-$(date +"%Y-%m-%d").txt"
+echo "$(text_date) Starting python script" | tee -a "logs/MAINLOG-$(date +"%m-%d").log"
