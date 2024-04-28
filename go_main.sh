@@ -7,6 +7,7 @@ if [ ! -d "logs" ]; then
 fi
 
 echo "$(text_date) DATA COLLECTION AND PUBLISHING START" | tee "logs/MAINLOG-$(date +"%m-%d").log"
+
 git pull | tee -a "logs/MAINLOG-$(date +"%m-%d").log"
 echo "$(text_date) git pull complete" | tee -a "logs/MAINLOG-$(date +"%m-%d").log"
 
