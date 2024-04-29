@@ -116,6 +116,9 @@ class DataGrabber:
         os.makedirs(FULL_DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_data(csv_frame)
+        log_or_print(
+            message=f"{curr_time_micro()} Gathering complete.", use_print=True
+        )
 
         return
 
@@ -126,8 +129,11 @@ if __name__ == "__main__":
         format="",
         filename=f"logs/GRABBER_LOG-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
-        filemode="w",
+        filemode="a",
         level=logging.INFO,
+    )
+    log_or_print(
+        message=f"\n{curr_time_micro()} Gathering staring.", use_print=True
     )
     grabber = DataGrabber()
     grabber.data_grabber_main()

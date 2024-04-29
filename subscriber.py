@@ -93,7 +93,7 @@ if __name__ == "__main__":
         format="",
         filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
-        filemode="w",
+        filemode="a",
         level=logging.INFO,
     )
     sub_worker = PipelineSubscriber()

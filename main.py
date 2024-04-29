@@ -35,21 +35,17 @@ Usage: python main.py -G [OPTIONS]
         time.sleep(1)
         sys.exit()
 
-    if "-B" in sys.argv:
-        started_by_bash = True
-        print(f"{curr_time_micro()} Will append to current logs file")
-
     if "-L" in sys.argv:
         os.makedirs("logs", exist_ok=True)
         logging.basicConfig(
             format="",
             filename=f"logs/MAINLOG-{DATA_MONTH_DAY}.log",
             encoding="utf-8",
-            filemode=("a" if started_by_bash else "w"),
+            filemode="a",
             level=logging.INFO,
         )
         message = (
-            f"{curr_time_micro()} Logging arg found. Will store any "
+            f"\n{curr_time_micro()} Logging arg found. Will store any "
             + f"data output data to logs/MAINLOG-{DATA_MONTH_DAY}.log"
         )
         print(f"{message}")
