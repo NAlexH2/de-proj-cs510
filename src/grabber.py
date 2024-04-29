@@ -132,5 +132,8 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
+    log_or_print(
+        message=f"\n{curr_time_micro()} Gathering staring.", use_print=True
+    )
     grabber = DataGrabber()
     grabber.data_grabber_main()
