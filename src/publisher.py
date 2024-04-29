@@ -109,7 +109,7 @@ if __name__ == "__main__":
         format="",
         filename=f"logs/PUBLOG-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
-        filemode="w",
+        filemode="a",
         level=logging.INFO,
     )
     print(f"{curr_time_micro()} Publisher starting.")
