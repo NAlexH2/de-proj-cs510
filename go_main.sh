@@ -14,4 +14,4 @@ echo "$(text_date) git pull complete" | tee -a "logs/MAINLOG-$(date +"%m-%d").lo
 pip install -r requirements.txt > /dev/null 2>&1
 python main.py -G -B -L -U -T -P
 
-echo "$(text_date) Starting python script" | tee -a "logs/MAINLOG-$(date +"%m-%d").log"
+echo "$(text_date) Stopping python script" | tee -a "logs/MAINLOG-$(date +"%m-%d").log"
