@@ -82,7 +82,7 @@ class PipelinePublisher:
                 futures_list.append(future)
 
         log_or_print(
-            message=f"{curr_time_micro()} Waiting on Publisher futures...",
+            message=f"\n{curr_time_micro()} Waiting on Publisher futures...",
             use_print=True,
             prend="\n",
         )
