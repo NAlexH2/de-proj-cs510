@@ -1,10 +1,7 @@
-import logging
-import os, sys, json
-import time
+import logging, os, sys, json
 from google.oauth2 import service_account
 from concurrent import futures
 from google.cloud import pubsub_v1
-from typing import Callable
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
@@ -85,7 +82,7 @@ class PipelinePublisher:
                 futures_list.append(future)
 
         log_or_print(
-            message=f"{curr_time_micro()} Waiting on Publisher futures...",
+            message=f"\n{curr_time_micro()} Waiting on Publisher futures...",
             use_print=True,
             prend="\n",
         )
@@ -95,7 +92,6 @@ class PipelinePublisher:
                     message=f"{curr_time_micro()} {future.exception()}",
                     use_print=True,
                 )
-            pass
 
         log_or_print(
             message=f"{curr_time_micro()} Publishing complete. Total records "
