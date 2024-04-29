@@ -123,9 +123,9 @@ if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         format="",
-        filename=f"logs/GRABBER_LOG-{DATA_MONTH_DAY}.log",
+        filename=f"logs/UPLOADLOG-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
-        filemode="w",
+        filemode="a",
         level=logging.INFO,
     )
     upload_to_gdrive()
