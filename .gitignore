@@ -8,5 +8,4 @@ __pycache__
 .vscode
 logs
 auth-playground.py
-customsub.py
-pubcust.py
+*.tar
