@@ -14,7 +14,7 @@ from src.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 120
+TIMEOUT = 180
 
 
 class PipelineSubscriber:
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     sub_worker = PipelineSubscriber()
     start_time = curr_time_micro()
     total_records_overall = 0
-    sub_logger(message=f"{start_time} Subscriber starting.")
+    sub_logger(message=f"{start_time} Python script - subscriber starting.")
     while True:
         sub_worker.subscriber_listener()
         if sub_worker.current_listener_records > 0:
@@ -112,7 +112,7 @@ if __name__ == "__main__":
             sub_worker.current_listener_records = 0
         else:
             sub_logger(
-                message=f"{curr_time_micro()} No data received in the past 5 minutes."
+                message=f"{curr_time_micro()} No data received in the past 3 minutes."
             )
             total_records_overall += sub_worker.current_listener_records
             sub_worker.current_listener_records = 0
