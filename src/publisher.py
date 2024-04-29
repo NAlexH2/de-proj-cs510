@@ -1,10 +1,7 @@
-import logging
-import os, sys, json
-import time
+import logging, os, sys, json
 from google.oauth2 import service_account
 from concurrent import futures
 from google.cloud import pubsub_v1
-from typing import Callable
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
