@@ -92,7 +92,6 @@ class PipelinePublisher:
                     message=f"{curr_time_micro()} {future.exception()}",
                     use_print=True,
                 )
-            pass
 
         log_or_print(
             message=f"{curr_time_micro()} Publishing complete. Total records "
