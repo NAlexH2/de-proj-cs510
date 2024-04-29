@@ -8,5 +8,5 @@ __pycache__
 .vscode
 logs
 auth-playground.py
-custompub.py
+customsub.py
 pubcust.py
