@@ -3,7 +3,7 @@ import json, os
 from google.oauth2 import service_account
 from google.cloud import pubsub_v1
 from concurrent.futures import TimeoutError
-from utils.utils import (
+from src.utils.utils import (
     DATA_MONTH_DAY,
     SUBSCRIBER_DATA_PATH_JSON,
     SUBSCRIBER_FOLDER,
