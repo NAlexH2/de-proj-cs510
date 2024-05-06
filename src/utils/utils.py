@@ -49,3 +49,21 @@ def log_or_print(
 def sub_logger(message: str, prend: str = "\n") -> None:
     logging.info(msg=message)
     print(message, end=prend)
+
+
+def lat_long_filler(point_a, aDistance, bDistance):
+    R = 6371  # Radius of the Earth in kilometers
+
+    distance_traveled = abs(bDistance - aDistance)
+
+    # Convert distance from meters to kilometers
+    distance_traveled_km = distance_traveled / 1000
+
+    # Calculate change in latitude and longitude
+    delta_lat = math.degrees(distance_traveled_km / R)
+    delta_lon = delta_lat / math.cos(math.radians(point_a[1]))
+
+    # Calculate coordinates of point B
+    point_b = (point_a[0] + delta_lon, point_a[1] + delta_lat)
+
+    return point_b
