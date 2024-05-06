@@ -5,14 +5,14 @@ from googleapiclient.discovery import build, MediaFileUpload
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
-    from utils import (
+    from utils.utils import (
         DATA_MONTH_DAY,
         FULL_DATA_PATH,
         log_or_print,
         curr_time_micro,
     )
 else:
-    from src.utils import (
+    from src.utils.utils import (
         DATA_MONTH_DAY,
         FULL_DATA_PATH,
         log_or_print,

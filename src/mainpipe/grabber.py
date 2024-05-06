@@ -4,7 +4,7 @@ from typing import Callable, Iterable
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
-    from utils import (
+    from utils.utils import (
         API_URL,
         FULL_DATA_PATH,
         DATA_MONTH_DAY,
@@ -14,7 +14,7 @@ if "/src" in script_dir:
     )
     from publisher import PipelinePublisher
 else:
-    from src.utils import (
+    from src.utils.utils import (
         API_URL,
         FULL_DATA_PATH,
         DATA_MONTH_DAY,
@@ -22,7 +22,7 @@ else:
         curr_time_micro,
         log_or_print,
     )
-    from src.publisher import PipelinePublisher
+    from src.mainpipe.publisher import PipelinePublisher
 
 
 class DataGrabber:

@@ -1,5 +1,5 @@
 import os, sys, tarfile
-from src.utils import (
+from src.utils.utils import (
     DATA_MONTH_DAY,
     FULL_DATA_PATH,
     curr_time_micro,

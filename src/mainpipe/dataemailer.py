@@ -7,9 +7,9 @@ from googleapiclient.discovery import build
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 if "/src" in script_dir:
-    from utils import DATA_MONTH_DAY, curr_time_micro
+    from utils.utils import DATA_MONTH_DAY, curr_time_micro
 else:
-    from src.utils import DATA_MONTH_DAY, curr_time_micro
+    from src.utils.utils import DATA_MONTH_DAY, curr_time_micro
 
 
 def data_emailer(ok_size: int, bad_size: int) -> None:

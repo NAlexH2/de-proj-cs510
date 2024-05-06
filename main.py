@@ -3,11 +3,11 @@ import sys
 import logging
 import time
 
-from src.tardata import tar_data
-from src.grabber import DataGrabber
-from src.uploadgdrive import upload_to_gdrive
-from src.utils import DATA_MONTH_DAY, curr_time_micro, log_or_print
-from src.publisher import PipelinePublisher
+from src.mainpipe.tardata import tar_data
+from src.mainpipe.grabber import DataGrabber
+from src.mainpipe.uploadgdrive import upload_to_gdrive
+from src.mainpipe.publisher import PipelinePublisher
+from src.utils.utils import DATA_MONTH_DAY, curr_time_micro, log_or_print
 
 
 def found_args():

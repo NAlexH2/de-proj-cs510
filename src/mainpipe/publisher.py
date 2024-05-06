@@ -5,14 +5,14 @@ from google.cloud import pubsub_v1
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if "/src" in script_dir:
-    from utils import (
+    from utils.utils import (
         curr_time_micro,
         log_or_print,
         FULL_DATA_PATH,
         DATA_MONTH_DAY,
     )
 else:
-    from src.utils import (
+    from src.utils.utils import (
         curr_time_micro,
         log_or_print,
         FULL_DATA_PATH,
