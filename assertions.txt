@@ -1,4 +1,4 @@
-[ ] Longitude is never less than or greater than -122 (-123 > x <= -122)
+[ ] Longitude is never less than -124 or greater than -122 (-124 > x <= -122)
 [ ] Latitude is never more or less than 45 ( 46 > x >= 45)
 [ ] No bus should exceed 100 mph/160 kmh (this is easier since it’s measured in meters!)
 [ ] GPS_HDOP values >= 4 and < 23.1 are missing long/lat information
