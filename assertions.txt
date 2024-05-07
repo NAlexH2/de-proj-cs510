@@ -1,4 +1,3 @@
-
 [ ] Longitude is never less than or greater than -122 (-123 > x <= -122)
 [ ] Latitude is never more or less than 45 ( 46 > x >= 45)
 [ ] No bus should exceed 100 mph/160 kmh (this is easier since it’s measured in meters!)
