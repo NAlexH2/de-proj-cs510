@@ -1,10 +1,10 @@
-[x] Longitude is never less than -124 or greater than -122 (-124 > x <= -122)
-[ ] Latitude is never more or less than 45 ( 46 > x >= 45)
+[x] Longitude is never less than -124 but must be greater than -122 (-124 > x <= -122)
+[x] Latitude is never more than 46 or less than 45 ( 46 > x >= 45)
+[x] GPS_HDOP values >= 4 and < 23.1 are missing long/lat information
+[x] The fewest number of GPS_SATELLITES is 0
+[x] The most number of GPS_SATELLITES is 12
+[x] Not all 0 GPS_SATELLITES are missing a lat/long
+[x] 12 GPS_SATELLITES all have lat/long
+[x] Every record has a activity time
+[x] Every record has a meters entry
 [ ] No bus should exceed 100 mph/160 kmh (this is easier since it’s measured in meters!)
-[ ] GPS_HDOP values >= 4 and < 23.1 are missing long/lat information
-[ ] All OPD_DATEs have DDMMMYYYY:HH:MM:SS format
-[ ] The fewest number of GPS_SATELLITES is 0
-[ ] The most number of GPS_SATELLITES is 12
-[ ] Not all 0 GPS_SATELLITES are missing a lat/long
-[ ] 12 GPS_SATELLITES all have lat/long
-[ ] Every EVENT_NO_TRIP has several EVENT_NO_STOPs associated with it
