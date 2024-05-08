@@ -44,11 +44,14 @@ class DataTransformer:
         td: pd.Timedelta = self.set_timedelta()
         self.df['TIMESTAMP'] = opd_sec + td
         self.df.drop(columns=['OPD_DATE'], inplace=True)
-        print(self.df.head())
+        
+    def add_speed(self):
+        
 
 
     def transform_run(self):
         self.add_timestamps()
+        self.add_speed()
         
         
 
