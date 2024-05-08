@@ -179,16 +179,15 @@ class ValidateBusData:
         pass
 
     def start_assertions(self):
-        # self.assert_long_vals()
-        # self.assert_lat_vals()
-        # self.assert_bad_gps_hdop_data()
-        # self.assert_gps_min()
-        # self.assert_gps_max()
-        # self.assert_zero_sat_ok()  # some 0 gps satellites still have a lat/long
-        # self.assert_twelve_sat_yes()  # if 12 gps satellites, there must be lat/long
-        # self.assert_event_act_time()  # Every record has an activity time
-        # self.assert_meters_entry()  # Every record has a meters entry
-        self.assert_speed_limit()
+        self.assert_long_vals()
+        self.assert_lat_vals()
+        self.assert_bad_gps_hdop_data()
+        self.assert_gps_min()
+        self.assert_gps_max()
+        self.assert_zero_sat_ok()  # some 0 gps satellites still have a lat/long
+        self.assert_twelve_sat_yes()  # if 12 gps satellites, there must be lat/long
+        self.assert_event_act_time()  # Every record has an activity time
+        self.assert_meters_entry()  # Every record has a meters entry
 
 
 if __name__ == "__main__":

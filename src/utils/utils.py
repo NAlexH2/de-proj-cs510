@@ -52,6 +52,13 @@ def sub_logger(message: str, prend: str = "\n") -> None:
     print(message, end=prend)
 
 
+# I am not clever enough to do this. Between finding formulas online and asking
+# ChatGPT a variety of questions on how to do it, this was the result. It's called
+# the 'Haversine Formula' and it calculates distance between two points. In this
+# case it returns a long/lat tuple to use.
+# However, this is an approximation
+# of the coordinates due to using only the distance in meters between the two
+# points, and the origin (point_a) long/lat.
 def lat_long_filler(point_a, aDistance, bDistance):
     R = 6371  # Radius of the Earth in kilometers
 
