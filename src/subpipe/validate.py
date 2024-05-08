@@ -34,11 +34,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} LONGITUDE BAD!!!!! Longitude had the following min and max values: "
                 + f"{longitude_lowest_min}, {longitude_highest_max}."
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} LONGITUDE GOOD! Longitude sits within -122 and -124! "
                 + f"Min and max vals are: {longitude_lowest_min}, {longitude_highest_max}."
             )
+            return True
 
     def assert_lat_vals(self):
         latitude_lowest_min = self.df["GPS_LATITUDE"].min(axis=0)
@@ -53,11 +55,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} LATITUDE ASSERT BAD!!!!! Latitude had the following "
                 + f"min and max values: {latitude_lowest_min}, {latitude_highest_max}."
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} LATITUDE ASSERT! Latitude sits within 45 and 46! Min "
                 + f"and max vals are: {latitude_lowest_min}, {latitude_highest_max}."
             )
+            return True
 
     def assert_bad_gps_hdop_data(self):
         gathered_HDOPs = self.df[
@@ -73,11 +77,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} HDOP ASSERT BAD!!!!! There were some HDOPs with "
                 + f"non-nan values on lat and long."
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} HDOP ASSERT GOOD! All HDOP values 4 upto "
                 + f"(not including) 23.1 are NaN on lat and long."
             )
+            return True
 
     def assert_gps_min(self):
         sat_min = self.df["GPS_SATELLITES"].min()
@@ -88,11 +94,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} MIN GPS satellites BAD!!!!! The minimum "
                 + f"number of satellites were: {sat_min}"
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} MIN GPS satellites GOOD! Minimum number "
                 + f"of satellites was: {sat_min}!"
             )
+            return True
 
     def assert_gps_max(self):
         sat_max = self.df["GPS_SATELLITES"].max()
@@ -103,11 +111,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} MAX GPS satellites BAD!!!!! The minimum "
                 + f"number of satellites were: {sat_max}"
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} MAX GPS satellites GOOD! Minimum number "
                 + f"of satellites was: {sat_max}!"
             )
+            return True
 
     def assert_zero_sat_ok(self):
         zero_sat_df = self.df[df["GPS_SATELLITES"] == 0]
@@ -121,11 +131,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} ZERO SATELLITES ASSERT BAD!!!! It seems that all "
                 + f"0 GPS satellite vehicles are missing lat and long."
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} ZERO SATELLITES ASSERT GOOD! It seems that SOME "
                 + f"0 GPS satellite vehicles HAVE a lat and long."
             )
+            return True
 
     def assert_twelve_sat_yes(self):
         twelve_sat_df = self.df[df["GPS_SATELLITES"] == 12]
@@ -139,11 +151,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} TWELVE SATELLITES ASSERT BAD!!!! It seems that some "
                 + f"12 GPS satellite vehicles are missing lat and long."
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} TWELVE SATELLITES ASSERT GOOD! It seems that ALL "
                 + f"12 GPS satellite vehicles HAVE a lat and long."
             )
+            return True
 
     def assert_meters_entry(self):
         meters_bool = self.df["ACT_TIME"].isna().all() == False
@@ -154,11 +168,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} ACTIVITY RECORD ASSERT BAD!!!! It seems that some "
                 + f"records are missing an event activity time."
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} ACTIVITY RECORD ASSERT GOOD! It seems that ALL "
                 + f"records HAVE an event activity time."
             )
+            return True
 
     def assert_event_act_time(self):
         meters_bool = df["METERS"].isna().all() == False
@@ -169,11 +185,13 @@ class ValidateBusData:
                 f"{curr_time_micro()} METERS RECORD ASSERT BAD!!!! It seems that some "
                 + f"records are missing an a meters metric."
             )
+            return False
         else:
             sub_logger(
                 f"{curr_time_micro()} METERS RECORD ASSERT GOOD! It seems that ALL "
                 + f"records HAVE an a meters metric."
             )
+            return True
 
     def assert_speed_limit(self):
         pass
