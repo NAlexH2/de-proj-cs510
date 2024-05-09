@@ -1,5 +1,7 @@
 import logging
 import json, os
+from src.subpipe.store import DataToSQLDB
+
 from google.oauth2 import service_account
 from google.cloud import pubsub_v1
 from concurrent.futures import TimeoutError
@@ -31,8 +33,12 @@ class PipelineSubscriber:
         self.data_to_write: list[str] = []
         self.current_listener_records = 0
 
+    def store_to_sql(self, jData: list[dict]) -> None:
+        db_worker = DataToSQLDB(jData)
+        db_worker.to_db_start()
+
     def write_records_to_file(self):
-        json_data = []
+        json_data: list[dict] = []
         sub_logger(message="")
         sub_logger(
             message=f"{curr_time_micro()} Total records: {self.current_listener_records}"
@@ -44,6 +50,8 @@ class PipelineSubscriber:
         while len(self.data_to_write) > 0:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
+
+        self.store_to_sql(json_data)
 
         if not os.path.exists(SUBSCRIBER_FOLDER):
             os.makedirs(SUBSCRIBER_FOLDER)
