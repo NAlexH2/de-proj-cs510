@@ -1,5 +1,7 @@
+import io
 import logging, os, sys, json
 import pandas as pd
+import psycopg2
 
 from pathlib import Path
 
@@ -39,6 +41,8 @@ from src.utils.utils import (
 DBNAME = "postgres"
 DBUSER = "postgres"
 DBPWD = os.getenv("SQL_PW")
+BCTABLE = "breadcrumb"
+TRIPTABLE = "trip"
 
 
 class DataToSQLDB:
@@ -62,7 +66,7 @@ class DataToSQLDB:
                 "EVENT_NO_TRIP",
             ]
         ]
-        bc_table.rename(columns=renamer, inplace=True)
+        bc_table = bc_table.rename(columns=renamer)
         return bc_table
 
     def make_trip_table(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -72,23 +76,64 @@ class DataToSQLDB:
         )
         trip_table.insert(1, "route_id", 0)
         trip_table.insert(3, "service_key", "Weekday")
-        trip_table.insert(4, "direction", 0)
+        trip_table.insert(4, "direction", "Out")
         trip_table.rename(columns=renamer, inplace=True)
         return trip_table
 
     def prepare_df(self, df: pd.DataFrame) -> pd.DataFrame:
         ValidateBusData(df).do_all_assertions_except_speed()
         preped_df = DataTransformer(df).transform_run()
-        ValidateBusData(preped_df).assert_speed_limit()
         return preped_df
-    
-    def write_to_db(self, trip_table, bc_table) -> None:
-        pass
+
+    def db_connect(self):
+        connection = psycopg2.connect(
+            host="localhost",
+            database=DBNAME,
+            user=DBUSER,
+            password=DBPWD,
+        )
+        connection.autocommit = True
+        return connection
+
+    def to_file_like(self, df: pd.DataFrame) -> io.StringIO:
+        csv_temp_string = df.to_csv(index=False)
+        file_like = io.StringIO(csv_temp_string)
+        return file_like
+
+    def write_to_db(self, tripe_frame: pd.DataFrame, bc_frame: pd.DataFrame):
+        trip_row_count = tripe_frame.shape[0]
+        bc_row_count = bc_frame.shape[0]
+        conn = self.db_connect()
+        cur = conn.cursor()
+        trip_file_like = self.to_file_like(tripe_frame)
+        bc_file_like = self.to_file_like(bc_frame)
+
+        sub_logger(
+            f"{curr_time_micro()} Writing {trip_row_count} rows to Trip table..."
+        )
+        with trip_file_like as tf:
+            next(tf)
+            cur.copy_from(tf, TRIPTABLE, sep=",")
+        sub_logger(
+            f"{curr_time_micro()} Writing {trip_row_count} rows to Trip table COMPLETE!"
+        )
+
+        sub_logger(
+            f"{curr_time_micro()} Writing {bc_row_count} rows to BreadCrumb table..."
+        )
+        with bc_file_like as bcf:
+            next(bcf)
+            cur.copy_from(bcf, BCTABLE, sep=",")
+        sub_logger(
+            f"{curr_time_micro()} Writing {bc_row_count} rows to BreadCrumb table COMPLETE!"
+        )
 
     def to_db_start(self):
-        preped_df = self.prepare_df(pd.DataFrame.from_dict(self.json_data))
-        bc_table = self.make_breadcrumb_table(preped_df)
-        trip_table = self.make_trip_table(preped_df)
+        preped_df: pd.DataFrame = self.prepare_df(
+            pd.DataFrame.from_dict(self.json_data)
+        )
+        bc_table: pd.DataFrame = self.make_breadcrumb_table(preped_df)
+        trip_table: pd.DataFrame = self.make_trip_table(preped_df)
         self.write_to_db(trip_table, bc_table)
 
 

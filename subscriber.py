@@ -47,15 +47,17 @@ class PipelineSubscriber:
         sub_logger(
             message=f"{curr_time_micro()} Total records: {self.current_listener_records}"
         )
-        sub_logger(
-            message=f"{curr_time_micro()} Writing all records to a single file."
-        )
 
         while len(self.data_to_write) > 0:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
 
+        # Where the storage magic happens!
         self.store_to_sql(json_data)
+
+        sub_logger(
+            message=f"{curr_time_micro()} Writing all records to a single file."
+        )
 
         if not os.path.exists(SUBSCRIBER_FOLDER):
             os.makedirs(SUBSCRIBER_FOLDER)
