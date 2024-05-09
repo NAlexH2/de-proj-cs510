@@ -34,8 +34,12 @@ class PipelineSubscriber:
         self.current_listener_records = 0
 
     def store_to_sql(self, jData: list[dict]) -> None:
+        sub_logger(f"{curr_time_micro()} Sending data to SQL database.")
         db_worker = DataToSQLDB(jData)
         db_worker.to_db_start()
+        sub_logger(
+            f"{curr_time_micro()} Data transfer to SQL database complete!"
+        )
 
     def write_records_to_file(self):
         json_data: list[dict] = []
