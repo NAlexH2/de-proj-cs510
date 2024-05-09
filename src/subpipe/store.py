@@ -8,6 +8,7 @@ if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
 
 from src.subpipe.validate import ValidateBusData
+from src.subpipe.transform import DataTransformer
 from src.utils.utils import (
     DATA_MONTH_DAY,
     SUBSCRIBER_FOLDER,
@@ -35,14 +36,40 @@ from src.utils.utils import (
         2. The rest should be the same ish? We'll see... Get it working with
             subscriber first.
 """
+DBNAME = "postgres"
+DBUSER = "postgres"
+DBPWD = os.getenv("SQL_PW")
 
 
 class DataToSQLDB:
     def __init__(self, jData: dict) -> None:
         self.json_data: dict = jData
 
-    def to_db_start(self):
+    def make_breadcrumb_table(self, df: pd.DataFrame) -> pd.DataFrame:
+        bc_table = df[
+            df[
+                "TIMESTAMP",
+                "GPS_LATITUDE",
+                "GPS_LONGITUDE",
+                "SPEED",
+                "EVENT_NO_TRIP",
+            ]
+        ]
+        return bc_table
+
+    def make_trip_table(self, df: pd.DataFrame) -> pd.DataFrame:
         pass
+
+    def prepare_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        ValidateBusData(df).do_all_assertions_except_speed()
+        preped_df = DataTransformer(df).transform_run()
+        ValidateBusData(preped_df).assert_speed_limit()
+        return preped_df
+
+    def to_db_start(self):
+        preped_df = self.prepare_df(pd.DataFrame.from_dict(self.json_data))
+        bc_table = self.make_breadcrumb_table(preped_df)
+        trip_table = self.make_trip_table(preped_df)
 
 
 if __name__ == "__main__":
@@ -67,6 +94,7 @@ if __name__ == "__main__":
             curr_file = open(os.path.join(SUBSCRIBER_FOLDER, file))
             json_from_file = json.load(curr_file)
             db_worker = DataToSQLDB(json_from_file)
+            db_worker.to_db_start()
 
     else:
         sub_logger(
