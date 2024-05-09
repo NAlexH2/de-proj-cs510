@@ -19,6 +19,9 @@ class DataToSQLDB:
     def __init__(self) -> None:
         pass
 
+    def to_db_start(self):
+        pass
+
 
 if __name__ == "__main__":
     pass
