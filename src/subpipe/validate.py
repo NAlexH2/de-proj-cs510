@@ -1,4 +1,4 @@
-import logging, os, sys, json
+import logging, os, sys
 import pandas as pd
 
 from pathlib import Path
@@ -9,7 +9,6 @@ if __name__ == "__main__":
 
 from src.utils.utils import (
     DATA_MONTH_DAY,
-    SUBSCRIBER_DATA_PATH_JSON,
     SUBSCRIBER_FOLDER,
     curr_time_micro,
     sub_logger,
@@ -177,7 +176,7 @@ class ValidateBusData:
             return True
 
     def assert_event_act_time(self):
-        meters_bool = df["METERS"].isna().all() == False
+        meters_bool = self.df["METERS"].isna().all() == False
         try:
             assert meters_bool == True
         except:
@@ -194,7 +193,31 @@ class ValidateBusData:
             return True
 
     def assert_speed_limit(self):
-        pass
+        kmh_data = pd.DataFrame()
+        kmh_data.insert(0, "SPEED", value=(self.df["SPEED"] * 3.6))
+        try:
+            assert (kmh_data["SPEED"] < 160).all() == True
+        except:
+            sub_logger(
+                f"{curr_time_micro()} SPEED ASSERTION ALERT!!! Some speeds on "
+                + f"some buses appears to be over 100MPH. This is not possible, "
+                + f"is an extreme anomaly, and will be removed from the dataset."
+            )
+            ids_over_limit = self.df.loc[
+                self.df["SPEED"] > (160 / 3.6), "VEHICLE_ID"
+            ].unique()
+            sub_logger(
+                f"{curr_time_micro()} Following vehicles have speeds greater "
+                + f"than 100MPH: {ids_over_limit}"
+            )
+            self.df = self.df[self.df["SPEED"] < (160 / 3.6)]
+            return True
+        else:
+            sub_logger(
+                f"{curr_time_micro()} SPEED LIMIT ASSERT GOOD! It seems that no "
+                + f"bus speeds are over 100mph!"
+            )
+            return True
 
     def start_assertions(self):
         self.assert_long_vals()
@@ -219,7 +242,7 @@ if __name__ == "__main__":
     files = os.listdir(SUBSCRIBER_FOLDER)
     files.sort()
     for file in files:
-        sub_logger(f"\n{curr_time_micro()} next file {file}")
+        sub_logger(f"\n{curr_time_micro()} Next file to assert: {file}")
         df = pd.read_json(os.path.join(SUBSCRIBER_FOLDER, file))
         vbd = ValidateBusData(df)
         vbd.start_assertions()
