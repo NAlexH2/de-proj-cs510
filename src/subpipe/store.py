@@ -46,8 +46,15 @@ class DataToSQLDB:
         self.json_data: dict = jData
 
     def make_breadcrumb_table(self, df: pd.DataFrame) -> pd.DataFrame:
+        renamer = {
+            "TIMESTAMP": "tstamp",
+            "GPS_LATITUDE": "latitude",
+            "GPS_LONGITUDE": "longitude",
+            "SPEED": "speed",
+            "EVENT_NO_TRIP": "trip_id",
+        }
         bc_table = df[
-            df[
+            [
                 "TIMESTAMP",
                 "GPS_LATITUDE",
                 "GPS_LONGITUDE",
@@ -55,21 +62,34 @@ class DataToSQLDB:
                 "EVENT_NO_TRIP",
             ]
         ]
+        bc_table.rename(columns=renamer, inplace=True)
         return bc_table
 
     def make_trip_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        pass
+        renamer = {"EVENT_NO_TRIP": "trip_id", "VEHICLE_ID": "vehicle_id"}
+        trip_table = df[["EVENT_NO_TRIP", "VEHICLE_ID"]].drop_duplicates(
+            keep="first"
+        )
+        trip_table.insert(1, "route_id", 0)
+        trip_table.insert(3, "service_key", "Weekday")
+        trip_table.insert(4, "direction", 0)
+        trip_table.rename(columns=renamer, inplace=True)
+        return trip_table
 
     def prepare_df(self, df: pd.DataFrame) -> pd.DataFrame:
         ValidateBusData(df).do_all_assertions_except_speed()
         preped_df = DataTransformer(df).transform_run()
         ValidateBusData(preped_df).assert_speed_limit()
         return preped_df
+    
+    def write_to_db(self, trip_table, bc_table) -> None:
+        pass
 
     def to_db_start(self):
         preped_df = self.prepare_df(pd.DataFrame.from_dict(self.json_data))
         bc_table = self.make_breadcrumb_table(preped_df)
         trip_table = self.make_trip_table(preped_df)
+        self.write_to_db(trip_table, bc_table)
 
 
 if __name__ == "__main__":
