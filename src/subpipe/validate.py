@@ -64,7 +64,7 @@ class ValidateBusData:
 
     def assert_bad_gps_hdop_data(self):
         gathered_HDOPs = self.df[
-            (df["GPS_HDOP"] >= 4) & (df["GPS_HDOP"] < 23.1)
+            (self.df["GPS_HDOP"] >= 4) & (self.df["GPS_HDOP"] < 23.1)
         ]
         these_HDOPs_nan = (gathered_HDOPs["GPS_LONGITUDE"].isna()) & (
             gathered_HDOPs["GPS_LATITUDE"].isna()
@@ -119,7 +119,7 @@ class ValidateBusData:
             return True
 
     def assert_zero_sat_ok(self):
-        zero_sat_df = self.df[df["GPS_SATELLITES"] == 0]
+        zero_sat_df = self.df[self.df["GPS_SATELLITES"] == 0]
         not_all_nan_lat = zero_sat_df[zero_sat_df["GPS_LATITUDE"].notna()]
         not_all_nan_long = zero_sat_df[zero_sat_df["GPS_LONGITUDE"].notna()]
         try:
@@ -139,7 +139,7 @@ class ValidateBusData:
             return True
 
     def assert_twelve_sat_yes(self):
-        twelve_sat_df = self.df[df["GPS_SATELLITES"] == 12]
+        twelve_sat_df = self.df[self.df["GPS_SATELLITES"] == 12]
         all_yes_lat = twelve_sat_df[twelve_sat_df["GPS_LATITUDE"].notna()]
         all_yes_long = twelve_sat_df[twelve_sat_df["GPS_LONGITUDE"].notna()]
         try:
@@ -210,16 +210,15 @@ class ValidateBusData:
                 f"{curr_time_micro()} Following vehicles have speeds greater "
                 + f"than 100MPH: {ids_over_limit}"
             )
-            self.df = self.df[self.df["SPEED"] < (160 / 3.6)]
-            return True
+            return self.df[self.df["SPEED"] < (160 / 3.6)]
         else:
             sub_logger(
                 f"{curr_time_micro()} SPEED LIMIT ASSERT GOOD! It seems that no "
                 + f"bus speeds are over 100mph!"
             )
-            return True
+            return self.df
 
-    def start_assertions(self):
+    def do_all_assertions_except_speed(self):
         self.assert_long_vals()
         self.assert_lat_vals()
         self.assert_bad_gps_hdop_data()
@@ -245,6 +244,6 @@ if __name__ == "__main__":
         sub_logger(f"\n{curr_time_micro()} Next file to assert: {file}")
         df = pd.read_json(os.path.join(SUBSCRIBER_FOLDER, file))
         vbd = ValidateBusData(df)
-        vbd.start_assertions()
+        vbd.do_all_assertions()
 
     sys.exit()

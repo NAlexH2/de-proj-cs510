@@ -77,7 +77,7 @@ class DataTransformer:
     def transform_run(self):
         self.add_timestamps()
         self.add_speed()
-        self.vbd.assert_speed_limit()
+        self.df = self.vbd.assert_speed_limit()
         return self.df
 
 
