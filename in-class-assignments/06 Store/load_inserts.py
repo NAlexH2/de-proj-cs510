@@ -210,8 +210,8 @@ def main():
     start = time.perf_counter()
     with open(Datafile, "r") as f:
         next(f)
-        elapsed = time.perf_counter() - start
         cur.copy_from(f, TableName.lower(), sep=",")
+        elapsed = time.perf_counter() - start
         print(f"Finished Loading. Elapsed Time: {elapsed:0.4} seconds")
 
     conn.commit()  # Required for Step F
