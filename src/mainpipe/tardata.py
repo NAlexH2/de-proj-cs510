@@ -1,12 +1,15 @@
 import os, sys, tarfile
-from src.utils import (
+from pathlib import Path
+
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
+
+from src.utils.utils import (
     DATA_MONTH_DAY,
     FULL_DATA_PATH,
     curr_time_micro,
     log_or_print,
 )
-
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 
 def tar_data():

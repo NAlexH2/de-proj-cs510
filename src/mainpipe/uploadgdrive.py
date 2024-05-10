@@ -1,23 +1,18 @@
+from pathlib import Path
 import logging, os, sys
 from time import sleep
 from google.oauth2 import service_account
 from googleapiclient.discovery import build, MediaFileUpload
 
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-if "/src" in script_dir:
-    from utils import (
-        DATA_MONTH_DAY,
-        FULL_DATA_PATH,
-        log_or_print,
-        curr_time_micro,
-    )
-else:
-    from src.utils import (
-        DATA_MONTH_DAY,
-        FULL_DATA_PATH,
-        log_or_print,
-        curr_time_micro,
-    )
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
+
+from src.utils.utils import (
+    DATA_MONTH_DAY,
+    FULL_DATA_PATH,
+    log_or_print,
+    curr_time_micro,
+)
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
@@ -128,4 +123,5 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
+    sys.argv.append("-L")
     upload_to_gdrive()

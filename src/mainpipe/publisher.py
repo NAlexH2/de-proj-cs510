@@ -1,23 +1,18 @@
+from pathlib import Path
 import logging, os, sys, json
 from google.oauth2 import service_account
 from concurrent import futures
 from google.cloud import pubsub_v1
 
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-if "/src" in script_dir:
-    from utils import (
-        curr_time_micro,
-        log_or_print,
-        FULL_DATA_PATH,
-        DATA_MONTH_DAY,
-    )
-else:
-    from src.utils import (
-        curr_time_micro,
-        log_or_print,
-        FULL_DATA_PATH,
-        DATA_MONTH_DAY,
-    )
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
+
+from src.utils.utils import (
+    curr_time_micro,
+    log_or_print,
+    FULL_DATA_PATH,
+    DATA_MONTH_DAY,
+)
 
 
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
@@ -76,6 +71,7 @@ class PipelinePublisher:
                     log_or_print(
                         message=f"{curr_time_micro()} Approximately {record_count} of "
                         + f"{self.total_records} published.",
+                        use_print=True,
                         prend="\r",
                     )
                 future.add_done_callback(self.futures_callback)
@@ -112,6 +108,7 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
+    sys.argv.append("-L")
     print(f"{curr_time_micro()} Publisher starting.")
     pub_worker = PipelinePublisher()
 

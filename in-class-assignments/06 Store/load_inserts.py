@@ -9,7 +9,6 @@ import csv
 
 DBname = "postgres"
 DBuser = "postgres"
-DBpwd = "1qaz"
 TableName = "CensusData"
 Datafile = "filedoesnotexist"  # name of the data file to be loaded
 CreateDB = False  # indicates whether the DB table should be (re)-created
@@ -109,7 +108,7 @@ def dbconnect():
         user=DBuser,
         password=DBpwd,
     )
-    connection.autocommit = True
+    connection.autocommit = False  # Disabled for the assignment
     return connection
 
 
@@ -117,10 +116,10 @@ def dbconnect():
 # assumes that conn is a valid, open connection to a Postgres database
 def createTable(conn):
     with conn.cursor() as cursor:
-        cursor.execute(
+        cursor.execute(  # Unlogging the table for step G
             f"""
 			DROP TABLE IF EXISTS {TableName};
-			CREATE TABLE {TableName} (
+			CREATE UNLOGGED TABLE {TableName} (
 				CensusTract         NUMERIC,
 				State               TEXT,
 				County              TEXT,
@@ -159,9 +158,11 @@ def createTable(conn):
 				FamilyWork          DECIMAL,
 				Unemployment        DECIMAL
 			);	
-			ALTER TABLE {TableName} ADD PRIMARY KEY (CensusTract);
-        	CREATE INDEX idx_{TableName}_State ON {TableName}(State);
 		"""
+            # Following are commented moved from the above and commented out
+            # for assignment progress
+            # ALTER TABLE {TableName} ADD PRIMARY KEY (CensusTract);
+            # CREATE INDEX idx_{TableName}_State ON {TableName}(State);
         )
 
         print(f"Created {TableName}")
@@ -179,6 +180,7 @@ def load(conn, icmdlist):
         print(f"Finished Loading. Elapsed Time: {elapsed:0.4} seconds")
 
 
+# CREATED TO SET KEYS FOR THE ASSIGNMENT, not used for
 def setKeys(conn):
     with conn.cursor() as cursor:
         cursor.execute(
@@ -198,20 +200,20 @@ def main():
     if CreateDB:
         createTable(conn)
 
-    # load(conn, cmdlist)
+    # load(conn, cmdlist) # commented out for the copy_from step below
 
-    # if CreateDB:
-    #     setKeys(conn)
+    if CreateDB:  # For step E
+        setKeys(conn)
 
     cur = conn.cursor()
     start = time.perf_counter()
     with open(Datafile, "r") as f:
         next(f)
-        elapsed = time.perf_counter() - start
         cur.copy_from(f, TableName.lower(), sep=",")
+        elapsed = time.perf_counter() - start
         print(f"Finished Loading. Elapsed Time: {elapsed:0.4} seconds")
 
-    # conn.commit()  # Required for Step F
+    conn.commit()  # Required for Step F
 
 
 if __name__ == "__main__":

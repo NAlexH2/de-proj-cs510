@@ -1,28 +1,19 @@
 import json, shutil, requests, pandas as pd, os, sys, logging
-from typing import Callable, Iterable
+from pathlib import Path
 
 
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-if "/src" in script_dir:
-    from utils import (
-        API_URL,
-        FULL_DATA_PATH,
-        DATA_MONTH_DAY,
-        mdy_time,
-        curr_time_micro,
-        log_or_print,
-    )
-    from publisher import PipelinePublisher
-else:
-    from src.utils import (
-        API_URL,
-        FULL_DATA_PATH,
-        DATA_MONTH_DAY,
-        mdy_time,
-        curr_time_micro,
-        log_or_print,
-    )
-    from src.publisher import PipelinePublisher
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
+
+from src.utils.utils import (
+    API_URL,
+    FULL_DATA_PATH,
+    DATA_MONTH_DAY,
+    mdy_time,
+    curr_time_micro,
+    log_or_print,
+)
+from src.mainpipe.publisher import PipelinePublisher
 
 
 class DataGrabber:
@@ -132,6 +123,7 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
+    sys.argv.append("-L")
     log_or_print(
         message=f"\n{curr_time_micro()} Gathering staring.", use_print=True
     )
