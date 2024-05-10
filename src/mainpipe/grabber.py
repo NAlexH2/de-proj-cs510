@@ -123,7 +123,7 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    sys.argv.append["-L"]
+    sys.argv.append("-L")
     log_or_print(
         message=f"\n{curr_time_micro()} Gathering staring.", use_print=True
     )
