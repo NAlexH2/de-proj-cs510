@@ -16,7 +16,7 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 180
+TIMEOUT = 600
 
 
 class PipelineSubscriber:
@@ -132,10 +132,12 @@ if __name__ == "__main__":
             sub_worker.current_listener_records = 0
 
         sub_logger(
-            message=f"{curr_time_micro()} Have received and saved {total_records_overall} records up to this point."
+            message=f"{curr_time_micro()} Have received and saved "
+            + f"{total_records_overall} records up to this point."
         )
         sub_logger(
-            message=f"{curr_time_micro()} Subscriber re-starting to continue listening for messages."
+            message=f"{curr_time_micro()} Subscriber re-starting to continue "
+            + f"listening for messages."
         )
         sub_worker.subscriber = pubsub_v1.SubscriberClient(
             credentials=sub_worker.pubsub_creds
