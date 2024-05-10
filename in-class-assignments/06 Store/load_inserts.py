@@ -9,7 +9,6 @@ import csv
 
 DBname = "postgres"
 DBuser = "postgres"
-DBpwd = "NO PW IN FILE BECAUSE OF GIT GUARDIAN"
 TableName = "CensusData"
 Datafile = "filedoesnotexist"  # name of the data file to be loaded
 CreateDB = False  # indicates whether the DB table should be (re)-created
