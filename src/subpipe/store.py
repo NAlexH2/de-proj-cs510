@@ -100,12 +100,12 @@ class DataToSQLDB:
         file_like = io.StringIO(csv_temp_string)
         return file_like
 
-    def write_to_db(self, tripe_frame: pd.DataFrame, bc_frame: pd.DataFrame):
-        trip_row_count = tripe_frame.shape[0]
+    def write_to_db(self, trip_frame: pd.DataFrame, bc_frame: pd.DataFrame):
+        trip_row_count = trip_frame.shape[0]
         bc_row_count = bc_frame.shape[0]
         conn = self.db_connect()
         cur = conn.cursor()
-        trip_file_like = self.to_file_like(tripe_frame)
+        trip_file_like = self.to_file_like(trip_frame)
         bc_file_like = self.to_file_like(bc_frame)
 
         sub_logger(
