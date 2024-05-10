@@ -113,11 +113,7 @@ class DataToSQLDB:
         )
         with trip_file_like as tf:
             next(tf)
-            try:
-                cur.copy_from(tf, TRIPTABLE, sep=",")
-            except:
-                sub_logger(f"{curr_time_micro()} Dupe found, skipping...")
-                next(tf)
+            cur.copy_from(tf, TRIPTABLE, sep=",")
 
         sub_logger(
             f"{curr_time_micro()} Writing {trip_row_count} rows to Trip table COMPLETE!"

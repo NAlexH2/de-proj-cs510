@@ -200,7 +200,7 @@ class ValidateBusData:
         except:
             sub_logger(
                 f"{curr_time_micro()} SPEED ASSERTION ALERT!!! Some speeds on "
-                + f"some buses appears to be over 100MPH. This is not possible, "
+                + f"some buses appears to be over 160KMH/100MPH. This is not possible, "
                 + f"is an extreme anomaly, and will be removed from the dataset."
             )
             ids_over_limit = self.df.loc[
@@ -208,13 +208,13 @@ class ValidateBusData:
             ].unique()
             sub_logger(
                 f"{curr_time_micro()} Following vehicles have speeds greater "
-                + f"than 100MPH: {ids_over_limit}"
+                + f"than 160KMH/100MPH: {ids_over_limit}"
             )
             return self.df[self.df["SPEED"] < (160 / 3.6)]
         else:
             sub_logger(
                 f"{curr_time_micro()} SPEED LIMIT ASSERT GOOD! It seems that no "
-                + f"bus speeds are over 100mph!"
+                + f"bus speeds are over 160KMH/100MPH!"
             )
             return self.df
 
