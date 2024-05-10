@@ -113,7 +113,12 @@ class DataToSQLDB:
         )
         with trip_file_like as tf:
             next(tf)
-            cur.copy_from(tf, TRIPTABLE, sep=",")
+            try:
+                cur.copy_from(tf, TRIPTABLE, sep=",")
+            except:
+                sub_logger(f"{curr_time_micro()} Dupe found, skipping...")
+                next(tf)
+
         sub_logger(
             f"{curr_time_micro()} Writing {trip_row_count} rows to Trip table COMPLETE!"
         )
@@ -124,6 +129,7 @@ class DataToSQLDB:
         with bc_file_like as bcf:
             next(bcf)
             cur.copy_from(bcf, BCTABLE, sep=",")
+
         sub_logger(
             f"{curr_time_micro()} Writing {bc_row_count} rows to BreadCrumb table COMPLETE!"
         )
