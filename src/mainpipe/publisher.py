@@ -107,6 +107,7 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
+    sys.argv.append["-L"]
     print(f"{curr_time_micro()} Publisher starting.")
     pub_worker = PipelinePublisher()
 
