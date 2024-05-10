@@ -114,8 +114,10 @@ if __name__ == "__main__":
     start_time = curr_time_micro()
     total_records_overall = 0
     sub_logger(message=f"{start_time} Python script - subscriber starting.")
+
     while True:
         sub_worker.subscriber_listener()
+
         if sub_worker.current_listener_records > 0:
             sub_worker.write_records_to_file()
             sub_logger(
@@ -124,9 +126,10 @@ if __name__ == "__main__":
             )
             total_records_overall += sub_worker.current_listener_records
             sub_worker.current_listener_records = 0
+
         else:
             sub_logger(
-                message=f"{curr_time_micro()} No data received in the past 3 minutes."
+                message=f"{curr_time_micro()} No data received in the past 10 minutes."
             )
             total_records_overall += sub_worker.current_listener_records
             sub_worker.current_listener_records = 0
