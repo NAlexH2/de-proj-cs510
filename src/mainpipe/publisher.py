@@ -71,6 +71,7 @@ class PipelinePublisher:
                     log_or_print(
                         message=f"{curr_time_micro()} Approximately {record_count} of "
                         + f"{self.total_records} published.",
+                        use_print=True,
                         prend="\r",
                     )
                 future.add_done_callback(self.futures_callback)
