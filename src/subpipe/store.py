@@ -18,26 +18,6 @@ from src.utils.utils import (
     sub_logger,
 )
 
-"""Here's the plan...
-    When operating with subscriber pipeline:
-        1. This takes in the collection of strings from subscriber.data_to_write
-        2. Turn it into a dict w/ something like....
-            json_data = []
-            while len(self.data_to_write) > 0:
-                data_prep = self.data_to_write.pop()
-                json_data.append(json.loads(data_prep))
-        3. Take this whole thing and load it into a pd dataframe much like
-           how pd.read_json does... some how. Maybe make fake file object
-        4. split dataframe into 2 separate dataframes to load into the tables
-            individually.
-        5. do this by converting the dataframe down back into a csv, then into
-            a fake file object, then use psycopg2 `copy_from`
-    
-    When operating independently:
-        1. Most the same, but loading from the files in a for loop first
-        2. The rest should be the same ish? We'll see... Get it working with
-            subscriber first.
-"""
 DBNAME = "postgres"
 DBUSER = "postgres"
 DBPWD = os.getenv("SQL_PW")
