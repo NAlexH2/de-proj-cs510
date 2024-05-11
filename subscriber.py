@@ -52,9 +52,6 @@ class PipelineSubscriber:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
 
-        # Where the storage magic happens!
-        self.store_to_sql(json_data)
-
         sub_logger(
             message=f"{curr_time_micro()} Writing all records to a single file."
         )
@@ -72,6 +69,10 @@ class PipelineSubscriber:
 
             with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
                 json.dump(existing_data, outfile, indent=4)
+
+        # Where the db storage magic happens!
+        self.store_to_sql(json_data)
+
         return
 
     def callback(self, message: pubsub_v1.subscriber.message.Message) -> None:
@@ -89,6 +90,9 @@ class PipelineSubscriber:
         return
 
     def subscriber_listener(self):
+        sub_logger(
+            message=f"\n{curr_time_micro()} Subscriber actively listening..."
+        )
         streaming_future = self.subscriber.subscribe(
             self.sub_path, callback=self.callback
         )
@@ -113,7 +117,7 @@ if __name__ == "__main__":
     sub_worker = PipelineSubscriber()
     start_time = curr_time_micro()
     total_records_overall = 0
-    sub_logger(message=f"{start_time} Python script - subscriber starting.")
+    sub_logger(message=f"\n{start_time} Python script - subscriber starting.")
 
     while True:
         sub_worker.subscriber_listener()
@@ -129,7 +133,7 @@ if __name__ == "__main__":
 
         else:
             sub_logger(
-                message=f"{curr_time_micro()} No data received in the past 10 minutes."
+                message=f"\n{curr_time_micro()} No data received in the past 10 minutes."
             )
             total_records_overall += sub_worker.current_listener_records
             sub_worker.current_listener_records = 0
@@ -145,3 +149,4 @@ if __name__ == "__main__":
         sub_worker.subscriber = pubsub_v1.SubscriberClient(
             credentials=sub_worker.pubsub_creds
         )
+        start_time = curr_time_micro()

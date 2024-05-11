@@ -196,25 +196,25 @@ class ValidateBusData:
         kmh_data = pd.DataFrame()
         kmh_data.insert(0, "SPEED", value=(self.df["SPEED"] * 3.6))
         try:
-            assert (kmh_data["SPEED"] < 160).all() == True
+            assert (kmh_data["SPEED"] < 113).all() == True
         except:
             sub_logger(
                 f"{curr_time_micro()} SPEED ASSERTION ALERT!!! Some speeds on "
-                + f"some buses appears to be over 160KMH/100MPH. This is not possible, "
+                + f"some buses appears to be over 113KMH/70MPH. This is not possible, "
                 + f"is an extreme anomaly, and will be removed from the dataset."
             )
             ids_over_limit = self.df.loc[
-                self.df["SPEED"] > (160 / 3.6), "VEHICLE_ID"
+                self.df["SPEED"] > (113 / 3.6), "VEHICLE_ID"
             ].unique()
             sub_logger(
                 f"{curr_time_micro()} Following vehicles have speeds greater "
-                + f"than 160KMH/100MPH: {ids_over_limit}"
+                + f"than 113KMH/70MPH: {ids_over_limit}"
             )
-            return self.df[self.df["SPEED"] < (160 / 3.6)]
+            return self.df[self.df["SPEED"] < (113 / 3.6)]
         else:
             sub_logger(
                 f"{curr_time_micro()} SPEED LIMIT ASSERT GOOD! It seems that no "
-                + f"bus speeds are over 160KMH/100MPH!"
+                + f"bus speeds are over 113KMH/70MPH!"
             )
             return self.df
 

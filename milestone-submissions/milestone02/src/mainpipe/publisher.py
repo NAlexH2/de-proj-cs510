@@ -109,7 +109,6 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     sys.argv.append("-L")
-    print(f"{curr_time_micro()} Publisher starting.")
     pub_worker = PipelinePublisher()
 
     files_list = []
@@ -117,6 +116,9 @@ if __name__ == "__main__":
         files_list = os.listdir(FULL_DATA_PATH)
         files_list.sort()
 
+        print(
+            f"\n{curr_time_micro()} Publisher starting with directory {FULL_DATA_PATH}."
+        )
         while len(files_list) > 0:
             file_to_open = files_list.pop()
             curr_file = open(os.path.join(FULL_DATA_PATH, file_to_open))
