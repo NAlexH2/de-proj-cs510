@@ -162,6 +162,6 @@ if __name__ == "__main__":
             filemode="a",
             level=logging.FATAL,
         )
-        sub_logger(f"{curr_time_micro} EXCEPTION THROWN!")
-        sub_logger(f"{curr_time_micro} Traceback:\n{traceback.format_exc()}")
-        sub_logger(f"{curr_time_micro} Exception as e:\n{e}")
+        sub_logger(f"{curr_time_micro()} EXCEPTION THROWN!")
+        sub_logger(f"{curr_time_micro()} Traceback:\n{traceback.format_exc()}")
+        sub_logger(f"{curr_time_micro()} Exception as e:\n{e}")
