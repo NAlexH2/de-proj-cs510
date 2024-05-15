@@ -1,5 +1,6 @@
 import logging
 import json, os
+import traceback
 from src.subpipe.store import DataToSQLDB
 
 from google.oauth2 import service_account
@@ -106,47 +107,61 @@ class PipelineSubscriber:
 
 
 if __name__ == "__main__":
-    os.makedirs("logs", exist_ok=True)
-    logging.basicConfig(
-        format="",
-        filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
-        encoding="utf-8",
-        filemode="a",
-        level=logging.INFO,
-    )
-    sub_worker = PipelineSubscriber()
-    start_time = curr_time_micro()
-    total_records_overall = 0
-    sub_logger(message=f"\n{start_time} Python script - subscriber starting.")
-
-    while True:
-        sub_worker.subscriber_listener()
-
-        if sub_worker.current_listener_records > 0:
-            sub_worker.write_records_to_file()
-            sub_logger(
-                message=f"{curr_time_micro()} Subscriber started at {start_time}. "
-                + f" Subscriber complete."
-            )
-            total_records_overall += sub_worker.current_listener_records
-            sub_worker.current_listener_records = 0
-
-        else:
-            sub_logger(
-                message=f"\n{curr_time_micro()} No data received in the past 10 minutes."
-            )
-            total_records_overall += sub_worker.current_listener_records
-            sub_worker.current_listener_records = 0
-
-        sub_logger(
-            message=f"{curr_time_micro()} Have received and saved "
-            + f"{total_records_overall} records up to this point."
+    try:
+        os.makedirs("logs", exist_ok=True)
+        logging.basicConfig(
+            format="",
+            filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
+            encoding="utf-8",
+            filemode="a",
+            level=logging.INFO,
         )
-        sub_logger(
-            message=f"{curr_time_micro()} Subscriber re-starting to continue "
-            + f"listening for messages."
-        )
-        sub_worker.subscriber = pubsub_v1.SubscriberClient(
-            credentials=sub_worker.pubsub_creds
-        )
+        sub_worker = PipelineSubscriber()
         start_time = curr_time_micro()
+        total_records_overall = 0
+        sub_logger(
+            message=f"\n{start_time} Python script - subscriber starting."
+        )
+
+        while True:
+            sub_worker.subscriber_listener()
+
+            if sub_worker.current_listener_records > 0:
+                sub_worker.write_records_to_file()
+                sub_logger(
+                    message=f"{curr_time_micro()} Subscriber started at {start_time}. "
+                    + f" Subscriber complete."
+                )
+                total_records_overall += sub_worker.current_listener_records
+                sub_worker.current_listener_records = 0
+
+            else:
+                sub_logger(
+                    message=f"\n{curr_time_micro()} No data received in the past 10 minutes."
+                )
+                total_records_overall += sub_worker.current_listener_records
+                sub_worker.current_listener_records = 0
+
+            sub_logger(
+                message=f"{curr_time_micro()} Have received and saved "
+                + f"{total_records_overall} records up to this point."
+            )
+            sub_logger(
+                message=f"{curr_time_micro()} Subscriber re-starting to continue "
+                + f"listening for messages."
+            )
+            sub_worker.subscriber = pubsub_v1.SubscriberClient(
+                credentials=sub_worker.pubsub_creds
+            )
+            start_time = curr_time_micro()
+    except Exception as e:
+        logging.basicConfig(
+            format="",
+            filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
+            encoding="utf-8",
+            filemode="a",
+            level=logging.FATAL,
+        )
+        sub_logger(f"{curr_time_micro()} EXCEPTION THROWN!")
+        sub_logger(f"{curr_time_micro()} Traceback:\n{traceback.format_exc()}")
+        sub_logger(f"{curr_time_micro()} Exception as e:\n{e}")
