@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import time
+import traceback
 
 from src.mainpipe.tardata import tar_data
 from src.mainpipe.grabber import DataGrabber
@@ -78,41 +79,66 @@ Usage: python main.py -G [OPTIONS]
 
 
 if __name__ == "__main__":
-    found_args()
-    if "-G" in sys.argv:
-        pub_worker: PipelinePublisher = PipelinePublisher()
-        data_collect = DataGrabber(pub_worker=pub_worker)
-        data_collect.data_grabber_main()
-        OK_size = data_collect.OK_response.size
-        bad_size = data_collect.bad_response.size
+    try:
+        found_args()
+        if "-G" in sys.argv:
+            pub_worker: PipelinePublisher = PipelinePublisher()
+            data_collect = DataGrabber(pub_worker=pub_worker)
+            data_collect.data_grabber_main()
+            OK_size = data_collect.OK_response.size
+            bad_size = data_collect.bad_response.size
 
-        # TODO: gmail acc to email from to myself
-        # data_emailer(ok_size=OK_size, bad_size=bad_size)
+            # TODO: gmail acc to email from to myself
+            # data_emailer(ok_size=OK_size, bad_size=bad_size)
 
-        if "-U" in sys.argv:
-            start_time = curr_time_micro()
-            upload_to_gdrive()
+            if "-U" in sys.argv:
+                start_time = curr_time_micro()
+                upload_to_gdrive()
+                log_or_print(
+                    message=f"{curr_time_micro()} Upload to google drive completed. "
+                    + f"Started at {start_time}."
+                )
+
+            if "-T" in sys.argv:
+                tar_data()  # Just tar the file instead. For now.
+
+            # Publish all the data that's been collected so far.
+            if "-P" in sys.argv:
+                start_time = curr_time_micro()
+                pub_worker.publish_data()
+                log_or_print(
+                    message=f"{curr_time_micro()} Publish started at {start_time}.",
+                    use_print=True,
+                    prend="\n",
+                )
+
             log_or_print(
-                message=f"{curr_time_micro()} Upload to google drive completed. "
-                + f"Started at {start_time}."
-            )
-
-        if "-T" in sys.argv:
-            tar_data()  # Just tar the file instead. For now.
-
-        # Publish all the data that's been collected so far.
-        if "-P" in sys.argv:
-            start_time = curr_time_micro()
-            pub_worker.publish_data()
-            log_or_print(
-                message=f"{curr_time_micro()} Publish started at {start_time}.",
+                message=f"\n{curr_time_micro()} Operation finished.",
                 use_print=True,
                 prend="\n",
             )
-
+    except Exception as e:
+        logging.basicConfig(
+            format="",
+            filename=f"logs/MAINLOG-{DATA_MONTH_DAY}.log",
+            encoding="utf-8",
+            filemode="a",
+            level=logging.FATAL,
+        )
         log_or_print(
-            message=f"\n{curr_time_micro()} Operation finished.",
+            message=f"{curr_time_micro()} EXCEPTION THROWN!",
             use_print=True,
             prend="\n",
         )
+        log_or_print(
+            message=f"{curr_time_micro()} Traceback:\n{traceback.format_exc()}",
+            use_print=True,
+            prend="\n",
+        )
+        log_or_print(
+            message=f"{curr_time_micro()} Exception as e:\n{e}",
+            use_print=True,
+            prend="\n",
+        )
+
     sys.exit()
