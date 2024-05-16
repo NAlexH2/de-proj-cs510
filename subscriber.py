@@ -1,5 +1,7 @@
 import logging
 import json, os
+import sys
+import time
 import traceback
 from src.subpipe.store import DataToSQLDB
 
@@ -107,14 +109,26 @@ class PipelineSubscriber:
 
 
 if __name__ == "__main__":
+    os.makedirs("logs", exist_ok=True)
+    logging.basicConfig(
+        format="",
+        filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
+        encoding="utf-8",
+        filemode="a",
+        level=logging.INFO,
+    )
+    if "-W" in sys.argv:
+        sub_logger(
+            message=f"\n{curr_time_micro()} Wait arg found, will sleep for 10 minutes before pulling."
+        )
+        time.sleep(600)
+        sub_logger(message=f"\n{curr_time_micro()} Sleep finished.")
     try:
-        os.makedirs("logs", exist_ok=True)
-        logging.basicConfig(
-            format="",
-            filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
-            encoding="utf-8",
-            filemode="a",
-            level=logging.INFO,
+        sub_worker = PipelineSubscriber()
+        start_time = curr_time_micro()
+        total_records_overall = 0
+        sub_logger(
+            message=f"\n{start_time} Python script - subscriber starting."
         )
         sub_worker = PipelineSubscriber()
         start_time = curr_time_micro()
