@@ -19,19 +19,15 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 600
+TIMEOUT = 1800
 
 
 class PipelineSubscriber:
     def __init__(self) -> None:
-        self.pubsub_creds = (
-            service_account.Credentials.from_service_account_file(
-                SERVICE_ACCOUNT_FILE
-            )
+        self.pubsub_creds = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE
         )
-        self.subscriber = pubsub_v1.SubscriberClient(
-            credentials=self.pubsub_creds
-        )
+        self.subscriber = pubsub_v1.SubscriberClient(credentials=self.pubsub_creds)
         self.sub_path = self.subscriber.subscription_path(PROJECT_ID, SUB_ID)
         self.data_to_write: list[str] = []
         self.current_listener_records = 0
@@ -40,9 +36,7 @@ class PipelineSubscriber:
         sub_logger(f"{curr_time_micro()} Sending data to SQL database.")
         db_worker = DataToSQLDB(jData)
         db_worker.to_db_start()
-        sub_logger(
-            f"{curr_time_micro()} Data transfer to SQL database complete!"
-        )
+        sub_logger(f"{curr_time_micro()} Data transfer to SQL database complete!")
 
     def write_records_to_file(self):
         json_data: list[dict] = []
@@ -55,9 +49,7 @@ class PipelineSubscriber:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
 
-        sub_logger(
-            message=f"{curr_time_micro()} Writing all records to a single file."
-        )
+        sub_logger(message=f"{curr_time_micro()} Writing all records to a single file.")
 
         if not os.path.exists(SUBSCRIBER_FOLDER):
             os.makedirs(SUBSCRIBER_FOLDER)
@@ -93,9 +85,7 @@ class PipelineSubscriber:
         return
 
     def subscriber_listener(self):
-        sub_logger(
-            message=f"\n{curr_time_micro()} Subscriber actively listening..."
-        )
+        sub_logger(message=f"\n{curr_time_micro()} Subscriber actively listening...")
         streaming_future = self.subscriber.subscribe(
             self.sub_path, callback=self.callback
         )
@@ -117,25 +107,12 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    if "-W" in sys.argv:
-        sub_logger(
-            message=f"\n{curr_time_micro()} Wait arg found, will sleep for 10 minutes before pulling."
-        )
-        time.sleep(600)
-        sub_logger(message=f"\n{curr_time_micro()} Sleep finished.")
     try:
         sub_worker = PipelineSubscriber()
         start_time = curr_time_micro()
         total_records_overall = 0
-        sub_logger(
-            message=f"\n{start_time} Python script - subscriber starting."
-        )
-        sub_worker = PipelineSubscriber()
-        start_time = curr_time_micro()
-        total_records_overall = 0
-        sub_logger(
-            message=f"\n{start_time} Python script - subscriber starting."
-        )
+
+        sub_logger(message=f"\n{start_time} Python script - subscriber starting.")
 
         while True:
             sub_worker.subscriber_listener()
@@ -151,7 +128,7 @@ if __name__ == "__main__":
 
             else:
                 sub_logger(
-                    message=f"\n{curr_time_micro()} No data received in the past 10 minutes."
+                    message=f"\n{curr_time_micro()} No data received in the past {TIMEOUT//60} minutes."
                 )
                 total_records_overall += sub_worker.current_listener_records
                 sub_worker.current_listener_records = 0
