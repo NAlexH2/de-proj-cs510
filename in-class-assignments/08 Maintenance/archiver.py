@@ -1,4 +1,4 @@
-import json, os, sys, zlib, rsa
+import json, os, sys, zlib
 from pathlib import Path
 from google.oauth2 import service_account
 from google.cloud import pubsub_v1, storage
@@ -88,13 +88,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 if __name__ == "__main__":
     # archive_go()
     # write_records_to_file()
-    pub_key, priv_key = rsa.newkeys(4096)
     original_dat = open(SUBSCRIBER_DATA_PATH_JSON, "rb").read()
-    original_dat = json.loads(original_dat)
-    odat_len = len(original_dat)
-    for i in range(odat_len):
-        original_dat[i] = rsa.encrypt(original_dat[i], pub_key=pub_key)
-    original_dat = json.dumps(original_dat).encode()
     compressed_data = zlib.compress(original_dat, zlib.Z_BEST_COMPRESSION)
     f = open(
         os.path.join(SUBSCRIBER_FOLDER, DATA_MONTH_DAY + "-compressed.zlib"), "a+b"
