@@ -19,7 +19,7 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 600
+TIMEOUT = 1800
 
 
 class PipelineSubscriber:
@@ -117,25 +117,17 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    if "-W" in sys.argv:
-        sub_logger(
-            message=f"\n{curr_time_micro()} Wait arg found, will sleep for 10 minutes before pulling."
-        )
-        time.sleep(600)
-        sub_logger(message=f"\n{curr_time_micro()} Sleep finished.")
+    sub_logger(
+        message=f"\n{curr_time_micro()} Subscriber sleeping for 20 minutes to allow publisher to publish first"
+    )
+    time.sleep(1200)
+
     try:
         sub_worker = PipelineSubscriber()
         start_time = curr_time_micro()
         total_records_overall = 0
-        sub_logger(
-            message=f"\n{start_time} Python script - subscriber starting."
-        )
-        sub_worker = PipelineSubscriber()
-        start_time = curr_time_micro()
-        total_records_overall = 0
-        sub_logger(
-            message=f"\n{start_time} Python script - subscriber starting."
-        )
+
+        sub_logger(message=f"\n{start_time} Subscriber starting.")
 
         while True:
             sub_worker.subscriber_listener()
@@ -151,7 +143,7 @@ if __name__ == "__main__":
 
             else:
                 sub_logger(
-                    message=f"\n{curr_time_micro()} No data received in the past 10 minutes."
+                    message=f"\n{curr_time_micro()} No data received in the past {TIMEOUT//60} minutes."
                 )
                 total_records_overall += sub_worker.current_listener_records
                 sub_worker.current_listener_records = 0
