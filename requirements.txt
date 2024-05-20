@@ -7,3 +7,4 @@ google-cloud-pubsub
 psycopg2-binary
 google-cloud-storage
 cryptography
+rsa
