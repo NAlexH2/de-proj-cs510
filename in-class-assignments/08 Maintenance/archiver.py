@@ -1,11 +1,17 @@
 import json
 import os
+from pathlib import Path
+import sys
+import zlib
 import pandas as pd
 from google.oauth2 import service_account
 from google.cloud import pubsub_v1, storage
 from concurrent.futures import TimeoutError
 
-from utils.utils import SUBSCRIBER_DATA_PATH_JSON, SUBSCRIBER_FOLDER
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
+
+from src.utils.utils import DATA_MONTH_DAY, SUBSCRIBER_DATA_PATH_JSON, SUBSCRIBER_FOLDER
 
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
@@ -59,6 +65,7 @@ def callback(message: pubsub_v1.subscriber.message.Message) -> None:
 
 
 def archive_go():
+    print("sub starting")
     streaming_future = subscriber.subscribe(sub_path, callback=callback)
     with subscriber:
         try:
@@ -70,11 +77,29 @@ def archive_go():
 
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
-    pass
+    storage_client = storage.Client.from_service_account_json(
+        json_credentials_path=SERVICE_ACCOUNT_FILE
+    )
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    generation_match_precondition = 0
+    blob.upload_from_filename(
+        source_file_name, if_generation_match=generation_match_precondition
+    )
+    print(f"File {source_file_name} uploaded to {destination_blob_name}.")
 
 
 if __name__ == "__main__":
-    archive_go()
-    write_records_to_file()
-    upload_blob("a", "a", "a")
+    # archive_go()
+    # write_records_to_file()
+    original_dat = open(SUBSCRIBER_DATA_PATH_JSON, "rb").read()
+    compressed_data = zlib.compress(original_dat, zlib.Z_BEST_COMPRESSION)
+    f = open(f"{DATA_MONTH_DAY}-compressed.json")
+    f.write(compressed_data)
+    f.close()
+    upload_blob(
+        "archivetest-bucket",
+        f"{SUBSCRIBER_DATA_PATH_JSON}-compressed.json",
+        f"{DATA_MONTH_DAY}-compressed.json",
+    )
     print()
