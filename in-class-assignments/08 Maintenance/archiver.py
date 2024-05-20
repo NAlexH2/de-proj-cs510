@@ -6,7 +6,7 @@ from concurrent.futures import TimeoutError
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SUB_ID = "archivetest-sub"
-TIMEOUT = 120
+TIMEOUT = 300
 
 pubsub_creds = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE
@@ -20,8 +20,12 @@ current_listener_records = 0
 def callback(message: pubsub_v1.subscriber.message.Message) -> None:
     rcvd_data: bytes = message.data
     decoded_data = rcvd_data.decode()
-    # data_to_write.append(decoded_data)
-    # current_listener_records = len(data_to_write)
+    data_to_write.append(decoded_data)
+    current_listener_records = len(data_to_write)
+    if current_listener_records % 1000 == 0:
+        print(
+            f"Approximate records received so far: {current_listener_records}", end="\r"
+        )
     message.ack()
     return
 
@@ -39,3 +43,4 @@ def archive_go():
 
 if __name__ == "__main__":
     archive_go()
+    print()
