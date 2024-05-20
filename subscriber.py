@@ -24,10 +24,14 @@ TIMEOUT = 1800
 
 class PipelineSubscriber:
     def __init__(self) -> None:
-        self.pubsub_creds = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE
+        self.pubsub_creds = (
+            service_account.Credentials.from_service_account_file(
+                SERVICE_ACCOUNT_FILE
+            )
         )
-        self.subscriber = pubsub_v1.SubscriberClient(credentials=self.pubsub_creds)
+        self.subscriber = pubsub_v1.SubscriberClient(
+            credentials=self.pubsub_creds
+        )
         self.sub_path = self.subscriber.subscription_path(PROJECT_ID, SUB_ID)
         self.data_to_write: list[str] = []
         self.current_listener_records = 0
@@ -36,7 +40,9 @@ class PipelineSubscriber:
         sub_logger(f"{curr_time_micro()} Sending data to SQL database.")
         db_worker = DataToSQLDB(jData)
         db_worker.to_db_start()
-        sub_logger(f"{curr_time_micro()} Data transfer to SQL database complete!")
+        sub_logger(
+            f"{curr_time_micro()} Data transfer to SQL database complete!"
+        )
 
     def write_records_to_file(self):
         json_data: list[dict] = []
@@ -49,7 +55,9 @@ class PipelineSubscriber:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
 
-        sub_logger(message=f"{curr_time_micro()} Writing all records to a single file.")
+        sub_logger(
+            message=f"{curr_time_micro()} Writing all records to a single file."
+        )
 
         if not os.path.exists(SUBSCRIBER_FOLDER):
             os.makedirs(SUBSCRIBER_FOLDER)
@@ -85,7 +93,9 @@ class PipelineSubscriber:
         return
 
     def subscriber_listener(self):
-        sub_logger(message=f"\n{curr_time_micro()} Subscriber actively listening...")
+        sub_logger(
+            message=f"\n{curr_time_micro()} Subscriber actively listening..."
+        )
         streaming_future = self.subscriber.subscribe(
             self.sub_path, callback=self.callback
         )
@@ -107,12 +117,17 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
+    sub_logger(
+        message=f"\n{curr_time_micro()} Subscriber sleeping for 20 minutes to allow publisher to publish first"
+    )
+    time.sleep(1200)
+
     try:
         sub_worker = PipelineSubscriber()
         start_time = curr_time_micro()
         total_records_overall = 0
 
-        sub_logger(message=f"\n{start_time} Python script - subscriber starting.")
+        sub_logger(message=f"\n{start_time} Subscriber starting.")
 
         while True:
             sub_worker.subscriber_listener()
