@@ -5,6 +5,3 @@ google-auth
 google-api-python-client
 google-cloud-pubsub
 psycopg2-binary
-google-cloud-storage
-cryptography
-rsa
