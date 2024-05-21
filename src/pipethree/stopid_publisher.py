@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
 from src.utils.utils import (
     log_and_print,
-    RAW_DATA_PATH,
+    STOPID_DATA_PATH,
     DATA_MONTH_DAY,
 )
 
@@ -93,21 +93,21 @@ if __name__ == "__main__":
     pub_worker = PipelinePublisher()
 
     files_list = []
-    if os.path.exists(RAW_DATA_PATH):
-        files_list = os.listdir(RAW_DATA_PATH)
+    if os.path.exists(STOPID_DATA_PATH):
+        files_list = os.listdir(STOPID_DATA_PATH)
         files_list.sort()
 
-        log_and_print(message=f"Publisher starting with directory {RAW_DATA_PATH}.")
+        log_and_print(message=f"Publisher starting with directory {STOPID_DATA_PATH}.")
         while len(files_list) > 0:
             file_to_open = files_list.pop()
-            curr_file = open(os.path.join(RAW_DATA_PATH, file_to_open))
+            curr_file = open(os.path.join(STOPID_DATA_PATH, file_to_open))
             json_from_file = json.load(curr_file)
             pub_worker.add_to_publish_list(json.dumps(json_from_file))
 
         pub_worker.publish_data()
     else:
         log_and_print(
-            message=f"Folder {RAW_DATA_PATH} does not exist. Quitting publishing."
+            message=f"Folder {STOPID_DATA_PATH} does not exist. Quitting publishing."
         )
         sys.exit(0)
     log_and_print(message=f"Publisher Finished.")
