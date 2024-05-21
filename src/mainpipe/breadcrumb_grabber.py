@@ -12,7 +12,7 @@ from src.utils.utils import (
     mdy_string,
     log_and_print,
 )
-from src.mainpipe.publisher import PipelinePublisher
+from mainpipe.breadcrumb_publisher import PipelinePublisher
 
 
 class DataGrabber:

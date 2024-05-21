@@ -5,9 +5,9 @@ import time
 import traceback
 
 from src.mainpipe.tardata import tar_data
-from src.mainpipe.grabber import DataGrabber
+from mainpipe.breadcrumb_grabber import DataGrabber
 from src.mainpipe.uploadgdrive import upload_to_gdrive
-from src.mainpipe.publisher import PipelinePublisher
+from mainpipe.breadcrumb_publisher import PipelinePublisher
 from src.utils.utils import DATA_MONTH_DAY, curr_time_micro, log_and_print
 
 
