@@ -13,9 +13,7 @@ STOPID_DATA_FOLDER = os.path.join("stop_id_data")
 STOPID_DATA_PATH = os.path.join(STOPID_DATA_FOLDER, DATA_MONTH_DAY)
 
 SUBSCRIBER_FOLDER = os.path.join("subscriber_data_files")
-SUBSCRIBER_DATA_PATH_JSON = os.path.join(
-    SUBSCRIBER_FOLDER, f"{DATA_MONTH_DAY}.json"
-)
+SUBSCRIBER_DATA_PATH_JSON = os.path.join(SUBSCRIBER_FOLDER, f"{DATA_MONTH_DAY}.json")
 
 
 def curr_time_micro() -> str:
@@ -33,6 +31,7 @@ def log_and_print(message: str, prend: str = "\n") -> None:
         message Specifies what the message to log/print will be
 
         prend Specifies if the print will or won't have a end= arg to be used.
+        Defaults to \n
 
     Returns:
         None
