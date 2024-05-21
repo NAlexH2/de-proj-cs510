@@ -7,12 +7,12 @@ if __name__ == "__main__":
 from src.utils.utils import (
     DATA_MONTH_DAY,
     FULL_DATA_PATH,
-    curr_time_micro,
-    log_or_print,
+    log_and_print,
 )
 
 
 def tar_data():
+    log_and_print(message=f"Starting tar for {DATA_MONTH_DAY}.")
     file_exists = os.path.exists(f"{FULL_DATA_PATH}.tar")
     if file_exists:
         os.remove(f"{FULL_DATA_PATH}.tar")
@@ -22,10 +22,6 @@ def tar_data():
     for file in files:
         file_path = os.path.join(FULL_DATA_PATH, file)
         tar.add(file_path, arcname=file_path)
-        log_or_print(
-            message=f"{curr_time_micro()} {file} added to tar.", prend=True
-        )
+        log_and_print(message=f"{file} added to tar.")
     tar.close()
-    log_or_print(
-        message=f"{curr_time_micro()} tar for {DATA_MONTH_DAY} complete."
-    )
+    log_and_print(message=f"tar for {DATA_MONTH_DAY} complete.")

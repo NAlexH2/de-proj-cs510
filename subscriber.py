@@ -37,27 +37,21 @@ class PipelineSubscriber:
         self.current_listener_records = 0
 
     def store_to_sql(self, jData: list[dict]) -> None:
-        sub_logger(f"{curr_time_micro()} Sending data to SQL database.")
+        sub_logger(f"Sending data to SQL database.")
         db_worker = DataToSQLDB(jData)
         db_worker.to_db_start()
-        sub_logger(
-            f"{curr_time_micro()} Data transfer to SQL database complete!"
-        )
+        sub_logger(f"Data transfer to SQL database complete!")
 
     def write_records_to_file(self):
         json_data: list[dict] = []
         sub_logger(message="")
-        sub_logger(
-            message=f"{curr_time_micro()} Total records: {self.current_listener_records}"
-        )
+        sub_logger(message=f"Total records: {self.current_listener_records}")
 
         while len(self.data_to_write) > 0:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
 
-        sub_logger(
-            message=f"{curr_time_micro()} Writing all records to a single file."
-        )
+        sub_logger(message=f"Writing all records to a single file.")
 
         if not os.path.exists(SUBSCRIBER_FOLDER):
             os.makedirs(SUBSCRIBER_FOLDER)
@@ -85,7 +79,7 @@ class PipelineSubscriber:
         self.current_listener_records = len(self.data_to_write)
         if self.current_listener_records % 1000 == 0:
             sub_logger(
-                message=f"{curr_time_micro()} Approximate records received so "
+                message=f"Approximate records received so "
                 + f"far: {self.current_listener_records}",
                 prend="\r",
             )
@@ -93,9 +87,7 @@ class PipelineSubscriber:
         return
 
     def subscriber_listener(self):
-        sub_logger(
-            message=f"\n{curr_time_micro()} Subscriber actively listening..."
-        )
+        sub_logger(message=f"\nSubscriber actively listening...")
         streaming_future = self.subscriber.subscribe(
             self.sub_path, callback=self.callback
         )
@@ -118,7 +110,7 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     sub_logger(
-        message=f"\n{curr_time_micro()} Subscriber sleeping for 20 minutes to allow publisher to publish first"
+        message=f"\nSubscriber sleeping for 20 minutes to allow publisher to publish first"
     )
     time.sleep(1200)
 
@@ -135,7 +127,7 @@ if __name__ == "__main__":
             if sub_worker.current_listener_records > 0:
                 sub_worker.write_records_to_file()
                 sub_logger(
-                    message=f"{curr_time_micro()} Subscriber started at {start_time}. "
+                    message=f"Subscriber started at {start_time}. "
                     + f" Subscriber complete."
                 )
                 total_records_overall += sub_worker.current_listener_records
@@ -143,17 +135,17 @@ if __name__ == "__main__":
 
             else:
                 sub_logger(
-                    message=f"\n{curr_time_micro()} No data received in the past {TIMEOUT//60} minutes."
+                    message=f"\nNo data received in the past {TIMEOUT//60} minutes."
                 )
                 total_records_overall += sub_worker.current_listener_records
                 sub_worker.current_listener_records = 0
 
             sub_logger(
-                message=f"{curr_time_micro()} Have received and saved "
+                message=f"Have received and saved "
                 + f"{total_records_overall} records up to this point."
             )
             sub_logger(
-                message=f"{curr_time_micro()} Subscriber re-starting to continue "
+                message=f"Subscriber re-starting to continue "
                 + f"listening for messages."
             )
             sub_worker.subscriber = pubsub_v1.SubscriberClient(
@@ -168,6 +160,6 @@ if __name__ == "__main__":
             filemode="a",
             level=logging.FATAL,
         )
-        sub_logger(f"{curr_time_micro()} EXCEPTION THROWN!")
-        sub_logger(f"{curr_time_micro()} Traceback:\n{traceback.format_exc()}")
-        sub_logger(f"{curr_time_micro()} Exception as e:\n{e}")
+        sub_logger(f"EXCEPTION THROWN!")
+        sub_logger(f"Traceback:\n{traceback.format_exc()}")
+        sub_logger(f"Exception as e:\n{e}")

@@ -8,8 +8,7 @@ if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
 
 from src.utils.utils import (
-    curr_time_micro,
-    log_or_print,
+    log_and_print,
     FULL_DATA_PATH,
     DATA_MONTH_DAY,
 )
@@ -51,11 +50,8 @@ class PipelinePublisher:
         future = None
         futures_list = []
 
-        log_or_print(
-            message=f"{curr_time_micro()} Publishing all records.",
-            use_print=True,
-            prend="\n",
-        )
+        logging.info("\n")
+        log_and_print(message=f"Publishing all records.")
         while len(self.data_to_publish) > 0:
             to_publish = self.data_to_publish.pop()
             to_publish_json = json.loads(to_publish)
@@ -68,32 +64,21 @@ class PipelinePublisher:
                 record_count += 1
 
                 if record_count % 1000 == 0:
-                    log_or_print(
-                        message=f"{curr_time_micro()} Approximately {record_count} of "
+                    log_and_print(
+                        message=f"Approximately {record_count} of "
                         + f"{self.total_records} published.",
-                        use_print=True,
                         prend="\r",
                     )
                 future.add_done_callback(self.futures_callback)
                 futures_list.append(future)
 
-        log_or_print(
-            message=f"\n{curr_time_micro()} Waiting on Publisher futures...",
-            use_print=True,
-            prend="\n",
-        )
+        log_and_print(message=f"\nWaiting on Publisher futures...")
         for future in futures.as_completed(futures_list):
             if future.cancelled():
-                log_or_print(
-                    message=f"{curr_time_micro()} {future.exception()}",
-                    use_print=True,
-                )
+                log_and_print(message=f"{future.exception()}")
 
-        log_or_print(
-            message=f"{curr_time_micro()} Publishing complete. Total records "
-            + f"published: {record_count}",
-            use_print=True,
-            prend="\n",
+        log_and_print(
+            message=f"Publishing complete. Total records published: {record_count}"
         )
 
         return
@@ -116,8 +101,8 @@ if __name__ == "__main__":
         files_list = os.listdir(FULL_DATA_PATH)
         files_list.sort()
 
-        print(
-            f"\n{curr_time_micro()} Publisher starting with directory {FULL_DATA_PATH}."
+        log_and_print(
+            message=f"Publisher starting with directory {FULL_DATA_PATH}."
         )
         while len(files_list) > 0:
             file_to_open = files_list.pop()
@@ -127,12 +112,9 @@ if __name__ == "__main__":
 
         pub_worker.publish_data()
     else:
-        print(
-            f"{curr_time_micro()} Folder {FULL_DATA_PATH} does not exist. Quitting publishing."
+        log_and_print(
+            message=f"Folder {FULL_DATA_PATH} does not exist. Quitting publishing."
         )
         sys.exit(0)
-    log_or_print(
-        message=f"{curr_time_micro()} Publisher Finished.",
-        use_print=True,
-    )
+    log_and_print(message=f"Publisher Finished.")
     sys.exit(0)

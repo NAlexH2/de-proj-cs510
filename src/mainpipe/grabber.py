@@ -10,8 +10,7 @@ from src.utils.utils import (
     FULL_DATA_PATH,
     DATA_MONTH_DAY,
     mdy_time,
-    curr_time_micro,
-    log_or_print,
+    log_and_print,
 )
 from src.mainpipe.publisher import PipelinePublisher
 
@@ -66,11 +65,7 @@ class DataGrabber:
     def gather_data(self, cf: pd.DataFrame):
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
-            log_or_print(
-                message=f"{curr_time_micro()} VID: {vehicleID}",
-                use_print=True,
-                prend="\r",
-            )
+            log_and_print(message=f"VID: {vehicleID}", prend="\r")
 
             resp = requests.request("GET", API_URL + vehicleID)
 
@@ -107,9 +102,7 @@ class DataGrabber:
         os.makedirs(FULL_DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_data(csv_frame)
-        log_or_print(
-            message=f"{curr_time_micro()} Gathering complete.", use_print=True
-        )
+        log_and_print(message="Gathering complete.")
 
         return
 
@@ -124,8 +117,6 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     sys.argv.append("-L")
-    log_or_print(
-        message=f"\n{curr_time_micro()} Gathering staring.", use_print=True
-    )
+    log_and_print(message="Gathering staring.")
     grabber = DataGrabber()
     grabber.data_grabber_main()

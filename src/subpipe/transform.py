@@ -10,7 +10,6 @@ from src.subpipe.validate import ValidateBusData
 from src.utils.utils import (
     DATA_MONTH_DAY,
     SUBSCRIBER_FOLDER,
-    curr_time_micro,
     sub_logger,
 )
 
@@ -36,7 +35,8 @@ class DataTransformer:
         return pd.to_timedelta(self.df["ACT_TIME"], unit="sec")
 
     def add_timestamps(self):
-        sub_logger(f"\n{curr_time_micro()} Adding timestamps...")
+        logging.info("\n")
+        sub_logger(f"Adding timestamps...")
 
         self.df.insert(5, "TIMESTAMP", 0)
         date_format = "%d%b%Y:%H:%M:%S"
@@ -45,12 +45,11 @@ class DataTransformer:
         self.df["TIMESTAMP"] = opd_sec + td
         self.df.drop(columns=["OPD_DATE", "ACT_TIME"], inplace=True)
 
-        sub_logger(f"{curr_time_micro()} Timestamps complete!")
+        sub_logger(f"Timestamps complete!")
 
     def add_speed(self):
-        sub_logger(
-            f"\n{curr_time_micro()} Adding bus speeds in meters/second..."
-        )
+        logging.info("\n")
+        sub_logger(f"Adding bus speeds in meters/second...")
 
         self.df.insert(4, "SPEED", 0)
         self.df.insert(4, "dMETERS", self.df["METERS"].diff())
@@ -72,7 +71,7 @@ class DataTransformer:
             self.df[self.df["VEHICLE_ID"] == id] = curr_data
             modified_index += curr_data.shape[0]
 
-        sub_logger(f"{curr_time_micro()} Bus speed additions complete!")
+        sub_logger(f"Bus speed additions complete!")
 
     def transform_run(self):
         self.add_timestamps()
@@ -89,16 +88,15 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    sub_logger(f"{curr_time_micro()} Starting data transformation.")
+    sub_logger(f"Starting data transformation.")
     files = os.listdir(SUBSCRIBER_FOLDER)
     files.sort()
     for file in files:
         df = pd.read_json(os.path.join(SUBSCRIBER_FOLDER, file))
         transformer = DataTransformer(df)
-        sub_logger(
-            f"\n{curr_time_micro()} Next file to transform in memory: {file}"
-        )
+        logging.info("\n")
+        sub_logger(f"Next file to transform in memory: {file}")
         transformer.transform_run()
-    sub_logger(f"{curr_time_micro()} Data transformation complete.")
+    sub_logger(f"Data transformation complete.")
 
     sys.exit()

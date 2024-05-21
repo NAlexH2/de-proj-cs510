@@ -88,27 +88,19 @@ class DataToSQLDB:
         trip_file_like = self.to_file_like(trip_frame)
         bc_file_like = self.to_file_like(bc_frame)
 
-        sub_logger(
-            f"{curr_time_micro()} Writing {trip_row_count} rows to Trip table..."
-        )
+        sub_logger(f"Writing {trip_row_count} rows to Trip table...")
         with trip_file_like as tf:
             next(tf)
             cur.copy_from(tf, TRIPTABLE, sep=",")
 
-        sub_logger(
-            f"{curr_time_micro()} Writing {trip_row_count} rows to Trip table COMPLETE!"
-        )
+        sub_logger(f"Writing {trip_row_count} rows to Trip table COMPLETE!")
 
-        sub_logger(
-            f"{curr_time_micro()} Writing {bc_row_count} rows to BreadCrumb table..."
-        )
+        sub_logger(f"Writing {bc_row_count} rows to BreadCrumb table...")
         with bc_file_like as bcf:
             next(bcf)
             cur.copy_from(bcf, BCTABLE, sep=",")
 
-        sub_logger(
-            f"{curr_time_micro()} Writing {bc_row_count} rows to BreadCrumb table COMPLETE!"
-        )
+        sub_logger(f"Writing {bc_row_count} rows to BreadCrumb table COMPLETE!")
 
     def to_db_start(self):
         preped_df: pd.DataFrame = self.prepare_df(
@@ -127,7 +119,7 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    sub_logger(f"{curr_time_micro()} Sending data to SQL database.")
+    sub_logger("Sending data to SQL database.")
     files = []
     if os.path.exists(SUBSCRIBER_FOLDER):
         files = os.listdir(SUBSCRIBER_FOLDER)
@@ -135,9 +127,8 @@ if __name__ == "__main__":
 
         while len(files) > 0:
             file = files.pop()
-            sub_logger(
-                f"\n{curr_time_micro()} Next file to transform in memory: {file}"
-            )
+            logging.info("\n")
+            sub_logger(f"Next file to transform in memory: {file}")
             curr_file = open(os.path.join(SUBSCRIBER_FOLDER, file))
             json_from_file = json.load(curr_file)
             db_worker = DataToSQLDB(json_from_file)
@@ -145,9 +136,9 @@ if __name__ == "__main__":
 
     else:
         sub_logger(
-            f"{curr_time_micro()} Folder {SUBSCRIBER_FOLDER} does not exist. "
-            + f"Unable to send any data as it does not exist."
+            f"Folder {SUBSCRIBER_FOLDER} does not exist. "
+            + "Unable to send any data as it does not exist."
         )
         sys.exit(0)
-    sub_logger(f"{curr_time_micro()} Data transfer to SQL database complete!")
+    sub_logger("Data transfer to SQL database complete!")
     sys.exit()
