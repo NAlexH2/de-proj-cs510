@@ -6,7 +6,7 @@ if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
 
 from src.utils.utils import (
-    BREADCRUMB_API_URL,
+    STOPID_API_URL,
     FULL_DATA_PATH,
     DATA_MONTH_DAY,
     mdy_time,
@@ -67,7 +67,7 @@ class DataGrabber:
             vehicleID = str(cf["Snickers"].at[i])
             log_and_print(message=f"VID: {vehicleID}", prend="\r")
 
-            resp = requests.request("GET", BREADCRUMB_API_URL + vehicleID)
+            resp = requests.request("GET", STOPID_API_URL + vehicleID)
 
             # Make a quick dataframe with our info to concat
             to_concat = self.response_vdf(vehicleID, resp.status_code)
