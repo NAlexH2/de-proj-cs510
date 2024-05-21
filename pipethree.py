@@ -4,10 +4,8 @@ import logging
 import time
 import traceback
 
-from src.mainpipe.tardata import tar_data
-from src.mainpipe.grabber import DataGrabber
-from src.mainpipe.uploadgdrive import upload_to_gdrive
-from src.mainpipe.publisher import PipelinePublisher
+from src.pipethree.stopid_grabber import DataGrabber
+from src.pipethree.stopid_publisher import PipelinePublisher
 from src.utils.utils import DATA_MONTH_DAY, curr_time_micro, log_and_print
 
 
@@ -25,7 +23,7 @@ Usage: python main.py -G [OPTIONS]
     \tand keys provided by the user in 'data_eng_key' directory.
             """
         )
-        print("Exiting program...")
+        print("Exiting program...\n")
         time.sleep(1)
         sys.exit()
 

@@ -73,6 +73,7 @@ class DataGrabber:
             # Make a quick dataframe with our info to concat
             to_concat = self.response_vdf(vehicleID, resp.status_code)
 
+            # TODO: Remove the 404, we only care about good responses
             # Collect both responses for notification
             if resp.status_code == 404:
                 self.bad_response = pd.concat(
@@ -87,6 +88,10 @@ class DataGrabber:
                     self.pub_worker.add_to_publish_list(resp.text)
 
         return
+
+    # TODO:
+    # [ ] Write a function to transform the HTML data into JSON, then save all files.
+    # [ ] Modify/make new publisher to use this newer modified data.
 
     def save_html_page(self, resp: requests.Response, vehicleID: str) -> None:
         file_str = vehicleID + "-" + mdy_string() + ".html"
