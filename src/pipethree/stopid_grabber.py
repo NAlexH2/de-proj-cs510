@@ -13,7 +13,7 @@ from src.utils.utils import (
     mdy_string,
     log_and_print,
 )
-from src.mainpipe.publisher import PipelinePublisher
+from src.pipethree.stopid_publisher import PipelinePublisher
 
 
 class DataGrabber:
