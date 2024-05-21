@@ -28,10 +28,11 @@ class DataGrabber:
             codes
     """
 
-    def __init__(self, pub_worker: PipelinePublisher) -> None:
+    def __init__(self) -> None:
+        # def __init__(self, pub_worker: PipelinePublisher) -> None:
         self.OK_response = self.build_query_df()
         self.bad_response = self.build_query_df()
-        self.pub_worker: PipelinePublisher = pub_worker
+        # self.pub_worker: PipelinePublisher = pub_worker
 
     def response_vdf(self, vehicleID: str, stat_code: int) -> None:
         """Build a dataframe just for vehicle responses to self modify
@@ -83,7 +84,7 @@ class DataGrabber:
                 self.OK_response = pd.concat(
                     [self.OK_response, to_concat], ignore_index=True
                 )
-                self.save_json_data(resp.text, vehicleID)
+                self.save_html_page(resp, vehicleID)
                 if "-P" in sys.argv:
                     self.pub_worker.add_to_publish_list(resp.text)
 

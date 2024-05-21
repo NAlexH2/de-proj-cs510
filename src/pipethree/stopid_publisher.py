@@ -16,7 +16,7 @@ from src.utils.utils import (
 
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
-TOPIC_ID = "VehicleData"
+TOPIC_ID = "StopData"
 
 
 class PipelinePublisher:
