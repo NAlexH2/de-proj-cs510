@@ -1,6 +1,5 @@
 import logging
 import json, os
-import sys
 import time
 import traceback
 from src.subpipe.store import DataToSQLDB
