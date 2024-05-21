@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
 from src.utils.utils import (
     DATA_MONTH_DAY,
-    FULL_DATA_PATH,
+    RAW_DATA_PATH,
     log_and_print,
 )
 
@@ -72,7 +72,7 @@ def upload_to_gdrive() -> None:
     gdrive_files_list: set = get_folder_files_list(
         service, GDRIVE_DATA_MONTH_DAY
     )
-    files = os.listdir(FULL_DATA_PATH)
+    files = os.listdir(RAW_DATA_PATH)
     files.sort()
 
     # for loop it through all files created in raw_data_files
@@ -92,7 +92,7 @@ def upload_to_gdrive() -> None:
                 "name": files[i],
                 "parents": [GDRIVE_DATA_MONTH_DAY],
             }
-            media = MediaFileUpload(FULL_DATA_PATH + "/" + files[i])
+            media = MediaFileUpload(RAW_DATA_PATH + "/" + files[i])
 
             # Upload the current file to my pdx gdrive
             response = (

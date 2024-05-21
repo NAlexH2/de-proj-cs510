@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 from src.utils.utils import (
     BREADCRUMB_API_URL,
-    FULL_DATA_PATH,
+    RAW_DATA_PATH,
     DATA_MONTH_DAY,
     mdy_time,
     log_and_print,
@@ -91,15 +91,15 @@ class DataGrabber:
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
         file_str = vehicleID + "-" + mdy_time() + ".json"
-        full_file_path = os.path.join(FULL_DATA_PATH, file_str)
+        full_file_path = os.path.join(RAW_DATA_PATH, file_str)
 
         with open(full_file_path, "w") as outfile:
             outfile.write(json_got)
 
     def data_grabber_main(self) -> None:
-        if os.path.exists(FULL_DATA_PATH):
-            shutil.rmtree(FULL_DATA_PATH)
-        os.makedirs(FULL_DATA_PATH)
+        if os.path.exists(RAW_DATA_PATH):
+            shutil.rmtree(RAW_DATA_PATH)
+        os.makedirs(RAW_DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_data(csv_frame)
         log_and_print(message="Gathering complete.")
