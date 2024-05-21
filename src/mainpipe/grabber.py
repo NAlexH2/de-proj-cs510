@@ -9,7 +9,7 @@ from src.utils.utils import (
     BREADCRUMB_API_URL,
     RAW_DATA_PATH,
     DATA_MONTH_DAY,
-    mdy_time,
+    mdy_string,
     log_and_print,
 )
 from src.mainpipe.publisher import PipelinePublisher
@@ -90,7 +90,7 @@ class DataGrabber:
     def save_json_data(self, resp_text: str, vehicleID: str) -> None:
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
-        file_str = vehicleID + "-" + mdy_time() + ".json"
+        file_str = vehicleID + "-" + mdy_string() + ".json"
         full_file_path = os.path.join(RAW_DATA_PATH, file_str)
 
         with open(full_file_path, "w") as outfile:

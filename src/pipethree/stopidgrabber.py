@@ -8,9 +8,9 @@ if __name__ == "__main__":
 
 from src.utils.utils import (
     STOPID_API_URL,
-    RAW_DATA_PATH,
+    STOPID_DATA_PATH,
     DATA_MONTH_DAY,
-    mdy_time,
+    mdy_string,
     log_and_print,
 )
 from src.mainpipe.publisher import PipelinePublisher
@@ -89,17 +89,17 @@ class DataGrabber:
         return
 
     def save_html_page(self, resp: requests.Response, vehicleID: str) -> None:
-        file_str = vehicleID + "-" + mdy_time() + ".html"
-        full_file_path = os.path.join(RAW_DATA_PATH, file_str)
+        file_str = vehicleID + "-" + mdy_string() + ".html"
+        full_file_path = os.path.join(STOPID_DATA_PATH, file_str)
         soup = BeautifulSoup(resp.content, "html.parser")
         content = soup.decode()
         with open(full_file_path, "w", encoding="UTF-8") as outfile:
             outfile.write(content)
 
     def data_grabber_main(self) -> None:
-        if os.path.exists(RAW_DATA_PATH):
-            shutil.rmtree(RAW_DATA_PATH)
-        os.makedirs(RAW_DATA_PATH)
+        if os.path.exists(STOPID_DATA_PATH):
+            shutil.rmtree(STOPID_DATA_PATH)
+        os.makedirs(STOPID_DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_data(csv_frame)
         log_and_print(message="Gathering complete.")
