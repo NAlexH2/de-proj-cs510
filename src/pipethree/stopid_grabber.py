@@ -80,7 +80,7 @@ class DataGrabber:
                         tables_data[i][j].get_text(separator=",").split(","),
                     )
                 )
-        keys = ["trip_id", "route_id", "service_key", "direction"]
+        keys = ["trip_id", "route_id", "direction", "service_key"]
         self.html_to_dict_data = [dict(zip(keys, row)) for row in rows_data]
         return
 
