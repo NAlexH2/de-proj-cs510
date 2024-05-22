@@ -9,16 +9,19 @@ from google.cloud import pubsub_v1
 from concurrent.futures import TimeoutError
 from src.utils.utils import (
     DATA_MONTH_DAY,
-    SUBSCRIBER_DATA_PATH_JSON,
-    SUBSCRIBER_FOLDER,
+    BC_SUBSCRIBER_FOLDER,
+    BC_SUBSCRIBER_DATA_PATH_JSON,
+    SID_SUBSCRIBER_FOLDER,
+    SID_SUBSCRIBER_DATA_PATH_JSON,
     curr_time_micro,
     log_and_print,
 )
 
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
-SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 1800
+BC_SUB_ID = "BreadCrumbsRcvr"
+SID_SUB_ID = "StopDataRcvr"
+TIMEOUT = 180
 
 
 class PipelineSubscriber:
@@ -31,71 +34,146 @@ class PipelineSubscriber:
         self.subscriber = pubsub_v1.SubscriberClient(
             credentials=self.pubsub_creds
         )
-        self.sub_path = self.subscriber.subscription_path(PROJECT_ID, SUB_ID)
-        self.data_to_write: list[str] = []
-        self.current_listener_records = 0
+        self.bc_path = self.subscriber.subscription_path(PROJECT_ID, BC_SUB_ID)
+        self.sid_path = self.subscriber.subscription_path(
+            PROJECT_ID, SID_SUB_ID
+        )
+        self.bc_data_to_write: list[str] = []
+        self.bc_current_listener_records = 0
 
-    def store_to_sql(self, jData: list[dict]) -> None:
+        self.sid_data_to_write: list[str] = []
+        self.sid_current_listener_records = 0
+
+    def store_to_sql(self, bc_data: list[dict], sid_data) -> None:
         log_and_print(f"Sending data to SQL database.")
-        db_worker = DataToSQLDB(jData)
+        db_worker = DataToSQLDB(bc_data, sid_data)
         db_worker.to_db_start()
         log_and_print(f"Data transfer to SQL database complete!")
 
-    def write_records_to_file(self):
-        json_data: list[dict] = []
-        log_and_print(message="")
-        log_and_print(message=f"Total records: {self.current_listener_records}")
+    def write_records_to_file(self, bcJson: list[dict], sidJson: list[dict]):
 
-        while len(self.data_to_write) > 0:
-            data_prep = self.data_to_write.pop()
-            json_data.append(json.loads(data_prep))
+        if len(bcJson) > 0:
+            if not os.path.exists(BC_SUBSCRIBER_FOLDER):
+                os.makedirs(BC_SUBSCRIBER_FOLDER)
+            log_and_print(
+                message=f"Writing all BreadCrumb records to a single file."
+            )
+            if not os.path.exists(BC_SUBSCRIBER_DATA_PATH_JSON):
+                with open(BC_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+                    json.dump(bcJson, outfile, indent=4)
+            else:
+                with open(BC_SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
+                    existing_data = json.load(outfile)
 
-        log_and_print(message=f"Writing all records to a single file.")
+                existing_data.extend(bcJson)
 
-        if not os.path.exists(SUBSCRIBER_FOLDER):
-            os.makedirs(SUBSCRIBER_FOLDER)
-        if not os.path.exists(SUBSCRIBER_DATA_PATH_JSON):
-            with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
-                json.dump(json_data, outfile, indent=4)
-        else:
-            with open(SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
-                existing_data = json.load(outfile)
+                with open(BC_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+                    json.dump(existing_data, outfile, indent=4)
 
-            existing_data.extend(json_data)
+        if len(sidJson) > 0:
+            if not os.path.exists(SID_SUBSCRIBER_FOLDER):
+                os.makedirs(SID_SUBSCRIBER_FOLDER)
 
-            with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
-                json.dump(existing_data, outfile, indent=4)
+            log_and_print(
+                message=f"Writing all StopID records to a single file."
+            )
 
-        # Where the db storage magic happens!
-        self.store_to_sql(json_data)
+            if not os.path.exists(SID_SUBSCRIBER_DATA_PATH_JSON):
+                with open(SID_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+                    json.dump(sidJson, outfile, indent=4)
+            else:
+                with open(SID_SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
+                    existing_data = json.load(outfile)
+
+                existing_data.extend(sidJson)
+
+                with open(SID_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+                    json.dump(existing_data, outfile, indent=4)
 
         return
 
-    def callback(self, message: pubsub_v1.subscriber.message.Message) -> None:
+    def prep_records_writing(self):
+        bc_json_data: list[dict] = []
+        sid_json_data: list[dict] = []
+        log_and_print(message="")
+        log_and_print(
+            message=f"BreadCrumbs: total records: "
+            + f"{self.bc_current_listener_records}"
+        )
+        log_and_print(
+            message=f"BreadCrumbs: total records: "
+            + f"{self.sid_current_listener_records}"
+        )
+
+        while len(self.bc_data_to_write) > 0:
+            bc_data_prep = self.bc_data_to_write.pop()
+            bc_json_data.append(json.loads(bc_data_prep))
+
+        while len(self.sid_data_to_write) > 0:
+            sid_data_prep = self.sid_data_to_write.pop()
+            sid_json_data.append(json.loads(sid_data_prep))
+
+        log_and_print(message=f"Writing all records to a single file.")
+
+        self.write_records_to_file(bcJson=bc_json_data, sidJson=sid_json_data)
+
+        # Where the db storage magic happens!
+        self.store_to_sql(bc_json_data, sid_json_data)
+
+        return
+
+    def bc_callback(
+        self, message: pubsub_v1.subscriber.message.Message
+    ) -> None:
         rcvd_data: bytes = message.data
         decoded_data = rcvd_data.decode()
-        self.data_to_write.append(decoded_data)
-        self.current_listener_records = len(self.data_to_write)
+        self.bc_data_to_write.append(decoded_data)
+        self.bc_current_listener_records = len(self.data_to_write)
         if self.current_listener_records % 1000 == 0:
             log_and_print(
-                message=f"Approximate records received so "
-                + f"far: {self.current_listener_records}",
+                message=f"BreadCrumb Callback: approximate records received so "
+                + f"far: {self.bc_current_listener_records}",
+                prend="\r",
+            )
+        message.ack()
+        return
+
+    def sid_callback(
+        self, message: pubsub_v1.subscriber.message.Message
+    ) -> None:
+        rcvd_data: bytes = message.data
+        decoded_data = rcvd_data.decode()
+        self.sid_data_to_write.append(decoded_data)
+        self.sid_current_listener_records = len(self.data_to_write)
+        if self.current_listener_records % 1000 == 0:
+            log_and_print(
+                message=f"StopID Callback: approximate records received so "
+                + f"far: {self.sid_current_listener_records}",
                 prend="\r",
             )
         message.ack()
         return
 
     def subscriber_listener(self):
-        log_and_print(message=f"Subscriber actively listening...")
-        streaming_future = self.subscriber.subscribe(
-            self.sub_path, callback=self.callback
+        log_and_print(
+            message=f"Subscriber actively listening to {BC_SUB_ID} "
+            + f"and {SID_SUB_ID}..."
+        )
+        bc_streaming_future = self.subscriber.subscribe(
+            self.bc_path, callback=self.bc_callback
+        )
+        sid_streaming_future = self.subscriber.subscribe(
+            self.bc_path, callback=self.sid_callback
         )
         with self.subscriber:
             try:
-                streaming_future.result(timeout=TIMEOUT)
+                bc_streaming_future.result(timeout=TIMEOUT)
+                sid_streaming_future.result(timeout=TIMEOUT)
             except TimeoutError:
-                streaming_future.cancel()
-                streaming_future.result()
+                bc_streaming_future.cancel()
+                bc_streaming_future.result()
+                sid_streaming_future.cancel()
+                sid_streaming_future.result()
                 return
 
 
@@ -111,12 +189,13 @@ if __name__ == "__main__":
     log_and_print(
         message=f"Subscriber sleeping for 20 minutes to allow publisher to publish first\n"
     )
-    time.sleep(1200)
+    # time.sleep(1200)
 
     try:
         sub_worker = PipelineSubscriber()
         start_time = curr_time_micro()
-        total_records_overall = 0
+        bc_total_records_overall = 0
+        sid_total_records_overall = 0
 
         log_and_print(message=f"{start_time} Subscriber starting.\n")
 
@@ -124,24 +203,39 @@ if __name__ == "__main__":
             sub_worker.subscriber_listener()
 
             if sub_worker.current_listener_records > 0:
-                sub_worker.write_records_to_file()
+                sub_worker.prep_records_writing()
                 log_and_print(
                     message=f"Subscriber started at {start_time}. "
                     + f" Subscriber complete."
                 )
-                total_records_overall += sub_worker.current_listener_records
+                bc_total_records_overall += (
+                    sub_worker.bc_current_listener_records
+                )
+                sid_total_records_overall += (
+                    sub_worker.sid_current_listener_records
+                )
                 sub_worker.current_listener_records = 0
 
             else:
                 log_and_print(
                     message=f"No data received in the past {TIMEOUT//60} minutes.\n"
                 )
-                total_records_overall += sub_worker.current_listener_records
-                sub_worker.current_listener_records = 0
+                bc_total_records_overall += (
+                    sub_worker.bc_current_listener_records
+                )
+                sid_total_records_overall += (
+                    sub_worker.sid_current_listener_records
+                )
+                sub_worker.bc_current_listener_records = 0
+                sub_worker.sid_current_listener_records = 0
 
             log_and_print(
-                message=f"Have received and saved "
-                + f"{total_records_overall} records up to this point."
+                message=f"BreadCrumb: have received and saved "
+                + f"{bc_total_records_overall} records up to this point."
+            )
+            log_and_print(
+                message=f"BreadCrumb: have received and saved "
+                + f"{sid_total_records_overall} records up to this point."
             )
             log_and_print(
                 message=f"Subscriber re-starting to continue "
