@@ -116,7 +116,6 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    sys.argv.append("-L")
     log_and_print(message="Gathering staring.")
     grabber = DataGrabber()
     grabber.data_grabber_main()
