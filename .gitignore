@@ -9,3 +9,4 @@ __pycache__
 logs
 auth-playground.py
 *.tar
+stop_id_data
