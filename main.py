@@ -7,7 +7,7 @@ import traceback
 from src.mainpipe.tardata import tar_data
 from mainpipe.breadcrumb_grabber import DataGrabber
 from src.mainpipe.uploadgdrive import upload_to_gdrive
-from mainpipe.breadcrumb_publisher import PipelinePublisher
+from src.mainpipe.breadcrumb_publisher import PipelinePublisher
 from src.utils.utils import DATA_MONTH_DAY, curr_time_micro, log_and_print
 
 
