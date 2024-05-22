@@ -21,10 +21,14 @@ TOPIC_ID = "StopData"
 
 class PipelinePublisher:
     def __init__(self):
-        self.pubsub_creds = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE
+        self.pubsub_creds = (
+            service_account.Credentials.from_service_account_file(
+                SERVICE_ACCOUNT_FILE
+            )
         )
-        self.publisher = pubsub_v1.PublisherClient(credentials=self.pubsub_creds)
+        self.publisher = pubsub_v1.PublisherClient(
+            credentials=self.pubsub_creds
+        )
         self.topic_path = self.publisher.topic_path(PROJECT_ID, TOPIC_ID)
         self.data_to_publish: list[str] = []
         self.total_records = 0
@@ -84,7 +88,7 @@ if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         format="",
-        filename=f"logs/PUBLOG-{DATA_MONTH_DAY}.log",
+        filename=f"logs/STOPID_PUB-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
         filemode="a",
         level=logging.INFO,
@@ -97,7 +101,9 @@ if __name__ == "__main__":
         files_list = os.listdir(STOPID_DATA_PATH)
         files_list.sort()
 
-        log_and_print(message=f"Publisher starting with directory {STOPID_DATA_PATH}.")
+        log_and_print(
+            message=f"Publisher starting with directory {STOPID_DATA_PATH}."
+        )
         while len(files_list) > 0:
             file_to_open = files_list.pop()
             curr_file = open(os.path.join(STOPID_DATA_PATH, file_to_open))
