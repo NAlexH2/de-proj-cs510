@@ -93,7 +93,6 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    sys.argv.append("-L")
     pub_worker = PipelinePublisher()
 
     files_list = []
