@@ -1,5 +1,7 @@
-from bs4 import BeautifulSoup
-import json, shutil, requests, pandas as pd, os, sys, logging
+from bs4 import BeautifulSoup, ResultSet, Tag
+import json, os, sys, logging, requests, re
+import pandas as pd
+
 from pathlib import Path
 
 
@@ -17,95 +19,79 @@ from src.pipethree.stopid_publisher import PipelinePublisher
 
 
 class DataGrabber:
-    """
-    Collection of data from bus API that the breadcrumbs come from.
-
-        Class Data Members:
-            OK_response -- pandas dataframe that stores the 200 status
-            codes
-
-            bad_response -- pandas dataframe that stores the 404 status
-            codes
-    """
-
-    def __init__(self) -> None:
-        # def __init__(self, pub_worker: PipelinePublisher) -> None:
-        self.OK_response = self.build_query_df()
-        self.bad_response = self.build_query_df()
-        # self.pub_worker: PipelinePublisher = pub_worker
-
-    def response_vdf(self, vehicleID: str, stat_code: int) -> None:
-        """Build a dataframe just for vehicle responses to self modify
-
-        Arguments:
-            vehicleID -- id of vehicle used in the query operation
-
-            stat_code -- response status code received in query operation
-
-        Returns:
-            pd.DataFrame with ID and Response as columns and a single row
-        """
-
-        data = {
-            "ID": [str(vehicleID)],
-            "Response": [str(stat_code)],
-        }
-        return pd.DataFrame(data)
-
-    def build_query_df(self) -> pd.DataFrame:
-        """Generates an empty dataframe with 'ID' and 'Response' columns.
-
-        Returns:
-            pd.DataFrame with columns 'ID' and 'Response'.
-        """
-
-        new_df = pd.DataFrame()
-        new_df["ID"] = pd.Series(dtype=str)
-        new_df["Response"] = pd.Series(dtype=str)
-        return new_df
-
-    def gather_data(self, cf: pd.DataFrame):
-        for i in range(cf.size):
-            vehicleID = str(cf["Snickers"].at[i])
-            log_and_print(message=f"VID: {vehicleID}", prend="\r")
-
-            resp = requests.request("GET", STOPID_API_URL + vehicleID)
-
-            # Make a quick dataframe with our info to concat
-            to_concat = self.response_vdf(vehicleID, resp.status_code)
-
-            # TODO: Remove the 404, we only care about good responses
-            # Collect both responses for notification
-            if resp.status_code == 404:
-                self.bad_response = pd.concat(
-                    [self.bad_response, to_concat], ignore_index=True
-                )
-            else:
-                self.OK_response = pd.concat(
-                    [self.OK_response, to_concat], ignore_index=True
-                )
-                self.save_html_page(resp, vehicleID)
-                if "-P" in sys.argv:
-                    self.pub_worker.add_to_publish_list(resp.text)
-
-        return
+    def __init__(self, pub_worker: PipelinePublisher) -> None:
+        self.pub_worker = 0
+        self.html_to_dict_data: list[dict] = None
+        self.pub_worker: PipelinePublisher = pub_worker
 
     # TODO:
     # [ ] Write a function to transform the HTML data into JSON, then save all files.
     # [ ] Modify/make new publisher to use this newer modified data.
 
-    def save_html_page(self, resp: requests.Response, vehicleID: str) -> None:
-        file_str = vehicleID + "-" + mdy_string() + ".html"
+    def gather_data(self, cf: pd.DataFrame):
+        for i in range(cf.size):
+            vehicleID = str(cf["Snickers"].at[i])
+            log_and_print(message=f"VID: {vehicleID}", prend="\r")
+            try:
+                resp: requests.Response = requests.request(
+                    "GET", STOPID_API_URL + vehicleID, timeout=15
+                )
+            except requests.ConnectTimeout:
+                log_and_print(
+                    message=f"{vehicleID} request failed\n",
+                )
+                continue
+
+            soup: BeautifulSoup = BeautifulSoup(resp.content, "html.parser")
+            content = soup.decode()
+
+            if resp.status_code != 404:
+                self.html_to_json_like(soup)
+                self.save_to_json(vehicleID)
+                if "-P" in sys.argv:
+                    self.pub_worker.add_to_publish_list(self.html_to_dict_data)
+        return
+
+    def required_data(self, stop_id: int, data: list[str]):
+        return [stop_id, int(data[3]), int(data[4]), data[5]]
+
+    def html_to_json_like(self, soup: BeautifulSoup):
+        stop_ids = [
+            re.search("\d+", res.text).group(0)
+            for res in soup.find_all(name="h2")
+        ]
+        tables: list[Tag] = [res for res in soup.find_all(name="table")]
+
+        tables_data: list[list[Tag]] = [
+            BeautifulSoup(table.decode(), "html.parser").find_all(name="tr")[1:]
+            for table in tables
+        ]
+
+        rows_data = []
+
+        for i in range(len(tables_data)):
+            for j in range(len(tables_data[i])):
+                rows_data.append(
+                    self.required_data(
+                        int(stop_ids[i]),
+                        tables_data[i][j].get_text(separator=",").split(","),
+                    )
+                )
+        keys = ["trip_id", "route_id", "service_key", "direction"]
+        self.html_to_dict_data = [dict(zip(keys, row)) for row in rows_data]
+        return
+
+    def save_to_json(self, vehicleID: str) -> None:
+        file_str = vehicleID + "-" + mdy_string() + ".json"
         full_file_path = os.path.join(STOPID_DATA_PATH, file_str)
-        soup = BeautifulSoup(resp.content, "html.parser")
-        content = soup.decode()
-        with open(full_file_path, "w", encoding="UTF-8") as outfile:
-            outfile.write(content)
+        json_got = json.dumps(self.html_to_dict_data, indent=4)
+
+        with open(full_file_path, "w") as outfile:
+            outfile.write(json_got)
+        return
 
     def data_grabber_main(self) -> None:
-        if os.path.exists(STOPID_DATA_PATH):
-            shutil.rmtree(STOPID_DATA_PATH)
-        os.makedirs(STOPID_DATA_PATH)
+        os.makedirs(STOPID_DATA_PATH, exist_ok=True)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_data(csv_frame)
         log_and_print(message="Gathering complete.")
@@ -117,12 +103,11 @@ if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         format="",
-        filename=f"logs/GRABBER_LOG-{DATA_MONTH_DAY}.log",
+        filename=f"logs/SID_GRABBER-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
         filemode="a",
         level=logging.INFO,
     )
-    sys.argv.append("-L")
     log_and_print(message="Gathering staring.")
     grabber = DataGrabber()
     grabber.data_grabber_main()
