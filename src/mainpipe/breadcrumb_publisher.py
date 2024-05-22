@@ -112,8 +112,8 @@ if __name__ == "__main__":
 
         pub_worker.publish_data()
     else:
-        log_and_print(
-            message=f"Folder {RAW_DATA_PATH} does not exist. Quitting publishing."
+        logging.error(
+            f"Folder {RAW_DATA_PATH} does not exist. Quitting publishing."
         )
         sys.exit(0)
     log_and_print(message=f"Publisher Finished.")
