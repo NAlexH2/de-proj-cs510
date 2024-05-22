@@ -117,5 +117,5 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     log_and_print(message="Gathering staring.")
-    grabber = DataGrabber()
+    grabber = DataGrabber(pub_worker=None)
     grabber.data_grabber_main()
