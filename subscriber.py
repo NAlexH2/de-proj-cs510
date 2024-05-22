@@ -86,7 +86,7 @@ class PipelineSubscriber:
         return
 
     def subscriber_listener(self):
-        log_and_print(message=f"\nSubscriber actively listening...")
+        log_and_print(message=f"Subscriber actively listening...")
         streaming_future = self.subscriber.subscribe(
             self.sub_path, callback=self.callback
         )
@@ -109,7 +109,7 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     log_and_print(
-        message=f"\nSubscriber sleeping for 20 minutes to allow publisher to publish first"
+        message=f"Subscriber sleeping for 20 minutes to allow publisher to publish first\n"
     )
     time.sleep(1200)
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
         start_time = curr_time_micro()
         total_records_overall = 0
 
-        log_and_print(message=f"\n{start_time} Subscriber starting.")
+        log_and_print(message=f"{start_time} Subscriber starting.\n")
 
         while True:
             sub_worker.subscriber_listener()
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
             else:
                 log_and_print(
-                    message=f"\nNo data received in the past {TIMEOUT//60} minutes."
+                    message=f"No data received in the past {TIMEOUT//60} minutes.\n"
                 )
                 total_records_overall += sub_worker.current_listener_records
                 sub_worker.current_listener_records = 0

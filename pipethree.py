@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 pub_worker.publish_data()
                 log_and_print(message=f"Publish started at {start_time}.")
 
-            log_and_print(message=f"\nOperation finished.")
+            log_and_print(message=f"Operation finished.")
     except Exception as e:
         logging.basicConfig(
             format="",
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         )
         logging.info("\n")
         logging.error(msg=f"EXCEPTION THROWN!")
-        logging.error(msg=f"Traceback:\n{traceback.format_exc()}")
+        logging.error(msg=f"Traceback:\n{traceback.format_exc()}\n")
         logging.error(msg=f"Exception as e:\n{e}")
 
     sys.exit()
