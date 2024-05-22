@@ -9,8 +9,7 @@ if __name__ == "__main__":
 
 from src.utils.utils import (
     DATA_MONTH_DAY,
-    SUBSCRIBER_FOLDER,
-    curr_time_micro,
+    BC_SUBSCRIBER_FOLDER,
     log_and_print,
 )
 
@@ -238,12 +237,12 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    files = os.listdir(SUBSCRIBER_FOLDER)
+    files = os.listdir(BC_SUBSCRIBER_FOLDER)
     files.sort()
     for file in files:
         logging.info("\n")
         log_and_print(f"Next file to assert: {file}")
-        df = pd.read_json(os.path.join(SUBSCRIBER_FOLDER, file))
+        df = pd.read_json(os.path.join(BC_SUBSCRIBER_FOLDER, file))
         vbd = ValidateBusData(df)
         vbd.do_all_assertions()
 

@@ -12,9 +12,14 @@ RAW_DATA_PATH = os.path.join(RAW_DATA_FOLDER, DATA_MONTH_DAY)
 STOPID_DATA_FOLDER = os.path.join("stop_id_data")
 STOPID_DATA_PATH = os.path.join(STOPID_DATA_FOLDER, DATA_MONTH_DAY)
 
-SUBSCRIBER_FOLDER = os.path.join("subscriber_data_files")
-SUBSCRIBER_DATA_PATH_JSON = os.path.join(
-    SUBSCRIBER_FOLDER, f"{DATA_MONTH_DAY}.json"
+BC_SUBSCRIBER_FOLDER = os.path.join("bc_subscriber_data_files")
+BC_SUBSCRIBER_DATA_PATH_JSON = os.path.join(
+    BC_SUBSCRIBER_FOLDER, f"{DATA_MONTH_DAY}.json"
+)
+
+SID_SUBSCRIBER_FOLDER = os.path.join("sid_subscriber_data_files")
+SID_SUBSCRIBER_DATA_PATH_JSON = os.path.join(
+    SID_SUBSCRIBER_FOLDER, f"{DATA_MONTH_DAY}.json"
 )
 
 

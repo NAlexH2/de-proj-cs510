@@ -13,8 +13,7 @@ from src.subpipe.validate import ValidateBusData
 from src.subpipe.transform import DataTransformer
 from src.utils.utils import (
     DATA_MONTH_DAY,
-    SUBSCRIBER_FOLDER,
-    curr_time_micro,
+    BC_SUBSCRIBER_FOLDER,
     log_and_print,
 )
 
@@ -26,8 +25,9 @@ TRIPTABLE = "trip"
 
 
 class DataToSQLDB:
-    def __init__(self, jData: dict) -> None:
-        self.json_data: dict = jData
+    def __init__(self, jData: dict, sidData: dict) -> None:
+        self.bc_json_data: dict = jData
+        self.sid_json_data: dict = sidData
 
     def make_breadcrumb_table(self, df: pd.DataFrame) -> pd.DataFrame:
         renamer = {
@@ -106,7 +106,7 @@ class DataToSQLDB:
 
     def to_db_start(self):
         preped_df: pd.DataFrame = self.prepare_df(
-            pd.DataFrame.from_dict(self.json_data)
+            pd.DataFrame.from_dict(self.bc_json_data)
         )
         bc_table: pd.DataFrame = self.make_breadcrumb_table(preped_df)
         trip_table: pd.DataFrame = self.make_trip_table(preped_df)
@@ -123,22 +123,22 @@ if __name__ == "__main__":
     )
     log_and_print("Sending data to SQL database.")
     files = []
-    if os.path.exists(SUBSCRIBER_FOLDER):
-        files = os.listdir(SUBSCRIBER_FOLDER)
+    if os.path.exists(BC_SUBSCRIBER_FOLDER):
+        files = os.listdir(BC_SUBSCRIBER_FOLDER)
         files.sort()
 
         while len(files) > 0:
             file = files.pop()
             logging.info("\n")
             log_and_print(f"Next file to transform in memory: {file}")
-            curr_file = open(os.path.join(SUBSCRIBER_FOLDER, file))
+            curr_file = open(os.path.join(BC_SUBSCRIBER_FOLDER, file))
             json_from_file = json.load(curr_file)
             db_worker = DataToSQLDB(json_from_file)
             db_worker.to_db_start()
 
     else:
         log_and_print(
-            f"Folder {SUBSCRIBER_FOLDER} does not exist. "
+            f"Folder {BC_SUBSCRIBER_FOLDER} does not exist. "
             + "Unable to send any data as it does not exist."
         )
         sys.exit(0)
