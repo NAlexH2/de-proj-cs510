@@ -57,8 +57,6 @@ if __name__ == "__main__":
             pub_worker: PipelinePublisher = PipelinePublisher()
             data_collect = DataGrabber(pub_worker=pub_worker)
             data_collect.data_grabber_main()
-            OK_size = data_collect.OK_response.size
-            bad_size = data_collect.bad_response.size
 
             # Publish all the data that's been collected so far.
             if "-P" in sys.argv:
