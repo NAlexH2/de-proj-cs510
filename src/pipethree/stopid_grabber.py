@@ -1,3 +1,4 @@
+import time
 from bs4 import BeautifulSoup, ResultSet, Tag
 import json, os, sys, logging, requests, re
 import pandas as pd
@@ -24,6 +25,7 @@ class DataGrabber:
         self.pub_worker = 0
         self.html_to_dict_data: list[dict] = None
         self.pub_worker: PipelinePublisher = pub_worker
+        self.con_path: bool = False
 
     # TODO:
     # [x] Write a function to transform the HTML data into JSON, then save all files.
@@ -96,41 +98,77 @@ class DataGrabber:
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_data(csv_frame)
         log_and_print(message="Gathering complete.")
+        return
 
+    def conversion_save_to_json(
+        self, save_path: str, mdy_str: str, vehicleID: str
+    ) -> None:
+        file_str = vehicleID + "-" + mdy_str + ".json"
+        full_file_path = os.path.join(save_path, file_str)
+        json_got = json.dumps(self.html_to_dict_data, indent=4)
+
+        with open(full_file_path, "w") as outfile:
+            outfile.write(json_got)
         return
 
     def conversion_path(self):
+        self.con_path = True
         if os.path.exists(STOPID_DATA_FOLDER):
             folder_list = os.listdir(STOPID_DATA_FOLDER)
             folder_list.sort()
             for folder in folder_list:
-                file_list = os.listdir(os.path.join(STOPID_DATA_FOLDER, folder))
+                files_path = os.path.join(STOPID_DATA_FOLDER, folder)
+                file_list = os.listdir(files_path)
+                file_list = [file for file in file_list if ".json" not in file]
                 file_list.sort()
                 for file in file_list:
-                    vehicleID = None
-                    with open(file, "rb", encoding="UTF-8") as infile:
+                    vehicleID = file[:4]
+                    cur_file_mdy = file[5:15]
+                    file_opened = os.path.join(STOPID_DATA_FOLDER, folder, file)
+                    log_and_print(
+                        f"Converting {folder}/{file} to .json", prend="\r"
+                    )
+                    with open(file_opened, "rb") as infile:
                         soup: BeautifulSoup = BeautifulSoup(
                             infile, "html.parser"
                         )
                         self.html_to_json_like(soup=soup)
+                        self.conversion_save_to_json(
+                            files_path, cur_file_mdy, vehicleID=vehicleID
+                        )
+                    self.html_to_dict_data = None
 
 
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
-    logging.basicConfig(
-        format="",
-        filename=f"logs/SID_GRABBER-{DATA_MONTH_DAY}.log",
-        encoding="utf-8",
-        filemode="a",
-        level=logging.INFO,
-    )
+
     grabber = DataGrabber(pub_worker=None)
     ans = input(
-        "Would you like to convert all existing folders from html to json? Y/N: "
+        "\nWould you like to convert all existing folders from html to json? Y/N: "
     )
     if ans and ans[0].lower() == "y":
+        logging.basicConfig(
+            format="",
+            filename=f"logs/STOPID_CONV-{DATA_MONTH_DAY}.log",
+            encoding="utf-8",
+            filemode="a",
+            level=logging.INFO,
+        )
+        log_and_print(message="Conversion path chosen.")
+        time.sleep(1)
         grabber.conversion_path()
+        log_and_print(message="")
+        log_and_print(message="Conversion complete!")
         sys.exit()
+
     else:
+        logging.basicConfig(
+            format="",
+            filename=f"logs/STOPID_GRAB-{DATA_MONTH_DAY}.log",
+            encoding="utf-8",
+            filemode="a",
+            level=logging.INFO,
+        )
         log_and_print(message="Gathering staring.")
+        time.sleep(1)
         grabber.data_grabber_main()
