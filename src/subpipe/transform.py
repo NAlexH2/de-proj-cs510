@@ -10,7 +10,7 @@ from src.subpipe.validate import ValidateBusData
 from src.utils.utils import (
     DATA_MONTH_DAY,
     SUBSCRIBER_FOLDER,
-    sub_logger,
+    log_and_print,
 )
 
 
@@ -36,7 +36,7 @@ class DataTransformer:
 
     def add_timestamps(self):
         logging.info("\n")
-        sub_logger(f"Adding timestamps...")
+        log_and_print(f"Adding timestamps...")
 
         self.df.insert(5, "TIMESTAMP", 0)
         date_format = "%d%b%Y:%H:%M:%S"
@@ -45,11 +45,11 @@ class DataTransformer:
         self.df["TIMESTAMP"] = opd_sec + td
         self.df.drop(columns=["OPD_DATE", "ACT_TIME"], inplace=True)
 
-        sub_logger(f"Timestamps complete!")
+        log_and_print(f"Timestamps complete!")
 
     def add_speed(self):
         logging.info("\n")
-        sub_logger(f"Adding bus speeds in meters/second...")
+        log_and_print(f"Adding bus speeds in meters/second...")
 
         self.df.insert(4, "SPEED", 0)
         self.df.insert(4, "dMETERS", self.df["METERS"].diff())
@@ -71,7 +71,7 @@ class DataTransformer:
             self.df[self.df["VEHICLE_ID"] == id] = curr_data
             modified_index += curr_data.shape[0]
 
-        sub_logger(f"Bus speed additions complete!")
+        log_and_print(f"Bus speed additions complete!")
 
     def transform_run(self):
         self.add_timestamps()
@@ -88,15 +88,15 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    sub_logger(f"Starting data transformation.")
+    log_and_print(f"Starting data transformation.")
     files = os.listdir(SUBSCRIBER_FOLDER)
     files.sort()
     for file in files:
         df = pd.read_json(os.path.join(SUBSCRIBER_FOLDER, file))
         transformer = DataTransformer(df)
         logging.info("\n")
-        sub_logger(f"Next file to transform in memory: {file}")
+        log_and_print(f"Next file to transform in memory: {file}")
         transformer.transform_run()
-    sub_logger(f"Data transformation complete.")
+    log_and_print(f"Data transformation complete.")
 
     sys.exit()
