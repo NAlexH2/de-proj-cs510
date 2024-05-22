@@ -1,0 +1,782 @@
+[
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862331,
+        "route_id": 64,
+        "service_key": 1,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862348,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862385,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862421,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862455,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862493,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    },
+    {
+        "trip_id": 239862526,
+        "route_id": 68,
+        "service_key": 0,
+        "direction": "W"
+    }
+]

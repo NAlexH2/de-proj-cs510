@@ -1,6 +1,5 @@
 import logging
 import json, os
-import sys
 import time
 import traceback
 from src.subpipe.store import DataToSQLDB
@@ -13,7 +12,7 @@ from src.utils.utils import (
     SUBSCRIBER_DATA_PATH_JSON,
     SUBSCRIBER_FOLDER,
     curr_time_micro,
-    sub_logger,
+    log_and_print,
 )
 
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
@@ -37,27 +36,21 @@ class PipelineSubscriber:
         self.current_listener_records = 0
 
     def store_to_sql(self, jData: list[dict]) -> None:
-        sub_logger(f"{curr_time_micro()} Sending data to SQL database.")
+        log_and_print(f"Sending data to SQL database.")
         db_worker = DataToSQLDB(jData)
         db_worker.to_db_start()
-        sub_logger(
-            f"{curr_time_micro()} Data transfer to SQL database complete!"
-        )
+        log_and_print(f"Data transfer to SQL database complete!")
 
     def write_records_to_file(self):
         json_data: list[dict] = []
-        sub_logger(message="")
-        sub_logger(
-            message=f"{curr_time_micro()} Total records: {self.current_listener_records}"
-        )
+        log_and_print(message="")
+        log_and_print(message=f"Total records: {self.current_listener_records}")
 
         while len(self.data_to_write) > 0:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
 
-        sub_logger(
-            message=f"{curr_time_micro()} Writing all records to a single file."
-        )
+        log_and_print(message=f"Writing all records to a single file.")
 
         if not os.path.exists(SUBSCRIBER_FOLDER):
             os.makedirs(SUBSCRIBER_FOLDER)
@@ -84,8 +77,8 @@ class PipelineSubscriber:
         self.data_to_write.append(decoded_data)
         self.current_listener_records = len(self.data_to_write)
         if self.current_listener_records % 1000 == 0:
-            sub_logger(
-                message=f"{curr_time_micro()} Approximate records received so "
+            log_and_print(
+                message=f"Approximate records received so "
                 + f"far: {self.current_listener_records}",
                 prend="\r",
             )
@@ -93,9 +86,7 @@ class PipelineSubscriber:
         return
 
     def subscriber_listener(self):
-        sub_logger(
-            message=f"\n{curr_time_micro()} Subscriber actively listening..."
-        )
+        log_and_print(message=f"\nSubscriber actively listening...")
         streaming_future = self.subscriber.subscribe(
             self.sub_path, callback=self.callback
         )
@@ -117,8 +108,8 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    sub_logger(
-        message=f"\n{curr_time_micro()} Subscriber sleeping for 20 minutes to allow publisher to publish first"
+    log_and_print(
+        message=f"\nSubscriber sleeping for 20 minutes to allow publisher to publish first"
     )
     time.sleep(1200)
 
@@ -127,33 +118,33 @@ if __name__ == "__main__":
         start_time = curr_time_micro()
         total_records_overall = 0
 
-        sub_logger(message=f"\n{start_time} Subscriber starting.")
+        log_and_print(message=f"\n{start_time} Subscriber starting.")
 
         while True:
             sub_worker.subscriber_listener()
 
             if sub_worker.current_listener_records > 0:
                 sub_worker.write_records_to_file()
-                sub_logger(
-                    message=f"{curr_time_micro()} Subscriber started at {start_time}. "
+                log_and_print(
+                    message=f"Subscriber started at {start_time}. "
                     + f" Subscriber complete."
                 )
                 total_records_overall += sub_worker.current_listener_records
                 sub_worker.current_listener_records = 0
 
             else:
-                sub_logger(
-                    message=f"\n{curr_time_micro()} No data received in the past {TIMEOUT//60} minutes."
+                log_and_print(
+                    message=f"\nNo data received in the past {TIMEOUT//60} minutes."
                 )
                 total_records_overall += sub_worker.current_listener_records
                 sub_worker.current_listener_records = 0
 
-            sub_logger(
-                message=f"{curr_time_micro()} Have received and saved "
+            log_and_print(
+                message=f"Have received and saved "
                 + f"{total_records_overall} records up to this point."
             )
-            sub_logger(
-                message=f"{curr_time_micro()} Subscriber re-starting to continue "
+            log_and_print(
+                message=f"Subscriber re-starting to continue "
                 + f"listening for messages."
             )
             sub_worker.subscriber = pubsub_v1.SubscriberClient(
@@ -168,6 +159,6 @@ if __name__ == "__main__":
             filemode="a",
             level=logging.FATAL,
         )
-        sub_logger(f"{curr_time_micro()} EXCEPTION THROWN!")
-        sub_logger(f"{curr_time_micro()} Traceback:\n{traceback.format_exc()}")
-        sub_logger(f"{curr_time_micro()} Exception as e:\n{e}")
+        logging.error(f"EXCEPTION THROWN!")
+        logging.error(f"Traceback:\n{traceback.format_exc()}")
+        logging.error(f"Exception as e:\n{e}")

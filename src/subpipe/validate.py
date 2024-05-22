@@ -11,7 +11,7 @@ from src.utils.utils import (
     DATA_MONTH_DAY,
     SUBSCRIBER_FOLDER,
     curr_time_micro,
-    sub_logger,
+    log_and_print,
 )
 
 
@@ -29,14 +29,14 @@ class ValidateBusData:
             result = (longitude_low_bool) & (longitude_high_bool)
             assert result.all() == True
         except:
-            sub_logger(
-                f"{curr_time_micro()} LONGITUDE BAD!!!!! Longitude had the following min and max values: "
+            log_and_print(
+                f"LONGITUDE BAD!!!!! Longitude had the following min and max values: "
                 + f"{longitude_lowest_min}, {longitude_highest_max}."
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} LONGITUDE GOOD! Longitude sits within -122 and -124! "
+            log_and_print(
+                f"LONGITUDE GOOD! Longitude sits within -122 and -124! "
                 + f"Min and max vals are: {longitude_lowest_min}, {longitude_highest_max}."
             )
             return True
@@ -50,14 +50,14 @@ class ValidateBusData:
             result = (latitude_low_bool) & (latitude_high_bool)
             assert result.all() == True
         except:
-            sub_logger(
-                f"{curr_time_micro()} LATITUDE ASSERT BAD!!!!! Latitude had the following "
+            log_and_print(
+                f"LATITUDE ASSERT BAD!!!!! Latitude had the following "
                 + f"min and max values: {latitude_lowest_min}, {latitude_highest_max}."
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} LATITUDE ASSERT! Latitude sits within 45 and 46! Min "
+            log_and_print(
+                f"LATITUDE ASSERT! Latitude sits within 45 and 46! Min "
                 + f"and max vals are: {latitude_lowest_min}, {latitude_highest_max}."
             )
             return True
@@ -72,14 +72,14 @@ class ValidateBusData:
         try:
             assert these_HDOPs_nan.all() == True
         except:
-            sub_logger(
-                f"{curr_time_micro()} HDOP ASSERT BAD!!!!! There were some HDOPs with "
+            log_and_print(
+                f"HDOP ASSERT BAD!!!!! There were some HDOPs with "
                 + f"non-nan values on lat and long."
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} HDOP ASSERT GOOD! All HDOP values 4 upto "
+            log_and_print(
+                f"HDOP ASSERT GOOD! All HDOP values 4 upto "
                 + f"(not including) 23.1 are NaN on lat and long."
             )
             return True
@@ -89,14 +89,14 @@ class ValidateBusData:
         try:
             assert sat_min == 0
         except:
-            sub_logger(
-                f"{curr_time_micro()} MIN GPS satellites BAD!!!!! The minimum "
+            log_and_print(
+                f"MIN GPS satellites BAD!!!!! The minimum "
                 + f"number of satellites were: {sat_min}"
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} MIN GPS satellites GOOD! Minimum number "
+            log_and_print(
+                f"MIN GPS satellites GOOD! Minimum number "
                 + f"of satellites was: {sat_min}!"
             )
             return True
@@ -106,14 +106,14 @@ class ValidateBusData:
         try:
             assert sat_max == 12
         except:
-            sub_logger(
-                f"{curr_time_micro()} MAX GPS satellites BAD!!!!! The minimum "
+            log_and_print(
+                f"MAX GPS satellites BAD!!!!! The minimum "
                 + f"number of satellites were: {sat_max}"
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} MAX GPS satellites GOOD! Minimum number "
+            log_and_print(
+                f"MAX GPS satellites GOOD! Minimum number "
                 + f"of satellites was: {sat_max}!"
             )
             return True
@@ -126,14 +126,14 @@ class ValidateBusData:
             assert not_all_nan_lat["GPS_LATITUDE"].notna().any() == True
             assert not_all_nan_long["GPS_LONGITUDE"].notna().any() == True
         except:
-            sub_logger(
-                f"{curr_time_micro()} ZERO SATELLITES ASSERT BAD!!!! It seems that all "
+            log_and_print(
+                f"ZERO SATELLITES ASSERT BAD!!!! It seems that all "
                 + f"0 GPS satellite vehicles are missing lat and long."
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} ZERO SATELLITES ASSERT GOOD! It seems that SOME "
+            log_and_print(
+                f"ZERO SATELLITES ASSERT GOOD! It seems that SOME "
                 + f"0 GPS satellite vehicles HAVE a lat and long."
             )
             return True
@@ -146,14 +146,14 @@ class ValidateBusData:
             assert all_yes_lat["GPS_LATITUDE"].notna().all() == True
             assert all_yes_long["GPS_LONGITUDE"].notna().all() == True
         except:
-            sub_logger(
-                f"{curr_time_micro()} TWELVE SATELLITES ASSERT BAD!!!! It seems that some "
+            log_and_print(
+                f"TWELVE SATELLITES ASSERT BAD!!!! It seems that some "
                 + f"12 GPS satellite vehicles are missing lat and long."
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} TWELVE SATELLITES ASSERT GOOD! It seems that ALL "
+            log_and_print(
+                f"TWELVE SATELLITES ASSERT GOOD! It seems that ALL "
                 + f"12 GPS satellite vehicles HAVE a lat and long."
             )
             return True
@@ -163,14 +163,14 @@ class ValidateBusData:
         try:
             assert meters_bool == True
         except:
-            sub_logger(
-                f"{curr_time_micro()} ACTIVITY RECORD ASSERT BAD!!!! It seems that some "
+            log_and_print(
+                f"ACTIVITY RECORD ASSERT BAD!!!! It seems that some "
                 + f"records are missing an event activity time."
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} ACTIVITY RECORD ASSERT GOOD! It seems that ALL "
+            log_and_print(
+                f"ACTIVITY RECORD ASSERT GOOD! It seems that ALL "
                 + f"records HAVE an event activity time."
             )
             return True
@@ -180,14 +180,14 @@ class ValidateBusData:
         try:
             assert meters_bool == True
         except:
-            sub_logger(
-                f"{curr_time_micro()} METERS RECORD ASSERT BAD!!!! It seems that some "
+            log_and_print(
+                f"METERS RECORD ASSERT BAD!!!! It seems that some "
                 + f"records are missing an a meters metric."
             )
             return False
         else:
-            sub_logger(
-                f"{curr_time_micro()} METERS RECORD ASSERT GOOD! It seems that ALL "
+            log_and_print(
+                f"METERS RECORD ASSERT GOOD! It seems that ALL "
                 + f"records HAVE an a meters metric."
             )
             return True
@@ -198,22 +198,22 @@ class ValidateBusData:
         try:
             assert (kmh_data["SPEED"] < 113).all() == True
         except:
-            sub_logger(
-                f"{curr_time_micro()} SPEED ASSERTION ALERT!!! Some speeds on "
+            log_and_print(
+                f"SPEED ASSERTION ALERT!!! Some speeds on "
                 + f"some buses appears to be over 113KMH/70MPH. This is not possible, "
                 + f"is an extreme anomaly, and will be removed from the dataset."
             )
             ids_over_limit = self.df.loc[
                 self.df["SPEED"] > (113 / 3.6), "VEHICLE_ID"
             ].unique()
-            sub_logger(
-                f"{curr_time_micro()} Following vehicles have speeds greater "
+            log_and_print(
+                f"Following vehicles have speeds greater "
                 + f"than 113KMH/70MPH: {ids_over_limit}"
             )
             return self.df[self.df["SPEED"] < (113 / 3.6)]
         else:
-            sub_logger(
-                f"{curr_time_micro()} SPEED LIMIT ASSERT GOOD! It seems that no "
+            log_and_print(
+                f"SPEED LIMIT ASSERT GOOD! It seems that no "
                 + f"bus speeds are over 113KMH/70MPH!"
             )
             return self.df
@@ -241,7 +241,8 @@ if __name__ == "__main__":
     files = os.listdir(SUBSCRIBER_FOLDER)
     files.sort()
     for file in files:
-        sub_logger(f"\n{curr_time_micro()} Next file to assert: {file}")
+        logging.info("\n")
+        log_and_print(f"Next file to assert: {file}")
         df = pd.read_json(os.path.join(SUBSCRIBER_FOLDER, file))
         vbd = ValidateBusData(df)
         vbd.do_all_assertions()

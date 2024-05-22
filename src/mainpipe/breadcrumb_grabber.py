@@ -6,14 +6,13 @@ if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
 
 from src.utils.utils import (
-    API_URL,
-    FULL_DATA_PATH,
+    BREADCRUMB_API_URL,
+    RAW_DATA_PATH,
     DATA_MONTH_DAY,
-    mdy_time,
-    curr_time_micro,
-    log_or_print,
+    mdy_string,
+    log_and_print,
 )
-from src.mainpipe.publisher import PipelinePublisher
+from src.mainpipe.breadcrumb_publisher import PipelinePublisher
 
 
 class DataGrabber:
@@ -66,13 +65,9 @@ class DataGrabber:
     def gather_data(self, cf: pd.DataFrame):
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
-            log_or_print(
-                message=f"{curr_time_micro()} VID: {vehicleID}",
-                use_print=True,
-                prend="\r",
-            )
+            log_and_print(message=f"VID: {vehicleID}", prend="\r")
 
-            resp = requests.request("GET", API_URL + vehicleID)
+            resp = requests.request("GET", BREADCRUMB_API_URL + vehicleID)
 
             # Make a quick dataframe with our info to concat
             to_concat = self.response_vdf(vehicleID, resp.status_code)
@@ -95,21 +90,19 @@ class DataGrabber:
     def save_json_data(self, resp_text: str, vehicleID: str) -> None:
         json_got = json.dumps(json.loads(resp_text), indent=4)
 
-        file_str = vehicleID + "-" + mdy_time() + ".json"
-        full_file_path = os.path.join(FULL_DATA_PATH, file_str)
+        file_str = vehicleID + "-" + mdy_string() + ".json"
+        full_file_path = os.path.join(RAW_DATA_PATH, file_str)
 
         with open(full_file_path, "w") as outfile:
             outfile.write(json_got)
 
     def data_grabber_main(self) -> None:
-        if os.path.exists(FULL_DATA_PATH):
-            shutil.rmtree(FULL_DATA_PATH)
-        os.makedirs(FULL_DATA_PATH)
+        if os.path.exists(RAW_DATA_PATH):
+            shutil.rmtree(RAW_DATA_PATH)
+        os.makedirs(RAW_DATA_PATH)
         csv_frame: pd.DataFrame = pd.read_csv("./src/vehicle_ids.csv")
         self.gather_data(csv_frame)
-        log_or_print(
-            message=f"{curr_time_micro()} Gathering complete.", use_print=True
-        )
+        log_and_print(message="Gathering complete.")
 
         return
 
@@ -123,9 +116,6 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    sys.argv.append("-L")
-    log_or_print(
-        message=f"\n{curr_time_micro()} Gathering staring.", use_print=True
-    )
-    grabber = DataGrabber()
+    log_and_print(message="Gathering staring.")
+    grabber = DataGrabber(pub_worker=None)
     grabber.data_grabber_main()

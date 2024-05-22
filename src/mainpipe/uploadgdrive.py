@@ -9,9 +9,8 @@ if __name__ == "__main__":
 
 from src.utils.utils import (
     DATA_MONTH_DAY,
-    FULL_DATA_PATH,
-    log_or_print,
-    curr_time_micro,
+    RAW_DATA_PATH,
+    log_and_print,
 )
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
@@ -52,20 +51,16 @@ def create_gdrive_folder(service, gdrive_folder_to_make):
         gdrive_folder_to_make = gdrive_folder_to_make["id"]
         return gdrive_folder_to_make
     else:
-        log_or_print(
-            message=f"{curr_time_micro()} Folder already exists on the drive... skipping creation in google drive."
+        log_and_print(
+            message=f"Folder already exists on the drive... skipping creation in google drive."
         )
         sleep(0.3)
         return gdrive_folder_to_make
 
 
 def upload_to_gdrive() -> None:
-    log_or_print(message="", use_print=True, prend="\n")
-    log_or_print(
-        message=f"{curr_time_micro()} Starting Google Drive upload.",
-        use_print=True,
-        prend="\n",
-    )
+    logging.info("\n")
+    log_and_print(message=f"Starting Google Drive upload.")
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES
     )
@@ -77,31 +72,27 @@ def upload_to_gdrive() -> None:
     gdrive_files_list: set = get_folder_files_list(
         service, GDRIVE_DATA_MONTH_DAY
     )
-    files = os.listdir(FULL_DATA_PATH)
+    files = os.listdir(RAW_DATA_PATH)
     files.sort()
 
     # for loop it through all files created in raw_data_files
     num_files = len(files)
     for i in range(num_files):
         if files[i] in gdrive_files_list:
-            log_or_print(
-                message=f"{curr_time_micro()} {files[i]}: already uploaded... skipping.",
-                use_print=True,
-                prend="\r",
+            log_and_print(
+                message=f"{files[i]}: already uploaded... skipping.", prend="\r"
             )
             sleep(0.3)
         else:
-            log_or_print(
-                message=f"{curr_time_micro()} Uploading file# {i+1} out of {num_files}",
-                use_print=True,
-                prend="\r",
+            log_and_print(
+                message=f"Uploading file# {i+1} out of {num_files}", prend="\r"
             )
 
             file_metadata = {
                 "name": files[i],
                 "parents": [GDRIVE_DATA_MONTH_DAY],
             }
-            media = MediaFileUpload(FULL_DATA_PATH + "/" + files[i])
+            media = MediaFileUpload(RAW_DATA_PATH + "/" + files[i])
 
             # Upload the current file to my pdx gdrive
             response = (
@@ -110,7 +101,7 @@ def upload_to_gdrive() -> None:
                 .execute()
             )
             gdrive_files_list.add(files[i])
-    log_or_print(message="", use_print=True, prend="\n")
+    logging.info("\n")
     return
 
 
