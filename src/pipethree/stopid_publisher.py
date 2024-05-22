@@ -51,7 +51,7 @@ class PipelinePublisher:
         futures_list = []
 
         logging.info("\n")
-        log_and_print(message=f"Publishing all records.")
+        log_and_print(message=f"Publishing all records to {TOPIC_ID}.")
         while len(self.data_to_publish) > 0:
             to_publish = self.data_to_publish.pop()
             to_publish_json = json.loads(to_publish)
@@ -101,7 +101,7 @@ if __name__ == "__main__":
         files_list.sort()
 
         log_and_print(
-            message=f"Publisher starting with directory {STOPID_DATA_PATH}."
+            message=f"Stop ID publisher starting with directory {STOPID_DATA_PATH}."
         )
         while len(files_list) > 0:
             file_to_open = files_list.pop()
@@ -115,5 +115,5 @@ if __name__ == "__main__":
             message=f"Folder {STOPID_DATA_PATH} does not exist. Quitting publishing."
         )
         sys.exit(0)
-    log_and_print(message=f"Publisher Finished.")
+    log_and_print(message=f"Stop ID publisher finished.")
     sys.exit(0)
