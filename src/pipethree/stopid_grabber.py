@@ -9,6 +9,7 @@ if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
 
 from src.utils.utils import (
+    STOPID_DATA_FOLDER,
     STOPID_API_URL,
     STOPID_DATA_PATH,
     DATA_MONTH_DAY,
@@ -25,7 +26,7 @@ class DataGrabber:
         self.pub_worker: PipelinePublisher = pub_worker
 
     # TODO:
-    # [ ] Write a function to transform the HTML data into JSON, then save all files.
+    # [x] Write a function to transform the HTML data into JSON, then save all files.
     # [ ] Modify/make new publisher to use this newer modified data.
 
     def gather_data(self, cf: pd.DataFrame):
@@ -98,6 +99,21 @@ class DataGrabber:
 
         return
 
+    def conversion_path(self):
+        if os.path.exists(STOPID_DATA_FOLDER):
+            folder_list = os.listdir(STOPID_DATA_FOLDER)
+            folder_list.sort()
+            for folder in folder_list:
+                file_list = os.listdir(os.path.join(STOPID_DATA_FOLDER, folder))
+                file_list.sort()
+                for file in file_list:
+                    vehicleID = None
+                    with open(file, "rb", encoding="UTF-8") as infile:
+                        soup: BeautifulSoup = BeautifulSoup(
+                            infile, "html.parser"
+                        )
+                        self.html_to_json_like(soup=soup)
+
 
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
@@ -108,6 +124,13 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    log_and_print(message="Gathering staring.")
-    grabber = DataGrabber()
-    grabber.data_grabber_main()
+    grabber = DataGrabber(pub_worker=None)
+    ans = input(
+        "Would you like to convert all existing folders from html to json? Y/N: "
+    )
+    if ans and ans[0].lower() == "y":
+        grabber.conversion_path()
+        sys.exit()
+    else:
+        log_and_print(message="Gathering staring.")
+        grabber.data_grabber_main()
