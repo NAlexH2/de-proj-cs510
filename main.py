@@ -95,8 +95,8 @@ if __name__ == "__main__":
             filemode="a",
             level=logging.ERROR,
         )
-        log_and_print(message="EXCEPTION THROWN!")
-        log_and_print(message=f"Traceback:\n{traceback.format_exc()}")
-        log_and_print(message=f"Exception as e:\n{e}")
+        logging.error(message="EXCEPTION THROWN!")
+        logging.error(message=f"Traceback:\n{traceback.format_exc()}")
+        logging.error(message=f"Exception as e:\n{e}")
 
     sys.exit()
