@@ -18,7 +18,7 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SID_SUB_ID = "StopDataRcvr"
-TIMEOUT = 300
+TIMEOUT = 180
 
 
 class PipelineSubscriber:
@@ -45,15 +45,15 @@ class PipelineSubscriber:
 
     def write_records_to_file(self):
         json_data: list[dict] = []
-        log_and_print(message="")
-        log_and_print(message=f"Total records: {self.current_listener_records}")
+        log_and_print("")
+        log_and_print(f"Total records: {self.current_listener_records}")
 
         while len(self.data_to_write) > 0:
             data_prep = self.data_to_write.pop()
             json_data.append(json.loads(data_prep))
 
-        log_and_print(message=f"Writing all records to a single file.")
-
+        log_and_print(f"Writing all records to a single file.")
+        log_and_print(f"{SID_SUBSCRIBER_DATA_PATH_JSON}")
         if not os.path.exists(SID_SUBSCRIBER_FOLDER):
             os.makedirs(SID_SUBSCRIBER_FOLDER)
         if not os.path.exists(SID_SUBSCRIBER_DATA_PATH_JSON):
@@ -67,7 +67,11 @@ class PipelineSubscriber:
 
             with open(SID_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
                 json.dump(existing_data, outfile, indent=4)
-
+        log_and_print(
+            f"{SID_SUB_ID} subscriber sleeping for 30 minutes to wait for "
+            + "BreadCrumbRcvr to finish."
+        )
+        time.sleep(1800)
         # Where the db storage magic happens!
         # self.store_to_sql(json_data)
 
@@ -78,7 +82,7 @@ class PipelineSubscriber:
         decoded_data = rcvd_data.decode()
         self.data_to_write.append(decoded_data)
         self.current_listener_records = len(self.data_to_write)
-        if self.current_listener_records % 1000 == 0:
+        if self.current_listener_records % 10 == 0:
             log_and_print(
                 message=f"Approximate records received so "
                 + f"far: {self.current_listener_records}",
@@ -88,7 +92,7 @@ class PipelineSubscriber:
         return
 
     def subscriber_listener(self):
-        log_and_print(message=f"Subscriber actively listening...")
+        log_and_print(f"Subscriber actively listening...")
         streaming_future = self.subscriber.subscribe(
             self.sub_path, callback=self.callback
         )
@@ -110,10 +114,6 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    log_and_print(
-        message=f"Stop ID: subscriber sleeping for 20 minutes to allow publisher to publish first\n"
-    )
-    # time.sleep(1200)
 
     try:
         sub_worker = PipelineSubscriber()
