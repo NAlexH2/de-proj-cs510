@@ -164,7 +164,7 @@ if __name__ == "__main__":
     else:
         logging.basicConfig(
             format="",
-            filename=f"logs/STOPID_GRAB-{DATA_MONTH_DAY}.log",
+            filename=f"logs/SID-GRAB-{DATA_MONTH_DAY}.log",
             encoding="utf-8",
             filemode="a",
             level=logging.INFO,

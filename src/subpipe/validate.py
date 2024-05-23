@@ -232,7 +232,7 @@ class ValidateBusData:
 if __name__ == "__main__":
     logging.basicConfig(
         format="",
-        filename=f"logs/ASSERTLOG-{DATA_MONTH_DAY}.log",
+        filename=f"logs/BC-ASSERTLOG-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
         filemode="a",
         level=logging.INFO,

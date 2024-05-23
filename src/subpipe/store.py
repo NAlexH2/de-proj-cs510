@@ -116,7 +116,7 @@ class DataToSQLDB:
 if __name__ == "__main__":
     logging.basicConfig(
         format="",
-        filename=f"logs/DBTRANSFERLOG-{DATA_MONTH_DAY}.log",
+        filename=f"logs/BC-DBTRANSFERLOG-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
         filemode="a",
         level=logging.INFO,
