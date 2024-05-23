@@ -42,14 +42,26 @@ class SIDDataToSQLDB:
         return connection
 
     def write_to_db(self, sid_df: pd.DataFrame):
-        trip_row_count = sid_df.shape[0]
+        stop_id_count = sid_df.shape[0]
         conn = self.db_connect()
         cur = conn.cursor()
         dict_to_write = sid_df.to_dict(orient="records")
 
-        log_and_print(f"Writing {trip_row_count} rows to Trip table...")
+        log_and_print(f"Writing {stop_id_count} rows to Trip table...")
+        for record in dict_to_write:
+            # each record has columns 'trip_id', 'route_id', 'direction',
+            # 'service_key'
 
-        log_and_print(f"Writing {trip_row_count} rows to Trip table COMPLETE!")
+            # UPDATE <table_name>
+            # SET <column1> = <value1>,
+            # <column2> = <value2>,
+            # ...
+            # WHERE <condition>
+            # RETURNING * | <output_expression> AS <output_name>;
+
+            cur.execute("UPDATE trip SET ")
+
+        log_and_print(f"Writing {stop_id_count} rows to Trip table COMPLETE!")
 
     def to_db_start(self):
         sid_df: pd.DataFrame = self.prepare_df(
