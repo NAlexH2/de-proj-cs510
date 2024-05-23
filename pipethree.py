@@ -32,14 +32,14 @@ Usage: python main.py -G [OPTIONS]
             f"Gather arg found. Will pull all assigned "
             + "vehicles from Stop ID API and save them as .json files."
         )
-        log_and_print(message=msg)
+        log_and_print(msg)
 
     if "-P" in sys.argv:
         msg = (
             f"Publish arg found. Will push ALL entries "
             + "in EVERY RECORD to Google pub/sub."
         )
-        log_and_print(message=msg)
+        log_and_print(msg)
 
 
 if __name__ == "__main__":
@@ -62,9 +62,9 @@ if __name__ == "__main__":
             if "-P" in sys.argv:
                 start_time = curr_time_micro()
                 pub_worker.publish_data()
-                log_and_print(message=f"Publish started at {start_time}.")
+                log_and_print(f"Publish started at {start_time}.")
 
-            log_and_print(message=f"\nOperation finished.")
+            log_and_print(f"Operation finished.")
     except Exception as e:
         logging.basicConfig(
             format="",
@@ -74,8 +74,8 @@ if __name__ == "__main__":
             level=logging.ERROR,
         )
         logging.info("\n")
-        logging.error(msg=f"EXCEPTION THROWN!")
-        logging.error(msg=f"Traceback:\n{traceback.format_exc()}")
-        logging.error(msg=f"Exception as e:\n{e}")
+        log_and_print(f"EXCEPTION THROWN!")
+        log_and_print(f"Traceback:\n{traceback.format_exc()}\n")
+        log_and_print(f"Exception as e:\n{e}")
 
     sys.exit()

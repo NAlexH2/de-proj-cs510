@@ -2,23 +2,23 @@ import logging
 import json, os
 import time
 import traceback
-from src.subpipe.store import DataToSQLDB
+from src.pipethree.stopid_store import SIDDataToSQLDB
 
 from google.oauth2 import service_account
 from google.cloud import pubsub_v1
 from concurrent.futures import TimeoutError
 from src.utils.utils import (
     DATA_MONTH_DAY,
-    SUBSCRIBER_DATA_PATH_JSON,
-    SUBSCRIBER_FOLDER,
+    SID_SUBSCRIBER_DATA_PATH_JSON,
+    SID_SUBSCRIBER_FOLDER,
     curr_time_micro,
     log_and_print,
 )
 
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
-SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 1800
+SID_SUB_ID = "StopDataRcvr"
+TIMEOUT = 300
 
 
 class PipelineSubscriber:
@@ -31,13 +31,15 @@ class PipelineSubscriber:
         self.subscriber = pubsub_v1.SubscriberClient(
             credentials=self.pubsub_creds
         )
-        self.sub_path = self.subscriber.subscription_path(PROJECT_ID, SUB_ID)
+        self.sub_path = self.subscriber.subscription_path(
+            PROJECT_ID, SID_SUB_ID
+        )
         self.data_to_write: list[str] = []
         self.current_listener_records = 0
 
     def store_to_sql(self, jData: list[dict]) -> None:
         log_and_print(f"Sending data to SQL database.")
-        db_worker = DataToSQLDB(jData)
+        db_worker = SIDDataToSQLDB(jData)
         db_worker.to_db_start()
         log_and_print(f"Data transfer to SQL database complete!")
 
@@ -52,22 +54,22 @@ class PipelineSubscriber:
 
         log_and_print(message=f"Writing all records to a single file.")
 
-        if not os.path.exists(SUBSCRIBER_FOLDER):
-            os.makedirs(SUBSCRIBER_FOLDER)
-        if not os.path.exists(SUBSCRIBER_DATA_PATH_JSON):
-            with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+        if not os.path.exists(SID_SUBSCRIBER_FOLDER):
+            os.makedirs(SID_SUBSCRIBER_FOLDER)
+        if not os.path.exists(SID_SUBSCRIBER_DATA_PATH_JSON):
+            with open(SID_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
                 json.dump(json_data, outfile, indent=4)
         else:
-            with open(SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
+            with open(SID_SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
                 existing_data = json.load(outfile)
 
             existing_data.extend(json_data)
 
-            with open(SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+            with open(SID_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
                 json.dump(existing_data, outfile, indent=4)
 
         # Where the db storage magic happens!
-        self.store_to_sql(json_data)
+        # self.store_to_sql(json_data)
 
         return
 
@@ -86,7 +88,7 @@ class PipelineSubscriber:
         return
 
     def subscriber_listener(self):
-        log_and_print(message=f"\nSubscriber actively listening...")
+        log_and_print(message=f"Subscriber actively listening...")
         streaming_future = self.subscriber.subscribe(
             self.sub_path, callback=self.callback
         )
@@ -103,22 +105,24 @@ if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         format="",
-        filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
+        filename=f"logs/SID-SUBLOG-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
         filemode="a",
         level=logging.INFO,
     )
     log_and_print(
-        message=f"\nSubscriber sleeping for 20 minutes to allow publisher to publish first"
+        message=f"Stop ID: subscriber sleeping for 20 minutes to allow publisher to publish first\n"
     )
-    time.sleep(1200)
+    # time.sleep(1200)
 
     try:
         sub_worker = PipelineSubscriber()
         start_time = curr_time_micro()
         total_records_overall = 0
 
-        log_and_print(message=f"\n{start_time} Subscriber starting.")
+        log_and_print(
+            message=f"{start_time} Subscriber {SID_SUB_ID} starting.\n"
+        )
 
         while True:
             sub_worker.subscriber_listener()
@@ -134,7 +138,7 @@ if __name__ == "__main__":
 
             else:
                 log_and_print(
-                    message=f"\nNo data received in the past {TIMEOUT//60} minutes."
+                    message=f"No data received in the past {TIMEOUT//60} minutes.\n"
                 )
                 total_records_overall += sub_worker.current_listener_records
                 sub_worker.current_listener_records = 0
@@ -154,11 +158,11 @@ if __name__ == "__main__":
     except Exception as e:
         logging.basicConfig(
             format="",
-            filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
+            filename=f"logs/SID-SUBLOG-{DATA_MONTH_DAY}.log",
             encoding="utf-8",
             filemode="a",
-            level=logging.FATAL,
+            level=logging.ERROR,
         )
-        logging.error(f"EXCEPTION THROWN!")
-        logging.error(f"Traceback:\n{traceback.format_exc()}")
-        logging.error(f"Exception as e:\n{e}")
+        log_and_print(f"EXCEPTION THROWN!")
+        log_and_print(f"Traceback:\n{traceback.format_exc()}")
+        log_and_print(f"Exception as e:\n{e}")
