@@ -49,17 +49,23 @@ class SIDDataToSQLDB:
 
         log_and_print(f"Writing {stop_id_count} rows to Trip table...")
         for record in dict_to_write:
-            # each record has columns 'trip_id', 'route_id', 'direction',
-            # 'service_key'
+            day_type = ""
+            if record["service_key"] == "W" or record["service_key"] == "M":
+                day_type = "Weekday"
+            elif record["service_key"] == "S":
+                day_type = "Saturday"
+            elif record["service_key"] == "U":
+                day_type = "Sunday"
+            else:
+                day_type = "Weekday"
+            direction_type = "Out" if record["direction"] == 0 else "Back"
 
-            # UPDATE <table_name>
-            # SET <column1> = <value1>,
-            # <column2> = <value2>,
-            # ...
-            # WHERE <condition>
-            # RETURNING * | <output_expression> AS <output_name>;
-
-            cur.execute("UPDATE trip SET ")
+            cur.execute(
+                f"UPDATE trip SET route_id={record['route_id']}, "
+                + f"service_key='{day_type}', "
+                + f"direction='{direction_type}' "
+                + f"WHERE trip_id={record['trip_id']};"
+            )
 
         log_and_print(f"Writing {stop_id_count} rows to Trip table COMPLETE!")
 
