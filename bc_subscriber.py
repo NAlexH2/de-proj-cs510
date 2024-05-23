@@ -18,11 +18,7 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 BC_SUB_ID = "BreadCrumbsRcvr"
-<<<<<<< milestone3
 TIMEOUT = 1800
-=======
-TIMEOUT = 1200
->>>>>>> main
 
 
 class PipelineSubscriber:
