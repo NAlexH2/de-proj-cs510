@@ -1,6 +1,5 @@
 from pathlib import Path
 import logging, os, sys, json
-import pandas as pd
 from google.oauth2 import service_account
 from concurrent import futures
 from google.cloud import pubsub_v1
@@ -64,22 +63,17 @@ class PipelinePublisher:
                 )
                 record_count += 1
 
-                if record_count % 1000 == 0:
-                    log_and_print(
-                        message=f"Approximately {record_count} of "
-                        + f"{self.total_records} published.",
-                        prend="\r",
-                    )
                 future.add_done_callback(self.futures_callback)
                 futures_list.append(future)
 
-        log_and_print(f"\nWaiting on Publisher futures...")
+        log_and_print(f"")
+        log_and_print(f"Waiting on Publisher futures...\n")
         for future in futures.as_completed(futures_list):
             if future.cancelled():
                 log_and_print(f"{future.exception()}")
 
         log_and_print(
-            message=f"Publishing complete. Total records published: {record_count}"
+            message=f"Publishing complete. Total records published: {record_count}.\n"
         )
 
         return
@@ -95,7 +89,6 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     pub_worker = PipelinePublisher()
-
     files_list = []
     if os.path.exists(STOPID_DATA_PATH):
         files_list = os.listdir(STOPID_DATA_PATH)
