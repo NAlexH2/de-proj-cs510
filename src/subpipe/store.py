@@ -24,10 +24,9 @@ BCTABLE = "breadcrumb"
 TRIPTABLE = "trip"
 
 
-class DataToSQLDB:
-    def __init__(self, jData: dict, sidData: dict) -> None:
+class BCDataToSQLDB:
+    def __init__(self, jData: dict) -> None:
         self.bc_json_data: dict = jData
-        self.sid_json_data: dict = sidData
 
     def make_breadcrumb_table(self, df: pd.DataFrame) -> pd.DataFrame:
         renamer = {
@@ -133,7 +132,7 @@ if __name__ == "__main__":
             log_and_print(f"Next file to transform in memory: {file}")
             curr_file = open(os.path.join(BC_SUBSCRIBER_FOLDER, file))
             json_from_file = json.load(curr_file)
-            db_worker = DataToSQLDB(json_from_file)
+            db_worker = BCDataToSQLDB(json_from_file)
             db_worker.to_db_start()
 
     else:
