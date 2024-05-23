@@ -74,8 +74,8 @@ if __name__ == "__main__":
             level=logging.ERROR,
         )
         logging.info("\n")
-        logging.error(msg=f"EXCEPTION THROWN!")
-        logging.error(msg=f"Traceback:\n{traceback.format_exc()}\n")
-        logging.error(msg=f"Exception as e:\n{e}")
+        log_and_print(msg=f"EXCEPTION THROWN!")
+        log_and_print(msg=f"Traceback:\n{traceback.format_exc()}\n")
+        log_and_print(msg=f"Exception as e:\n{e}")
 
     sys.exit()
