@@ -18,7 +18,7 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SID_SUB_ID = "StopDataRcvr"
-TIMEOUT = 180
+TIMEOUT = 600
 
 
 class PipelineSubscriber:
@@ -38,10 +38,10 @@ class PipelineSubscriber:
         self.current_listener_records = 0
 
     def store_to_sql(self, jData: list[dict]) -> None:
-        log_and_print(f"Sending data to SQL database.")
+        log_and_print(f"Sending stop ID data to SQL trip table.")
         db_worker = SIDDataToSQLDB(jData)
         db_worker.to_db_start()
-        log_and_print(f"Data transfer to SQL database complete!")
+        log_and_print(f"Stop ID data update to SQL trip table complete!")
 
     def write_records_to_file(self):
         json_data: list[dict] = []
@@ -56,24 +56,18 @@ class PipelineSubscriber:
         log_and_print(f"{SID_SUBSCRIBER_DATA_PATH_JSON}")
         if not os.path.exists(SID_SUBSCRIBER_FOLDER):
             os.makedirs(SID_SUBSCRIBER_FOLDER)
-        if not os.path.exists(SID_SUBSCRIBER_DATA_PATH_JSON):
-            with open(SID_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
-                json.dump(json_data, outfile, indent=4)
-        else:
-            with open(SID_SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
-                existing_data = json.load(outfile)
 
-            existing_data.extend(json_data)
+        with open(SID_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+            json.dump(json_data, outfile, indent=4)
 
-            with open(SID_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
-                json.dump(existing_data, outfile, indent=4)
         log_and_print(
             f"{SID_SUB_ID} subscriber sleeping for 30 minutes to wait for "
             + "BreadCrumbRcvr to finish."
         )
         time.sleep(1800)
+
         # Where the db storage magic happens!
-        # self.store_to_sql(json_data)
+        self.store_to_sql(json_data)
 
         return
 
@@ -114,6 +108,11 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
+
+    log_and_print(
+        message=f"Subscriber sleeping for 20 minutes to allow publisher to publish first.\n"
+    )
+    time.sleep(1200)
 
     try:
         sub_worker = PipelineSubscriber()

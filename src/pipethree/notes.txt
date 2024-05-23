@@ -1,6 +1,0 @@
-Do the following for html files:
-- turn each html into a dictionary - like a json object
-- publish each record
-- subscriber takes that data and put it into a pd dataframe
-- take that and the json response data, and go add it to the db
-  correctly. Matching trip ids and their in/out/weekday/etc.
