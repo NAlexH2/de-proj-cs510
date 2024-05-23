@@ -18,7 +18,7 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 SID_SUB_ID = "StopDataRcvr"
-TIMEOUT = 1800
+TIMEOUT = 300
 
 
 class PipelineSubscriber:
@@ -69,7 +69,7 @@ class PipelineSubscriber:
                 json.dump(existing_data, outfile, indent=4)
 
         # Where the db storage magic happens!
-        self.store_to_sql(json_data)
+        # self.store_to_sql(json_data)
 
         return
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         format="",
-        filename=f"logs/SUBLOG-{DATA_MONTH_DAY}.log",
+        filename=f"logs/SID-SUBLOG-{DATA_MONTH_DAY}.log",
         encoding="utf-8",
         filemode="a",
         level=logging.INFO,

@@ -1,5 +1,6 @@
 from pathlib import Path
 import logging, os, sys, json
+import pandas as pd
 from google.oauth2 import service_account
 from concurrent import futures
 from google.cloud import pubsub_v1
@@ -34,6 +35,8 @@ class PipelinePublisher:
         self.total_records = 0
 
     def add_to_publish_list(self, data):
+        df = pd.DataFrame().from_dict(json.loads(data))
+        df_unique = df.drop_duplicates()
         self.data_to_publish.append(data)
         self.total_records += len(json.loads(data))
         return
@@ -51,7 +54,7 @@ class PipelinePublisher:
         futures_list = []
 
         logging.info("\n")
-        log_and_print(message=f"Publishing all records to {TOPIC_ID}.")
+        log_and_print(f"Publishing all records to {TOPIC_ID}.")
         while len(self.data_to_publish) > 0:
             to_publish = self.data_to_publish.pop()
             to_publish_json = json.loads(to_publish)
@@ -72,10 +75,10 @@ class PipelinePublisher:
                 future.add_done_callback(self.futures_callback)
                 futures_list.append(future)
 
-        log_and_print(message=f"\nWaiting on Publisher futures...")
+        log_and_print(f"\nWaiting on Publisher futures...")
         for future in futures.as_completed(futures_list):
             if future.cancelled():
-                log_and_print(message=f"{future.exception()}")
+                log_and_print(f"{future.exception()}")
 
         log_and_print(
             message=f"Publishing complete. Total records published: {record_count}"
@@ -115,5 +118,5 @@ if __name__ == "__main__":
             message=f"Folder {STOPID_DATA_PATH} does not exist. Quitting publishing."
         )
         sys.exit(0)
-    log_and_print(message=f"Stop ID publisher finished.")
+    log_and_print(f"Stop ID publisher finished.")
     sys.exit(0)

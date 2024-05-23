@@ -52,7 +52,9 @@ class DataGrabber:
                 self.html_to_json_like(soup)
                 self.save_to_json(vehicleID)
                 if "-P" in sys.argv:
-                    self.pub_worker.add_to_publish_list(self.html_to_dict_data)
+                    self.pub_worker.add_to_publish_list(
+                        json.dumps(self.html_to_dict_data)
+                    )
         return
 
     def required_data(self, stop_id: int, data: list[str]):
@@ -80,8 +82,12 @@ class DataGrabber:
                         tables_data[i][j].get_text(separator=",").split(","),
                     )
                 )
+
         keys = ["trip_id", "route_id", "direction", "service_key"]
         self.html_to_dict_data = [dict(zip(keys, row)) for row in rows_data]
+        df = pd.DataFrame().from_dict(self.html_to_dict_data)
+        df_unique = df.drop_duplicates()
+        self.html_to_dict_data = df_unique.to_dict(orient="records")
         return
 
     def save_to_json(self, vehicleID: str) -> None:
