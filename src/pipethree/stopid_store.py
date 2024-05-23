@@ -9,11 +9,10 @@ from pathlib import Path
 if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).parents[2].absolute()))
 
-from src.subpipe.validate import ValidateBusData
-from src.subpipe.transform import DataTransformer
+from src.pipethree.stopid_transform import SIDDataTransformer
 from src.utils.utils import (
     DATA_MONTH_DAY,
-    BC_SUBSCRIBER_FOLDER,
+    SID_SUBSCRIBER_FOLDER,
     log_and_print,
 )
 
@@ -25,43 +24,11 @@ TRIPTABLE = "trip"
 
 
 class SIDDataToSQLDB:
-    def __init__(self, sidData: dict) -> None:
-        self.sid_json_data: dict = sidData
-
-    def make_breadcrumb_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        renamer = {
-            "TIMESTAMP": "tstamp",
-            "GPS_LATITUDE": "latitude",
-            "GPS_LONGITUDE": "longitude",
-            "SPEED": "speed",
-            "EVENT_NO_TRIP": "trip_id",
-        }
-        bc_table = df[
-            [
-                "TIMESTAMP",
-                "GPS_LATITUDE",
-                "GPS_LONGITUDE",
-                "SPEED",
-                "EVENT_NO_TRIP",
-            ]
-        ]
-        bc_table = bc_table.rename(columns=renamer)
-        return bc_table
-
-    def make_trip_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        renamer = {"EVENT_NO_TRIP": "trip_id", "VEHICLE_ID": "vehicle_id"}
-        trip_table = df[["EVENT_NO_TRIP", "VEHICLE_ID"]].drop_duplicates(
-            keep="first"
-        )
-        trip_table.insert(1, "route_id", 0)
-        trip_table.insert(3, "service_key", "Weekday")
-        trip_table.insert(4, "direction", "Out")
-        trip_table.rename(columns=renamer, inplace=True)
-        return trip_table
+    def __init__(self, sidData: list[dict]) -> None:
+        self.sid_json_data: list[dict] = sidData
 
     def prepare_df(self, df: pd.DataFrame) -> pd.DataFrame:
-        ValidateBusData(df).do_all_assertions_except_speed()
-        preped_df = DataTransformer(df).transform_run()
+        preped_df = SIDDataTransformer(df).df_transform()
         return preped_df
 
     def db_connect(self):
@@ -74,42 +41,21 @@ class SIDDataToSQLDB:
         connection.autocommit = True
         return connection
 
-    def to_file_like(self, df: pd.DataFrame) -> io.StringIO:
-        csv_temp_string = df.to_csv(index=False)
-        file_like = io.StringIO(csv_temp_string)
-        return file_like
-
-    def write_to_db(self, trip_frame: pd.DataFrame, bc_frame: pd.DataFrame):
-        trip_row_count = trip_frame.shape[0]
-        bc_row_count = bc_frame.shape[0]
+    def write_to_db(self, sid_df: pd.DataFrame):
+        trip_row_count = sid_df.shape[0]
         conn = self.db_connect()
         cur = conn.cursor()
-        trip_file_like = self.to_file_like(trip_frame)
-        bc_file_like = self.to_file_like(bc_frame)
+        dict_to_write = sid_df.to_dict(orient="records")
 
         log_and_print(f"Writing {trip_row_count} rows to Trip table...")
-        with trip_file_like as tf:
-            next(tf)
-            cur.copy_from(tf, TRIPTABLE, sep=",")
 
         log_and_print(f"Writing {trip_row_count} rows to Trip table COMPLETE!")
 
-        log_and_print(f"Writing {bc_row_count} rows to BreadCrumb table...")
-        with bc_file_like as bcf:
-            next(bcf)
-            cur.copy_from(bcf, BCTABLE, sep=",")
-
-        log_and_print(
-            f"Writing {bc_row_count} rows to BreadCrumb table COMPLETE!"
-        )
-
     def to_db_start(self):
-        preped_df: pd.DataFrame = self.prepare_df(
-            pd.DataFrame.from_dict(self.bc_json_data)
+        sid_df: pd.DataFrame = self.prepare_df(
+            pd.DataFrame.from_dict(self.sid_json_data)
         )
-        bc_table: pd.DataFrame = self.make_breadcrumb_table(preped_df)
-        trip_table: pd.DataFrame = self.make_trip_table(preped_df)
-        self.write_to_db(trip_table, bc_table)
+        self.write_to_db(sid_df)
 
 
 if __name__ == "__main__":
@@ -122,22 +68,22 @@ if __name__ == "__main__":
     )
     log_and_print("Sending data to SQL database.")
     files = []
-    if os.path.exists(BC_SUBSCRIBER_FOLDER):
-        files = os.listdir(BC_SUBSCRIBER_FOLDER)
+    if os.path.exists(SID_SUBSCRIBER_FOLDER):
+        files = os.listdir(SID_SUBSCRIBER_FOLDER)
         files.sort()
 
         while len(files) > 0:
             file = files.pop()
             logging.info("\n")
             log_and_print(f"Next file to transform in memory: {file}")
-            curr_file = open(os.path.join(BC_SUBSCRIBER_FOLDER, file))
+            curr_file = open(os.path.join(SID_SUBSCRIBER_FOLDER, file))
             json_from_file = json.load(curr_file)
-            db_worker = DataToSQLDB(json_from_file)
+            db_worker = SIDDataToSQLDB(json_from_file)
             db_worker.to_db_start()
 
     else:
         log_and_print(
-            f"Folder {BC_SUBSCRIBER_FOLDER} does not exist. "
+            f"Folder {SID_SUBSCRIBER_FOLDER} does not exist. "
             + "Unable to send any data as it does not exist."
         )
         sys.exit(0)
