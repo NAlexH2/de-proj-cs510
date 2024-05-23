@@ -35,8 +35,6 @@ class PipelinePublisher:
         self.total_records = 0
 
     def add_to_publish_list(self, data):
-        df = pd.DataFrame().from_dict(json.loads(data))
-        df_unique = df.drop_duplicates()
         self.data_to_publish.append(data)
         self.total_records += len(json.loads(data))
         return
