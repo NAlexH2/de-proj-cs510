@@ -14,6 +14,6 @@ echo "$(text_date) git pull complete" | tee -a "logs/PIPETHREELOG-$(date +"%m-%d
 
 # TODO: add -P arg when it is complete
 pip install -r requirements.txt > /dev/null 2>&1
-python pipethree.py -G
+python pipethree.py -G -P
 
 echo "$(text_date) Stopping pipethree.py script" | tee -a "logs/PIPETHREELOG-$(date +"%m-%d").log"
