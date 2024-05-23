@@ -18,7 +18,7 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 BC_SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 300
+TIMEOUT = 1200
 
 
 class PipelineSubscriber:
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     log_and_print(
         message=f"Subscriber sleeping for 20 minutes to allow publisher to publish first\n"
     )
-    # time.sleep(1200)
+    time.sleep(1200)
 
     try:
         sub_worker = PipelineSubscriber()
