@@ -18,7 +18,7 @@ from src.utils.utils import (
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
 BC_SUB_ID = "BreadCrumbsRcvr"
-TIMEOUT = 300
+TIMEOUT = 1800
 
 
 class PipelineSubscriber:
@@ -54,17 +54,8 @@ class PipelineSubscriber:
 
         if not os.path.exists(BC_SUBSCRIBER_FOLDER):
             os.makedirs(BC_SUBSCRIBER_FOLDER)
-        if not os.path.exists(BC_SUBSCRIBER_DATA_PATH_JSON):
-            with open(BC_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
-                json.dump(json_data, outfile, indent=4)
-        else:
-            with open(BC_SUBSCRIBER_DATA_PATH_JSON, "r") as outfile:
-                existing_data = json.load(outfile)
-
-            existing_data.extend(json_data)
-
-            with open(BC_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
-                json.dump(existing_data, outfile, indent=4)
+        with open(BC_SUBSCRIBER_DATA_PATH_JSON, "w") as outfile:
+            json.dump(json_data, outfile, indent=4)
 
         # Where the db storage magic happens!
         self.store_to_sql(json_data)
@@ -109,9 +100,9 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     log_and_print(
-        message=f"Subscriber sleeping for 20 minutes to allow publisher to publish first\n"
+        message=f"Subscriber sleeping for 20 minutes to allow publisher to publish first.\n"
     )
-    # time.sleep(1200)
+    time.sleep(1200)
 
     try:
         sub_worker = PipelineSubscriber()
