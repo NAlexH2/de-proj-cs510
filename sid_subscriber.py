@@ -2,7 +2,7 @@ import logging
 import json, os
 import time
 import traceback
-from src.subpipe.store import DataToSQLDB
+from src.pipethree.stopid_store import SIDDataToSQLDB
 
 from google.oauth2 import service_account
 from google.cloud import pubsub_v1
@@ -17,7 +17,7 @@ from src.utils.utils import (
 
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 PROJECT_ID = "data-eng-419218"
-BC_SUB_ID = "BreadCrumbsRcvr"
+SID_SUB_ID = "StopDataRcvr"
 TIMEOUT = 1800
 
 
@@ -31,13 +31,15 @@ class PipelineSubscriber:
         self.subscriber = pubsub_v1.SubscriberClient(
             credentials=self.pubsub_creds
         )
-        self.sub_path = self.subscriber.subscription_path(PROJECT_ID, BC_SUB_ID)
+        self.sub_path = self.subscriber.subscription_path(
+            PROJECT_ID, SID_SUB_ID
+        )
         self.data_to_write: list[str] = []
         self.current_listener_records = 0
 
     def store_to_sql(self, jData: list[dict]) -> None:
         log_and_print(f"Sending data to SQL database.")
-        db_worker = DataToSQLDB(jData)
+        db_worker = SIDDataToSQLDB(jData)
         db_worker.to_db_start()
         log_and_print(f"Data transfer to SQL database complete!")
 
@@ -109,7 +111,7 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     log_and_print(
-        message=f"Subscriber sleeping for 20 minutes to allow publisher to publish first\n"
+        message=f"Stop ID: subscriber sleeping for 20 minutes to allow publisher to publish first\n"
     )
     # time.sleep(1200)
 
@@ -118,7 +120,9 @@ if __name__ == "__main__":
         start_time = curr_time_micro()
         total_records_overall = 0
 
-        log_and_print(message=f"{start_time} Subscriber starting.\n")
+        log_and_print(
+            message=f"{start_time} Subscriber {SID_SUB_ID} starting.\n"
+        )
 
         while True:
             sub_worker.subscriber_listener()
@@ -157,8 +161,8 @@ if __name__ == "__main__":
             filename=f"logs/SID-SUBLOG-{DATA_MONTH_DAY}.log",
             encoding="utf-8",
             filemode="a",
-            level=logging.FATAL,
+            level=logging.ERROR,
         )
-        logging.error(f"EXCEPTION THROWN!")
-        logging.error(f"Traceback:\n{traceback.format_exc()}")
-        logging.error(f"Exception as e:\n{e}")
+        log_and_print(f"EXCEPTION THROWN!")
+        log_and_print(f"Traceback:\n{traceback.format_exc()}")
+        log_and_print(f"Exception as e:\n{e}")
