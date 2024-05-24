@@ -1,4 +1,4 @@
-# CS510 (Grad) - Data Engineering Project 
+# CS410/510 - Data Engineering Project 
 
 ## What is this project about
 For this project we were tasked to do the following:
@@ -14,7 +14,9 @@ For this project we were tasked to do the following:
        - This also involved correctly incorporating the data from both API into the database seamlessly and soundly enough to prevent against crashes that may come up.
     - Finally, **storing** it into a pSQL database which would then be used to **visualize** with [MapBox](https://www.mapbox.com/) hosted on the VM.
 
-This project was a term long (10 weeks) with checkpoints approximately every 2 to 3 weeks called 'Milestones'. You can find all the code in each directory under 'milestone-submissions' to see how it evolved. The project and was optional to be in a team or not I elected to do the entire project by myself.
+This project was a term long (10 weeks) with checkpoints approximately every 2 to 3 weeks called 'Milestones'. You can find all the code in each directory under 'milestone-submissions' to see how it evolved. 
+
+The project and was optional to be in a team or not I elected to do the entire project by myself. I was a Graduate Student at PSU during the duration of this project, taking the course at the 510 level.
 
 ## Challenges
 
