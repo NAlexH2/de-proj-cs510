@@ -12,7 +12,6 @@ from src.utils.utils import DATA_MONTH_DAY, curr_time_micro, log_and_print
 
 
 def found_args():
-    started_by_bash = False
     if len(sys.argv) == 1 and "-G" not in sys.argv:
         print(
             """
