@@ -28,39 +28,7 @@ class DataGrabber:
     """
 
     def __init__(self, pub_worker: PipelinePublisher) -> None:
-        self.OK_response = self.build_query_df()
-        self.bad_response = self.build_query_df()
         self.pub_worker: PipelinePublisher = pub_worker
-
-    def response_vdf(self, vehicleID: str, stat_code: int) -> None:
-        """Build a dataframe just for vehicle responses to self modify
-
-        Arguments:
-            vehicleID -- id of vehicle used in the query operation
-
-            stat_code -- response status code received in query operation
-
-        Returns:
-            pd.DataFrame with ID and Response as columns and a single row
-        """
-
-        data = {
-            "ID": [str(vehicleID)],
-            "Response": [str(stat_code)],
-        }
-        return pd.DataFrame(data)
-
-    def build_query_df(self) -> pd.DataFrame:
-        """Generates an empty dataframe with 'ID' and 'Response' columns.
-
-        Returns:
-            pd.DataFrame with columns 'ID' and 'Response'.
-        """
-
-        new_df = pd.DataFrame()
-        new_df["ID"] = pd.Series(dtype=str)
-        new_df["Response"] = pd.Series(dtype=str)
-        return new_df
 
     def gather_data(self, cf: pd.DataFrame):
         for i in range(cf.size):
@@ -70,17 +38,9 @@ class DataGrabber:
             resp = requests.request("GET", BREADCRUMB_API_URL + vehicleID)
 
             # Make a quick dataframe with our info to concat
-            to_concat = self.response_vdf(vehicleID, resp.status_code)
 
             # Collect both responses for notification
-            if resp.status_code == 404:
-                self.bad_response = pd.concat(
-                    [self.bad_response, to_concat], ignore_index=True
-                )
-            else:
-                self.OK_response = pd.concat(
-                    [self.OK_response, to_concat], ignore_index=True
-                )
+            if resp.status_code != 404:
                 self.save_json_data(resp.text, vehicleID)
                 if "-P" in sys.argv:
                     self.pub_worker.add_to_publish_list(resp.text)
