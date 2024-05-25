@@ -19,7 +19,7 @@ PROJECT_ID = "data-eng-419218"
 TOPIC_ID = "VehicleData"
 
 
-class PipelinePublisher:
+class PipelinePublisherBC:
     def __init__(self):
         self.pubsub_creds = (
             service_account.Credentials.from_service_account_file(
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     sys.argv.append("-L")
-    pub_worker = PipelinePublisher()
+    pub_worker = PipelinePublisherBC()
 
     files_list = []
     if os.path.exists(RAW_DATA_PATH):

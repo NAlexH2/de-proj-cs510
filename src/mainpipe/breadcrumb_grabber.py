@@ -12,10 +12,10 @@ from src.utils.utils import (
     mdy_string,
     log_and_print,
 )
-from src.mainpipe.breadcrumb_publisher import PipelinePublisher
+from src.mainpipe.breadcrumb_publisher import PipelinePublisherBC
 
 
-class DataGrabber:
+class DataGrabberBC:
     """
     Collection of data from bus API that the breadcrumbs come from.
 
@@ -27,8 +27,8 @@ class DataGrabber:
             codes
     """
 
-    def __init__(self, pub_worker: PipelinePublisher) -> None:
-        self.pub_worker: PipelinePublisher = pub_worker
+    def __init__(self, pub_worker: PipelinePublisherBC) -> None:
+        self.pub_worker: PipelinePublisherBC = pub_worker
 
     def gather_data(self, cf: pd.DataFrame):
         for i in range(cf.size):
@@ -77,5 +77,5 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     log_and_print(message="Gathering staring.")
-    grabber = DataGrabber(pub_worker=None)
+    grabber = DataGrabberBC(pub_worker=None)
     grabber.data_grabber_main()

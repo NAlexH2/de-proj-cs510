@@ -5,9 +5,9 @@ import time
 import traceback
 
 from src.mainpipe.tardata import tar_data
-from src.mainpipe.breadcrumb_grabber import DataGrabber
+from src.mainpipe.breadcrumb_grabber import DataGrabberBC
 from src.mainpipe.uploadgdrive import upload_to_gdrive
-from src.mainpipe.breadcrumb_publisher import PipelinePublisher
+from src.mainpipe.breadcrumb_publisher import PipelinePublisherBC
 from src.utils.utils import DATA_MONTH_DAY, curr_time_micro, log_and_print
 
 # This script is the main gatherer of the pipeline. This is where all things
@@ -58,8 +58,8 @@ Usage: python main.py -G [OPTIONS]
 
 
 if __name__ == "__main__":
-    # Immediately want to make sure we have our logs folder for all the info
-    # we are logging.
+    # Immediately want to make sure the logs folder exists for all the info
+    # being logged.
     os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         format="",
@@ -74,11 +74,11 @@ if __name__ == "__main__":
 
             # Create the publisher which will be used to publish to the topic
             # on GCP pub/sub (defined in the class)
-            pub_worker: PipelinePublisher = PipelinePublisher()
+            pub_worker: PipelinePublisherBC = PipelinePublisherBC()
 
             # Make the DataGrabber objet and allow it to manipulate pub_worker
             # info to support the operation
-            data_collect = DataGrabber(pub_worker=pub_worker)
+            data_collect = DataGrabberBC(pub_worker=pub_worker)
 
             # Begin collecting from bus vehicle data api
             data_collect.data_grabber_main()

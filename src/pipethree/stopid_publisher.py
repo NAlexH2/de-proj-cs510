@@ -19,7 +19,7 @@ PROJECT_ID = "data-eng-419218"
 TOPIC_ID = "StopData"
 
 
-class PipelinePublisher:
+class PipelinePublisherSID:
     def __init__(self):
         self.pubsub_creds = (
             service_account.Credentials.from_service_account_file(
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         filemode="a",
         level=logging.INFO,
     )
-    pub_worker = PipelinePublisher()
+    pub_worker = PipelinePublisherSID()
     files_list = []
     if os.path.exists(STOPID_DATA_PATH):
         files_list = os.listdir(STOPID_DATA_PATH)

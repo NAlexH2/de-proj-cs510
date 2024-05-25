@@ -17,14 +17,14 @@ from src.utils.utils import (
     mdy_string,
     log_and_print,
 )
-from src.pipethree.stopid_publisher import PipelinePublisher
+from src.pipethree.stopid_publisher import PipelinePublisherSID
 
 
-class DataGrabber:
-    def __init__(self, pub_worker: PipelinePublisher) -> None:
+class DataGrabberSID:
+    def __init__(self, pub_worker: PipelinePublisherSID) -> None:
         self.pub_worker = 0
         self.html_to_dict_data: list[dict] = None
-        self.pub_worker: PipelinePublisher = pub_worker
+        self.pub_worker: PipelinePublisherSID = pub_worker
         self.con_path: bool = False
 
     # TODO:
@@ -148,7 +148,7 @@ class DataGrabber:
 if __name__ == "__main__":
     os.makedirs("logs", exist_ok=True)
 
-    grabber = DataGrabber(pub_worker=None)
+    grabber = DataGrabberSID(pub_worker=None)
     ans = input(
         "\nWould you like to convert all existing folders from html to json? Y/N: "
     )
