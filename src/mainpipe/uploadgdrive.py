@@ -17,6 +17,10 @@ SCOPES = ["https://www.googleapis.com/auth/drive"]
 SERVICE_ACCOUNT_FILE = "./data_eng_key/data-eng-auth-data.json"
 GDRIVE_RAW_DATA_FILES = "1ew5-8Iyrg4gdRdleqRULt5WxMMAiwT8B"
 
+# This script will upload all breadcrumb json responses received from main.py
+# to a google drive folder given shared permissions to the service account
+# attached to the service account key file located in data_eng_key
+
 
 def folder_exists(service):
     query = f"name='{DATA_MONTH_DAY}' and mimeType='application/vnd.google-apps.folder'"
