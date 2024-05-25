@@ -30,11 +30,6 @@ class DataGrabberSID:
         # Init the pubworker to share data
         self.pub_worker: PipelinePublisherSID = pub_worker
 
-        # If this is being ran as an independent file, then it can be used
-        # to convert any existing .html files to .json. Otherwise it will
-        # only collect and transform it to json.
-        self.con_path: bool = False
-
     def gather_data(self, cf: pd.DataFrame):
         """Collect data from API endpoint accessing each vehicle id in the
         dataframe to be used as the final part of the api call
@@ -200,30 +195,57 @@ class DataGrabberSID:
         a directory only contains json, then it is ignored as this function
         throws away json files from the list and does work for .html files
         """
-        self.con_path = True
+        # Only do work if the folder exists
         if os.path.exists(STOPID_DATA_FOLDER):
+
+            # List all the folders
             folder_list = os.listdir(STOPID_DATA_FOLDER)
-            folder_list.sort()
+            folder_list.sort()  # Sort them
+
+            # For every folder in the folder list...
             for folder in folder_list:
+                # Build the first stage of the path
                 files_path = os.path.join(STOPID_DATA_FOLDER, folder)
+
+                # Get the list of files in the file_path just built
                 file_list = os.listdir(files_path)
+
+                # Remove everything that's .json
                 file_list = [file for file in file_list if ".json" not in file]
+
+                # Sort the .html files by name
                 file_list.sort()
                 for file in file_list:
+                    # now for each file we've identified...
+                    # Get the vehicle id (fixed string size allows this!)
                     vehicleID = file[:4]
+                    # Same with the mdy in the string!
                     cur_file_mdy = file[5:15]
+                    # We need these both when re-writing to a new file and some
+                    # other extra operations.
+
+                    # Build another file path to the exact file we are changing
                     file_opened = os.path.join(STOPID_DATA_FOLDER, folder, file)
                     log_and_print(
                         f"Converting {folder}/{file} to .json", prend="\r"
                     )
+                    # Read that file in as bytes
                     with open(file_opened, "rb") as infile:
+                        # Soup it
                         soup: BeautifulSoup = BeautifulSoup(
                             infile, "html.parser"
                         )
+                        # Use that souped object to transform it (same as non
+                        # conversion path)
                         self.html_to_json_like(soup=soup)
+
+                        # Save the converted file with all the variables found
+                        # earlier and to the file_path we also found earlier.
                         self.conversion_save_to_json(
                             files_path, cur_file_mdy, vehicleID=vehicleID
                         )
+                    # Reset the html_to_dict_data so that we work from a clean
+                    # slate on the next file
                     self.html_to_dict_data = None
 
 
