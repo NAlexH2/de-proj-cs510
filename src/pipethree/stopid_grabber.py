@@ -27,10 +27,6 @@ class DataGrabberSID:
         self.pub_worker: PipelinePublisherSID = pub_worker
         self.con_path: bool = False
 
-    # TODO:
-    # [x] Write a function to transform the HTML data into JSON, then save all files.
-    # [ ] Modify/make new publisher to use this newer modified data.
-
     def gather_data(self, cf: pd.DataFrame):
         for i in range(cf.size):
             vehicleID = str(cf["Snickers"].at[i])
