@@ -5,14 +5,22 @@ import time
 import traceback
 
 from src.mainpipe.tardata import tar_data
-from src.mainpipe.breadcrumb_grabber import DataGrabber
+from src.mainpipe.breadcrumb_grabber import DataGrabberBC
 from src.mainpipe.uploadgdrive import upload_to_gdrive
-from src.mainpipe.breadcrumb_publisher import PipelinePublisher
+from src.mainpipe.breadcrumb_publisher import PipelinePublisherBC
 from src.utils.utils import DATA_MONTH_DAY, curr_time_micro, log_and_print
 
+# This script is the main gatherer of the pipeline. This is where all things
+# begin for this entire process. This will gather all the initial data for
+# the breadcrumb api, upload it to a gdrive folder, tar it, then publish it
+# to GCP pub/sub based on the command line args.
 
+
+# -G is required, the rest are optional.
 def found_args():
-    started_by_bash = False
+    """Alerts the user to what args were found or if it's missing -G then
+    provides a usage statement.
+    """
     if len(sys.argv) == 1 and "-G" not in sys.argv:
         print(
             """
@@ -50,6 +58,8 @@ Usage: python main.py -G [OPTIONS]
 
 
 if __name__ == "__main__":
+    # Immediately want to make sure the logs folder exists for all the info
+    # being logged.
     os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         format="",
@@ -59,15 +69,21 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     try:
-        found_args()
-        if "-G" in sys.argv:
-            pub_worker: PipelinePublisher = PipelinePublisher()
-            data_collect = DataGrabber(pub_worker=pub_worker)
-            data_collect.data_grabber_main()
-            OK_size = data_collect.OK_response.size
-            bad_size = data_collect.bad_response.size
+        found_args()  # Inform the user of what ops will take place
+        if "-G" in sys.argv:  # Only do work if -G is present
 
-            if "-U" in sys.argv:
+            # Create the publisher which will be used to publish to the topic
+            # on GCP pub/sub (defined in the class)
+            pub_worker: PipelinePublisherBC = PipelinePublisherBC()
+
+            # Make the DataGrabber objet and allow it to manipulate pub_worker
+            # info to support the operation
+            data_collect = DataGrabberBC(pub_worker=pub_worker)
+
+            # Begin collecting from bus vehicle data api
+            data_collect.data_grabber_main()
+
+            if "-U" in sys.argv:  # Upload if this was in the argv to gdrive
                 start_time = curr_time_micro()
                 upload_to_gdrive()
                 log_and_print(
@@ -75,12 +91,12 @@ if __name__ == "__main__":
                     + f"Started at {start_time}."
                 )
 
-            if "-T" in sys.argv:
+            if "-T" in sys.argv:  # Tar it to compress it
                 logging.info("\n")
                 tar_data()
                 logging.info("\n")
 
-            # Publish all the data that's been collected so far.
+            # Publish all the data that's been collected so far from the grabber
             if "-P" in sys.argv:
                 start_time = curr_time_micro()
                 pub_worker.publish_data()

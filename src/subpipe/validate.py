@@ -15,6 +15,10 @@ from src.utils.utils import (
 
 
 class ValidateBusData:
+    """Validation class used in the step to validate data or in the case of
+    removing erroneous speeds in the transform step.
+    """
+
     def __init__(self, df: pd.DataFrame) -> None:
         self.df: pd.DataFrame = df
 

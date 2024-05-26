@@ -4,13 +4,22 @@ import logging
 import time
 import traceback
 
-from src.pipethree.stopid_grabber import DataGrabber
-from src.pipethree.stopid_publisher import PipelinePublisher
+from src.pipethree.stopid_grabber import DataGrabberSID
+from src.pipethree.stopid_publisher import PipelinePublisherSID
 from src.utils.utils import DATA_MONTH_DAY, curr_time_micro, log_and_print
 
 
+# This script is used to commence the gathering of the third pipe in the op.
+# This is the stop id data main script which collects the necessary and missing
+# data from the first pipe in main.py. Stop ID data gives day of week,
+# direction, and the bus route the vehicle was working for that trip id.
+
+
+# -G is required, the rest are optional.
 def found_args():
-    started_by_bash = False
+    """Alerts the user to what args were found or if it's missing -G then
+    provides a usage statement.
+    """
     if len(sys.argv) == 1 and "-G" not in sys.argv:
         print(
             """
@@ -43,6 +52,8 @@ Usage: python main.py -G [OPTIONS]
 
 
 if __name__ == "__main__":
+    # Immediately want to make sure the logs folder exists for all the info
+    # being logged.
     os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         format="",
@@ -52,10 +63,10 @@ if __name__ == "__main__":
         level=logging.INFO,
     )
     try:
-        found_args()
-        if "-G" in sys.argv:
-            pub_worker: PipelinePublisher = PipelinePublisher()
-            data_collect = DataGrabber(pub_worker=pub_worker)
+        found_args()  # Inform the user of what ops will take place
+        if "-G" in sys.argv:  # Required arg
+            pub_worker: PipelinePublisherSID = PipelinePublisherSID()
+            data_collect = DataGrabberSID(pub_worker=pub_worker)
             data_collect.data_grabber_main()
 
             # Publish all the data that's been collected so far.
