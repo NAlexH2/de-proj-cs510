@@ -54,7 +54,7 @@ class DataGrabberBC:
         # Take the response, json.loads (because it's bytes) with some
         # indentation to keep it pretty when the dumps receives it and saves it
         # a var
-        json_got = json.dumps(json.loads(resp_text), indent=4)
+        json_got = json.dumps(resp_text, indent=4)
 
         # Build the file string name
         file_str = vehicleID + "-" + mdy_string() + ".json"
