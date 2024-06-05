@@ -6,3 +6,4 @@ google-api-python-client
 google-cloud-pubsub
 psycopg2-binary
 bs4
+Faker
